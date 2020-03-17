@@ -18,6 +18,14 @@ const server = http.createServer((request, response) => {
             }
         });
     }
+    if(request.method == 'GET' /*&& request.url == "/"*/){
+        console.log(request.url);
+        response.writeHead(401 ,{
+            'Content-Type': '*',
+            'Access-Control-Allow-Origin': '*'
+        });
+        response.end('Dude you cant just get');
+    }
 });
 
 server.listen(3000, 'localhost', () => {
