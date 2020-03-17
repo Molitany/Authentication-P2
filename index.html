@@ -1,26 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test site</title>
 </head>
+
 <body>
     <p>This site is all about testing the node.js server for the p2 authentication project.
-       This site has only one purpose and that is sending and recieving information from the app.js server.
+        This site has only one purpose and that is sending and recieving information from the app.js server.
     </p>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-
-        fetch('http://localhost:3000', {
-            method: 'POST',
-            body: 'Sebastian'//'Hello we are not trying to hack you please authenticate us'
-        })
-        .then((response) => {
-            response.text()
+        document.addEventListener("keydown", request);
+        function post_request() {
+            fetch('http://localhost:3000', {
+                method: 'POST',
+                body: 'Sebastian'//'Hello we are not trying to hack you please authenticate us'
+            })
+                .then((response) => {
+                    response.text()
+                        .then(data => console.log(data));
+                })
+                .catch(err => console.log(err));
+        }
+        /*function get_request(){
+            fetch('http://localhost:3000/password')
+            .then(response => response.json())
             .then(data => console.log(data));
-        })
-        .catch(err => console.log(err));
+        }*/
+        function request(event) {
+            if (event.keyCode == '80') {
+                post_request();
+            }
+            if (event == '71'){
+                //get_request();
+            }
+        }
+
     </script>
 </body>
+
 </html>
