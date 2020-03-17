@@ -9,19 +9,17 @@ const server = http.createServer((request, response) => {
             'Content-Type': '*',
             'Access-Control-Allow-Origin': '*'
         });
-
-        console.log(json_Converted.ID);
-
         let body = '';
         request.on('data', chunk => {
             body += chunk.toString();
         });   
         request.on('end', () => {
-            if (json_Converted.ID == '12345'){ //This sould be changed
-                response.end('You have access');
-            }else{
-                response.end('You do not have access')
+            for (const property in json_Converted) {
+                if (json_Converted[property] == body){
+                    response.end('You have access');
+                }
             }
+            response.end('You do not have access')
         });
     }
 });
