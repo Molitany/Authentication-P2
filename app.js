@@ -1,7 +1,7 @@
 const http = require('http');
 
 const server = http.createServer((request, response) => {
-    if (method == 'POST') {
+    if (request.method == 'POST') {
         response.writeHead(200,{
             'Content-Type': '*',
             'Access-Control-Allow-Origin': '*'
