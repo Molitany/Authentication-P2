@@ -16,6 +16,7 @@ const server = http.createServer((request, response) => {
         request.on('end', () => {
             for (const property in json_Converted) {
                 if (json_Converted[property] == body){
+                    console.log(`Access granted to ${json_Converted[property]}`);
                     response.end('You have access');
                 }
             }
