@@ -9,11 +9,15 @@ const server = http.createServer((request, response) => {
         let body = '';
         request.on('data', chunk => {
             body += chunk.toString();
-        });
-        request.on('end', () => {
             console.log(body);
-            response.end('You have access');
         });
+        if (body == 'Sebastian'){
+            request.on('end', () => {
+                console.log(body);
+                response.end('You have access');
+            });
+        }
+        response.end('You do not have access')
     }
     response.end('You do not have access to do other requests than POST');
 });
