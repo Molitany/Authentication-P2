@@ -10,16 +10,31 @@
 
 
 const electron = require('electron');
+const {app} = electron;
 const crypto = require('crypto');
-const {app, BrowserWindow} = electron;
 
-let message = "SecretPassword101.";
-let publicKey;
-let privateKey;
+let message = Buffer.from("Simon's secret password including 1 and A");
 
-crypto.generateKeyPair('rsa',{modulusLength: 1000, publicExponent: 0x10001}, (err, public, private) => {
-    publicKey = public;
-    privateKey = private;
-} )
+const keys = crypto.generateKeyPairSync('rsa', {
+    modulusLength: 4096,
+    publicKeyEncoding: {
+        type: 'spki',
+        format: 'pem'
+      },
+      privateKeyEncoding: {
+        type: 'pkcs8',
+        format: 'pem',
+        cipher: 'aes-256-cbc',
+        passphrase: 'top secret'
+      }
+});
 
-console.log(publicKey + "+" + privateKey);
+
+const privateKey = {key: keys.privateKey.toString(), passphrase: 'top secret'};
+const publicKey = keys.publicKey;
+
+console.log(message.toString());
+message = crypto.publicEncrypt(publicKey, message);
+console.log(message);
+message = crypto.privateDecrypt(privateKey, message);
+console.log(message.toString());
