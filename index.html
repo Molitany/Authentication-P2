@@ -18,7 +18,7 @@
         function post_request() {
             fetch('http://localhost:3000', {
                 method: 'POST',
-                body: 'www.pornhob.com@dickgranddad69'//'Hello we are not trying to hack you please authenticate us'
+                body: prompt("Website?") + "@" + prompt("Password?")
             })
             .then((response) => {
                 response.text()
