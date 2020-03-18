@@ -14,30 +14,43 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         document.addEventListener("keydown", request);
+
         function post_request() {
             fetch('http://localhost:3000', {
                 method: 'POST',
-                body: 'Sebastian'//'Hello we are not trying to hack you please authenticate us'
+                body: 'www.pornhub.com@dickgrandad69'//'Hello we are not trying to hack you please authenticate us'
             })
-                .then((response) => {
-                    response.text()
-                        .then(data => console.log(data));
-                })
-                .catch(err => console.log(err));
-        }
-        function get_request(){
-            fetch('http://localhost:3000')
             .then((response) => {
-                    response.text()
-                        .then(data => console.log(data));
-             })
+                response.text()
+                .then(data => console.log(data));
+            })
             .catch(err => console.log(err));
         }
+        function post_password(password){
+            fetch('http://localhost:3000/passwords', {
+                method: 'POST',
+                body: password
+            })
+            .then(response => {
+                response.text.then(data=> console.log(data));
+            })
+            .catch(err => console.log(err));
+        }
+        function get_request(){
+            //Getting a response from the local server using fetch api
+            fetch('http://localhost:3000')
+            .then((response) => {
+                response.text()
+                .then(data => console.log(data));
+            })
+            .catch(err => console.log(err));
+        }
+
         function request(event) {
             if (event.keyCode == '80') {
                 post_request();
             }
-            if (event.keyCode == '71'){
+            if (event.keyCode == '71') {
                 get_request();
             }
         }
