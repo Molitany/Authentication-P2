@@ -24,7 +24,7 @@ const keys = crypto.generateKeyPairSync('rsa', {
         type: 'pkcs8',
         format: 'pem',
         cipher: 'aes-256-cbc',
-        passphrase: 'top secret'
+        passphrase: 'VIgIlanT37diRt68GRaftED69RAdIatE55rIgIdity35sHoWdOwn62diSaBLe04pupILs'
       }
 });
 const privateKey = {key: keys.privateKey.toString(), passphrase: 'top secret'};
