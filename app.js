@@ -52,38 +52,34 @@ const server = http.createServer((request, response) => {
         });
     }
     if(request.method == 'GET' /*&& request.url == "/"*/){
-        console.log(request.url);
-        response.writeHead(401 ,{
+        response.writeHead(200 ,{
             'Content-Type': '*',
             'Access-Control-Allow-Origin': '*'
         });
-        response.end('Dude you cant just get');
+        sequelize_to_json(User).then(data => response.end(JSON.stringify(data)));
     }
 });
 
 server.listen(3000, 'localhost', () => {
   console.log('Listening...');
-  new Promise(resolve =>{
-    let json_structure = sequelize_to_json(User)
-    resolve(json_structure);
-  })
-    .then(data => console.log(data));
+  sequelize_to_json(User).then(data=>{console.log(data)});
 })
 function sequelize_to_json(model){
-    let JSON_array = [];
-    model.findAll()
-    .then(user => {
-        for(let i = 0; i < user.length; i++){
-            let JSON_User = {
-                id: user[i].dataValues.id,
-                password: user[i].dataValues.password
+    return new Promise((resolve,reject)=>{
+        let JSON_array = [];
+        model.findAll()
+        .then(user => {
+            for(let i = 0; i < user.length; i++){
+                let JSON_User = {
+                    id: user[i].dataValues.id,
+                    password: user[i].dataValues.password
+                }
+                JSON_array.push(JSON_User);
             }
-            JSON_array.push(JSON_User);
-        }
-    })
-    .then(()=>{
-        console.log(JSON_array);
-    })
-    .catch(err => console.log('No passwords or ids in the database'));
-    return JSON_array;
+        })
+        .then(()=>{
+            resolve(JSON_array);
+        })
+        .catch(err => console.log('No passwords or ids in the database'));
+    });
 }
