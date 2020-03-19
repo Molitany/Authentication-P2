@@ -64,7 +64,8 @@ const server = http.createServer((request, response) => {
 server.listen(3000, 'localhost', () => {
   console.log('Listening...');
   new Promise(resolve =>{
-    resolve(sequelize_to_json(User));
+    let json_structure = sequelize_to_json(User)
+    resolve(json_structure);
   })
     .then(data => console.log(data));
 })
@@ -82,8 +83,7 @@ function sequelize_to_json(model){
     })
     .then(()=>{
         console.log(JSON_array);
-        return JSON_array;
     })
     .catch(err => console.log('No passwords or ids in the database'));
-    
+    return JSON_array;
 }
