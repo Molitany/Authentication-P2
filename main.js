@@ -43,3 +43,11 @@ for(i=0; i<32; i++){
 console.log(message);
 message = Buffer.from(message);
 console.log(message);
+
+
+const sequelize = new Sequelize('keysets', 'username', 'password', {dialect: 'mysql' });
+
+
+
+
+
