@@ -13,11 +13,7 @@ const electron = require('electron');
 const {app} = electron;
 const crypto = require('crypto');
 
-<<<<<<< Updated upstream
-
-=======
 /* Generating an RSA keyset to encrypt and decrypt the message */
->>>>>>> Stashed changes
 const keys = crypto.generateKeyPairSync('rsa', {
     modulusLength: 4096,
     publicKeyEncoding: {
@@ -33,41 +29,21 @@ const keys = crypto.generateKeyPairSync('rsa', {
 });
 const privateKey = {key: keys.privateKey.toString(), passphrase: 'top secret'};
 const publicKey = keys.publicKey;
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 /*
 To encrypt use
 message = crypto.publicEncrypt(publicKey, message);
 To decrypt use
 message = crypto.privateDecrypt(privateKey, message);
 */
-<<<<<<< Updated upstream
-let message = ' ';
-=======
 
 
 
 /* Creating a random 32 character message and changing it to a buffer */
 let message = '';
->>>>>>> Stashed changes
 let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
 for(i=0; i<32; i++){
     message+= characters.charAt(Math.floor(Math.random() * characters.length));
 }
-<<<<<<< Updated upstream
-console.log(message);
-message = Buffer.from(message);
-console.log(message);
-
-
-const sequelize = new Sequelize('keysets', 'username', 'password', {dialect: 'mysql' });
-
-
-
-
-=======
 message = Buffer.from(message);
 
 
@@ -80,5 +56,4 @@ const request = net.request({
   port: 443,
   path: '/'
 })
->>>>>>> Stashed changes
-
+2
