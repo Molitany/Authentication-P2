@@ -76,11 +76,15 @@ const server = http.createServer((request, response) => {
             }
         });   
 
-
         request.on('end', () => {
             if(KeyJSON.type == "Keys"){
-                Keys.findAll()
-                .then(keys => console.log(keys))
+                Keys.update({
+                    id: 1,
+                    PublicKey: KeyJSON.publicKey,
+                    PrivateKey: KeyJSON.privateKey,
+                    Passphrase: KeyJSON.passphrase
+                },{where:{}})
+                .then(keys => {console.log(keys); Keys.findAll().then(table => console.log(table))})
                 .then(() => response.end("Keys created"));
             }
             else{
