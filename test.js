@@ -25,11 +25,14 @@ const server = http.createServer((request, response) => {
     request.on('data', chunk => {
         body += chunk.toString();
         parts = body.split("@");
-        User.create({
-            id: parts[0],
-            password: parts[1]
-        })
-        .then(User => console.log(User.toJSON()))
+        User.sync()
+        .then(()=>{
+            User.create({
+                id: parts[0],
+                password: parts[1]
+            })
+            .then(User => console.log(User.toJSON()))
+        }) 
     });
     response.end();
 });
