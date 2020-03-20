@@ -18,10 +18,13 @@ const User = sequelize.define('User', {
       type: DataTypes.STRING
     }
 });
-const Key = Keysets.define('Key', {
+const Keys = Keysets.define('Keys', {
+    id: {
+        type: DataTypes.NUMBER,
+        primaryKey: true
+    },
     PrivateKey: {
-      type: DataTypes.BLOB,
-      primaryKey: true
+      type: DataTypes.BLOB
     },
     PublicKey: {
       type: DataTypes.BLOB
@@ -33,7 +36,6 @@ const Key = Keysets.define('Key', {
 
 const server = http.createServer((request, response) => {
     if (request.method == 'POST'){
-       console.log(request.body);
         User.sync()
             .then(() => console.log('Database synced'))
             .catch(err => {
@@ -45,10 +47,10 @@ const server = http.createServer((request, response) => {
                 response.end('Database couldn\'t handle request right now');
             });
         
-            Key.sync()
+            Keys.sync()
             .then(() => console.log("Keys synced"))
             .catch(err => {
-                console.log("Keys could not be updated");
+                console.log("Keys could not be synced");
                 response.writeHead(400,{
                     'Content-Type': '*',
                     'Access-Control-Allow-Origin': '*'
@@ -74,14 +76,17 @@ const server = http.createServer((request, response) => {
             }
         });   
         request.on('end', () => {
-            console.log(KeyJSON);
             if(KeyJSON.type == "Keys"){
-                Key.create({
+                Keys.update({
                     PublicKey: KeyJSON.publicKey,
                     PrivateKey: KeyJSON.privateKey,
                     Passphrase: KeyJSON.passphrase 
+                }, {
+                    where: {
+                        id: 1
+                    }
                 })
-                .then(keys => console.log(keys.toJSON()))
+                .then(keys => console.log(keys))
                 .then(() => response.end("Keys created"));
             }
             else{
