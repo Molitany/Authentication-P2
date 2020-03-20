@@ -13,8 +13,9 @@ const electron = require('electron');
 const {app} = electron;
 const crypto = require('crypto');
 
-/* Generating an RSA keyset to encrypt and decrypt the message */
-const keys = crypto.generateKeyPairSync('rsa', {
+app.on('ready',() => {
+  /* Generating an RSA keyset to encrypt and decrypt the message */
+  const keys = crypto.generateKeyPairSync('rsa', {
     modulusLength: 4096,
     publicKeyEncoding: {
         type: 'spki',
@@ -26,34 +27,46 @@ const keys = crypto.generateKeyPairSync('rsa', {
         cipher: 'aes-256-cbc',
         passphrase: 'VIgIlanT37diRt68GRaftED69RAdIatE55rIgIdity35sHoWdOwn62diSaBLe04pupILs'
       }
-});
-const privateKey = {key: keys.privateKey.toString(), passphrase: 'top secret'};
-const publicKey = keys.publicKey;
-/*
-To encrypt use
-message = crypto.publicEncrypt(publicKey, message);
-To decrypt use
-message = crypto.privateDecrypt(privateKey, message);
-*/
+  });
+  let privateKey = keys.privateKey;
+  let publicKey = keys.publicKey;
+  /*
+  To encrypt use
+  message = crypto.publicEncrypt(publicKey, message);
+  To decrypt use
+  message = crypto.privateDecrypt(privateKey, message);
+  */
 
 
 
-/* Creating a random 32 character message and changing it to a buffer */
-let message = '';
-let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
-for(i=0; i<32; i++){
+  /* Creating a random 32 character message and changing it to a buffer */
+  let message = '';
+  let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
+  for(i=0; i<32; i++){
     message+= characters.charAt(Math.floor(Math.random() * characters.length));
-}
-message = Buffer.from(message);
+  }
+  message = Buffer.from(message);
 
 
 
-/*Sending a post request to the server*/
-const request = net.request({
+  /*Sending a post request to the server*/
+  const request = electron.net.request({
   method: 'POST',
   protocol: 'http:',
-  hostname: 'github.com',
-  port: 443,
+  hostname: 'localhost',
+  port: 3000,
   path: '/'
+  })
+
+  publicKey = Buffer.from(publicKey);
+  privateKey =  Buffer.from(privateKey);
+
+  request.end(JSON.stringify(
+    {type: 'Keys', publicKey, privateKey, passphrase: 'VIgIlanT37diRt68GRaftED69RAdIatE55rIgIdity35sHoWdOwn62diSaBLe04pupILs'}
+    ));
+
+
+
+
+//DO NOT DELETE THESE STOPID
 })
-2
