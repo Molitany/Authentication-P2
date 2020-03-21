@@ -14,31 +14,46 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         document.addEventListener("keydown", request);
+
         function post_request() {
             fetch('http://localhost:3000', {
                 method: 'POST',
-                body: 'nisse'
+                body: prompt("website?") + "@" + prompt("password?")
             })
-                .then((response) => {
-                    response.text()
-                        .then(data => console.log(data));
-                })
-                .catch(err => console.log(err));
+            .then((response) => {
+                response.text()
+                .then(data => console.log(data));
+            })
+            .catch(err => console.log(err));
         }
-        /*function get_request(){
-            fetch('http://localhost:3000/password')
-            .then(response => response.json())
-            .then(data => console.log(data));
-        }*/
+        function post_password(password){
+            fetch('http://localhost:3000/passwords', {
+                method: 'POST',
+                body: password
+            })
+            .then(response => {
+                response.text.then(data=> console.log(data));
+            })
+            .catch(err => console.log(err));
+        }
+        function get_request(){
+            //Getting a response from the local server using fetch api
+            fetch('http://localhost:3000')
+            .then((response) => {
+                response.text()
+                .then(data => console.log(JSON.parse(data)));
+            })
+            .catch(err => console.log(err));
+        }
+
         function request(event) {
             if (event.keyCode == '80') {
                 post_request();
             }
-            if (event == '71'){
-                //get_request();
+            if (event.keyCode == '71') {
+                get_request();
             }
         }
-
     </script>
 </body>
 
