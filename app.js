@@ -58,6 +58,39 @@ const server = http.createServer((request, response) => {
         });
         sequelize_to_json(User).then(data => response.end(JSON.stringify(data)));
     }
+    if(request.method == 'DELETE') {
+        console.log('HEJ');
+        User.sync()
+            .then(() => console.log('Database synced'))
+            .catch(err => {
+                console.log("Database couldn't sync with the error: " + err);
+                response.writeHead(400,{
+                    'Content-Type': '*',
+                    'Access-Control-Allow-Origin': '*'
+                })
+                response.end('Database couldn\'t handle request right now');
+            });
+        
+        response.writeHead(200,{
+            'Content-Type': '*',
+            'Access-Control-Allow-Origin': '*'
+        });
+        let body = '';
+
+        request.on('data', chunk => {
+            body += chunk.toString();
+        });   
+
+        request.on('end', () => {
+             User.destroy({
+                id: body
+            })
+            .then(user => {
+                console.log(user.toJSON());
+            })
+            .then(()=> response.end("Password deleted"));
+        });
+    }
 });
 
 server.listen(3000, 'localhost', () => {
