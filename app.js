@@ -37,7 +37,7 @@ const server = http.createServer((request, response) => {
 
         request.on('data', chunk => {
             body += chunk.toString();
-            parts = body.split("@");
+            parts = body.split(0x1c);
         });   
 
         request.on('end', () => {
