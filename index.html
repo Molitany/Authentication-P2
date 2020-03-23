@@ -11,14 +11,41 @@
     <p>This site is all about testing the node.js server for the p2 authentication project.
         This site has only one purpose and that is sending and recieving information from the app.js server.
     </p>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <section>
+            <!-- There are all for show, the only working part right now is the website input field, but all the others
+                 Are being implemented as you read this. Though the computation itself will be serverside, it will be made
+                 locally for now, just as a testing thingy doodad.
+            -->
+            <label for="website">Which website is your password for?</label>
+            <input id="website" type="text">
+            <label for="uppercase">Does the password require an uppercased letter?</label>
+            <select id="uppercase">
+                <option>Yes</option>
+                <option>No</option>
+            </select>
+            <label for="number">Does the password require a number?</label>
+            <select id="number">
+                <option>Yes</option>
+                <option>No</option>
+            </select>
+            <label for="special">Does the password require a special character?</label>
+            <select id="special">
+                <option>Yes</option>
+                <option>No</option>
+            </select>
+            <label for="special">How long should the password be?</label>
+            <input type="number">
+            <button id="submit">Submit</button>
+    </section>
     <script>
-        document.addEventListener("keydown", request);
+        document.addEventListener("keydown", get_request);
+        document.getElementById('submit').addEventListener("click", request);
 
-        function post_request() {
+
+        function post_request(website, password) {
             fetch('http://localhost:3000', {
                 method: 'POST',
-                body: prompt("Website?") + "@" + prompt("Password?")
+                body: website + 0x1c + password
             })
             .then((response) => {
                 response.text()
@@ -26,35 +53,26 @@
             })
             .catch(err => console.log(err));
         }
-        function post_password(password){
-            fetch('http://localhost:3000/passwords', {
-                method: 'POST',
-                body: password
-            })
-            .then(response => {
-                response.text.then(data=> console.log(data));
-            })
-            .catch(err => console.log(err));
-        }
-        function get_request(){
+        
+        function get_request(event){
             //Getting a response from the local server using fetch api
-            fetch('http://localhost:3000')
-            .then((response) => {
-                response.text()
-                .then(data => console.log(data));
-            })
-            .catch(err => console.log(err));
+            if(event.keyCode == '71'){
+                fetch('http://localhost:3000')
+                    .then((response) => {
+                         response.text()
+                            .then(data => console.log(JSON.parse(data)));
+                    })
+                    .catch(err => console.log(err));
+            }
         }
-
         function request(event) {
-            if (event.keyCode == '80') {
-                post_request();
-            }
-            if (event.keyCode == '71') {
-                get_request();
-            }
+                let website = document.getElementById('website').value;
+                let password = generate_password();
+                post_request(website, password);
         }
-
+        function generate_password(){
+            return "password123";
+        }
     </script>
 </body>
 
