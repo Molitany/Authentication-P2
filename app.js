@@ -51,15 +51,22 @@ const server = http.createServer((request, response) => {
             .then(()=> response.end("Password created"));
         });
     }
-    if(request.method == 'GET' /*&& request.url == "/"*/){
+    else if(request.method == 'GET' /*&& request.url == "/"*/){
         response.writeHead(200 ,{
             'Content-Type': '*',
             'Access-Control-Allow-Origin': '*'
         });
         sequelize_to_json(User).then(data => response.end(JSON.stringify(data)));
     }
-    if(request.method == 'DELETE') {
-        console.log('HEJ');
+    else if(request.method == 'OPTIONS') {
+        response.writeHead(200,{
+            'Content-Type': '*',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': '*'
+        });
+        response.end("Access granted to 'OPTIONS'");
+    }
+    else if(request.method == 'DELETE') {
         User.sync()
             .then(() => console.log('Database synced'))
             .catch(err => {
@@ -82,11 +89,10 @@ const server = http.createServer((request, response) => {
         });   
 
         request.on('end', () => {
-             User.destroy({
-                id: body
-            })
-            .then(user => {
-                console.log(user.toJSON());
+             User.destroy({where: {id: body}})
+
+            .then(deleted => {
+                console.log(deleted);
             })
             .then(()=> response.end("Password deleted"));
         });
