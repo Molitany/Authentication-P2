@@ -12,6 +12,7 @@ const server = http.createServer((request, response) => {
         let body = '';
         request.on('data', chunk => {
             body += chunk.toString();
+            parts = body.split(0x1c);
         });   
         request.on('end', () => {
             for (const property in json_Converted) {
