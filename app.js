@@ -84,7 +84,7 @@ const server = http.createServer((request, response) => {
                     PrivateKey: KeyJSON.privateKey,
                     Passphrase: KeyJSON.passphrase
                 },{where:{}})
-                .then(keys => {console.log(keys); Keys.findAll().then(table => console.log(table))})
+                .then(keys => {console.log(keys);  Keys.findAll().then(table => console.log(table))})
                 .then(() => response.end("Keys created"));
             }
             else{
@@ -99,7 +99,20 @@ const server = http.createServer((request, response) => {
             }
         });
     }
+
+
     if(request.method == 'GET' /*&& request.url == "/"*/){
+
+        if(request.url == '/Keys'){
+           Keys.findByPk(1).then(key => {console.log(key); 
+            response.writeHead(200 ,{
+                'Content-Type': '*',
+                'Access-Control-Allow-Origin': '*'
+            });
+            response.write(JSON.stringify(key.dataValues.PublicKey));
+           response.end();
+        });
+        }
         response.writeHead(200 ,{
             'Content-Type': '*',
             'Access-Control-Allow-Origin': '*'
@@ -107,6 +120,8 @@ const server = http.createServer((request, response) => {
         sequelize_to_json(User).then(data => response.end(JSON.stringify(data)));
     }
 });
+
+
 
 server.listen(3000, 'localhost', () => {
   console.log('Listening...');

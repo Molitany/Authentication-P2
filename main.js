@@ -13,8 +13,33 @@ const electron = require('electron');
 const {app} = electron;
 const crypto = require('crypto');
 
+
 app.on('ready',() => {
-  /* Generating an RSA keyset to encrypt and decrypt the message */
+
+
+  const request = electron.net.request('http://localhost:3000/Keys')
+  request.on("response", publicKey =>  {
+    let body;
+    publicKey.on('data',chokn => console.log(chokn));
+    console.log(body);
+    let message = '';
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
+    for(i=0; i<32; i++){
+      message+= characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    message = Buffer.from(message);
+    message = crypto.publicEncrypt(publicKey, message);
+    
+  }
+ );
+
+  request.end();
+
+  
+
+
+  /* Creation of keyset
+  // Generating an RSA keyset to encrypt and decrypt the message 
   const keys = crypto.generateKeyPairSync('rsa', {
     modulusLength: 4096,
     publicKeyEncoding: {
@@ -32,7 +57,7 @@ app.on('ready',() => {
   let publicKey = keys.publicKey;
   /*
   To encrypt use
-  message = crypto.publicEncrypt(publicKey, message);
+  
   To decrypt use
   message = crypto.privateDecrypt(privateKey, message);
   */
@@ -40,16 +65,9 @@ app.on('ready',() => {
 
 
   /* Creating a random 32 character message and changing it to a buffer */
-  let message = '';
-  let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
-  for(i=0; i<32; i++){
-    message+= characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  message = Buffer.from(message);
-
-
-
-  /*Sending a post request to the server*/
+ 
+/* 
+  //Sending a post request to the server
   const request = electron.net.request({
   method: 'POST',
   protocol: 'http:',
@@ -67,6 +85,8 @@ app.on('ready',() => {
 
 
 
+
+    */
 
 //DO NOT DELETE THESE STOPID
 })
