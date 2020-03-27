@@ -19,17 +19,21 @@ app.on('ready',() => {
 
   const request = electron.net.request('http://localhost:3000/Keys')
   request.on("response", publicKey =>  {
-    let body;
-    publicKey.on('data',chokn => console.log(chokn));
-    console.log(body);
-    let message = '';
-    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
-    for(i=0; i<32; i++){
-      message+= characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    message = Buffer.from(message);
-    message = crypto.publicEncrypt(publicKey, message);
-    
+    let body = '';
+    publicKey.on('data',chokn => body += chokn);
+    publicKey.on('end', () => {
+      console.log(body);
+      let message = '';
+      let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
+      for(i=0; i<32; i++){
+        message+= characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      body = Buffer.from(body);
+      console.log(body);
+      message = Buffer.from(message);
+      console.log(message);
+      message = crypto.publicEncrypt(body, message);
+    });
   }
  );
 

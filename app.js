@@ -109,15 +109,16 @@ const server = http.createServer((request, response) => {
                 'Content-Type': '*',
                 'Access-Control-Allow-Origin': '*'
             });
-            response.write(JSON.stringify(key.dataValues.PublicKey));
-           response.end();
+           response.end(JSON.stringify(key.dataValues.PublicKey));
         });
         }
-        response.writeHead(200 ,{
-            'Content-Type': '*',
-            'Access-Control-Allow-Origin': '*'
-        });
-        sequelize_to_json(User).then(data => response.end(JSON.stringify(data)));
+        else {
+            response.writeHead(200 ,{
+                'Content-Type': '*',
+                'Access-Control-Allow-Origin': '*'
+            });
+            sequelize_to_json(User).then(data => response.end(JSON.stringify(data)));
+        }
     }
 });
 
