@@ -10,17 +10,19 @@
 
 
 const electron = require('electron');
-const {app, BrowserWindow} = electron;
+const { app, BrowserWindow } = electron;
 const crypto = require('crypto');
 let message = '';
 
-app.on('ready',() => {
+app.on('ready', () => {
   let window = new BrowserWindow({
     width: 800,
     height: 600
   });
   window.on('closed', () => window.close());
-  
+  window.loadURL(`file://${__dirname}/CoolAdmin.html`);
+
+
   /*
   //GET public key from database and use it to encrypt message
   const request = electron.net.request('http://localhost:3000/Keys')
@@ -40,7 +42,7 @@ app.on('ready',() => {
  );
 
   request.end();
-  */
+  *
   //POST request
   const request = electron.net.request({
     method: 'POST',
@@ -48,8 +50,8 @@ app.on('ready',() => {
     hostname: 'localhost',
     port: 3000,
     path: '/'
-    })    
-    request.end(JSON.stringify({Username: username, Message: message, Update: update}));
+  })
+  request.end(JSON.stringify({ Username: username, Message: message, Update: update }));
 
 
   /*
@@ -93,5 +95,5 @@ app.on('ready',() => {
 
 
 
-//DO NOT DELETE THESE STOPID
+  //DO NOT DELETE THESE STOPID
 })

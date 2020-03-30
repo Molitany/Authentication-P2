@@ -1,15 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Tools</title>
+    <title>Admin Tools: Thor should not judge his co-programmers inability to program well</title>
 </head>
-<body>
-    <input> </input>
-    <input> </input>
-    <button onclick="UpdateMessage()">Update Message</button>
-    <button onclick="CreateMessage()">Create Message</button>
-    <script src="tools.js"></script>
+
+<body >
+   
+    <div>
+        <h1>Employee</h1>
+        <input id='employee' placeholder="Which employee do you wish to change?">
+    </div>
+    <button onclick="document.getElementById('employee').value = 'bob';">Update Message</button>
+    <button onclick = "CreateMessage()"> Create Message </button>
+    <script src = 'tools.js'></script>
+
 </body>
+
 </html>

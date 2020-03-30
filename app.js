@@ -122,7 +122,6 @@ const server = http.createServer((request, response) => {
                         Username: MessageJSON.Username,
                         Message: MessageJSON.Message
                     }, { where: { Username: MessageJSON.Username } })
-                        .then(messages => { console.log(messages); Messages.findAll().then(table => console.log(table)) })
                         .then(() => response.end("Messages updated"));
                 }
 
@@ -152,7 +151,6 @@ const server = http.createServer((request, response) => {
 
         if (request.url == '/Keys') {
             Keys.findByPk(1).then(key => {
-                console.log(key);
                 response.writeHead(200, {
                     'Content-Type': '*',
                     'Access-Control-Allow-Origin': '*'
