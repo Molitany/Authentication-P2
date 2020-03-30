@@ -7,30 +7,29 @@ function UpdateMessage() {
         .catch(err => console.error(err));
 }
 function CreateMessage() {
-    fetch("http://localhost:3000/Message", {
-        method: 'POST',
-        body: JSON.stringify({ type: 'Message', Username: document.getElementById('employee').value, Message: MessageGeneration(), Update: false })
+    let message = '';
+    MessageGeneration().then(data => {
+        console.log(`In CreateMessage ${data}`);
+        fetch("http://localhost:3000/Message", {
+            method: 'POST',
+            body: JSON.stringify({ type: 'Message', Username: document.getElementById('employee').value, Message: data, Update: false })
+        })
+            .then(() => console.log("done"))
+            .catch(err => console.error(err));
     })
-        .then(() => console.log("done"))
-        .catch(err => console.error(err));
 }
 
 function MessageGeneration() {
-    let message = '';
-    return fetch("http://localhost:3000/Keys")
-        .then(publicKey => {
-
-            let body = '';
-            publicKey.on('data', chokn => body += chokn);
-
-            publicKey.on('end', () => {
-                let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
-                for (i = 0; i < 32; i++) message += characters.charAt(Math.floor(Math.random() * characters.length));
-                body = Buffer.from(JSON.parse(body));
-                message = Buffer.from(message);
-                message = crypto.publicEncrypt(body, message);
-                resolve(message);
+    let message = 'Do this get changed?';
+    return new Promise(resolve => {
+        resolve(fetch("http://localhost:3000/Keys")
+            .then(publicKey => {
+                return publicKey.json().then(data => data);
             })
-        })
-    
+            .then(data => {
+                console.log(data);
+                return data;
+            })
+        )
+    });
 }
