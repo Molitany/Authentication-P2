@@ -9,7 +9,6 @@ function UpdateMessage() {
 function CreateMessage() {
     let message = '';
     MessageGeneration().then(data => {
-        console.log(`In CreateMessage ${data}`);
         fetch("http://localhost:3000/Message", {
             method: 'POST',
             body: JSON.stringify({ type: 'Message', Username: document.getElementById('employee').value, Message: data, Update: false })
@@ -27,7 +26,6 @@ function MessageGeneration() {
                 return publicKey.json().then(data => data);
             })
             .then(data => {
-                console.log(data);
                 return data;
             })
         )
