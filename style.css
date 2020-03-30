@@ -1,0 +1,79 @@
+body {
+    font-family: sans-serif;
+    background-color: #dedede;
+    color: #333;
+    padding: 20px 0 28px 0;
+    margin: 0;
+  }
+  
+  .app-title {
+    text-align: center;
+    font-weight: normal;
+    font-size: 2.6rem;
+    color: #FFFFFF;
+    padding-top: 30px;
+    padding-bottom: 20px;
+    margin: 0px;
+  }
+
+  .app-sub {
+    text-align: center;
+    font-weight: normal;
+    font-size: 1rem;
+    color: #FFFFFF;
+    margin: 0px;
+    padding-bottom: 20px;
+  }
+  
+  .box {
+    width: 500px;
+    height: 20px;
+    padding: 20px;
+    margin: 10px auto;
+    background-color: #fff;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .url-text {
+    align-self: left;
+    font-weight: normal;
+    font-size: 1rem;
+  }
+
+  .psw-text {
+    text-align: right;
+    font-weight: normal;
+    font-size: 1rem;
+  }
+
+  .psw-title {
+      text-align: center;
+      font-weight: normal;
+      font-size: 1rem;
+      color: #FFFFFF;
+  }
+
+  .box-title {
+    width: 500px;
+    padding: 20px;
+    margin: 5px auto;
+    overflow: hidden;
+    color: #FFFFFF;
+    padding-bottom: 5px;
+  }
+
+  .footer {
+    font-size: 0.7rem;
+    color: #FFFFFF;
+    text-align: center;
+    margin: 0;
+  }
+
+  .image {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%;
+      height: 100%;
+  }

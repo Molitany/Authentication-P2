@@ -3,38 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="setup.css">
-    <title>Mah little table</title>
-    <style>
-      table {
-        font-family: arial, sans-serif;
-        border-collapse: separate;
-        width: 35%;
-        border:1px
-        solid black;margin-left:auto;margin-right:auto;
-      }
-      
-      td, th {
-        border: 1px;
-        text-align: left;
-        padding: 8px;
-      }
-      </style>
+    <link rel="stylesheet" type="text/css" href="test.css">
+    <title>AAU's Password Vault</title>
+
+    <link rel = "icon" href =  
+"https://i.imgur.com/dGImM3T.png" 
+        type = "image/x-icon"> 
 </head>
+<style>
+    body, html {
+        height: 100%;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .bg {
+        background-image: url("webbg.jpg");
+        height: 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-attachment: scroll;
+    }
+</style>
 <body>
-
-    <div id="app">
-
-    <h1 class="app-title">Password manager</h1>
-    <table id="my_table">
-        <tr>
-            <th>Website</th>
-            <th>Password</th>
-        </tr>
-    </table>
-      <script src="main.js"></script>
+    <div id="app" class="bg">
+        <script src="test.js"></script>
       <p><br /> <br /> <br /> <br /></p>
     <h1 class="footer">This password vault was made by the P2 group at Aalborg University: Thomas Damsgaard, Thor Beregaard, Simon Preuss, Sebastian Lindhart, Kenneth Køpke, Andreas Poulsen</h1>
-      </div>
+    </div>
+    
 </body>
 </html>
