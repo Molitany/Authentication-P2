@@ -1,0 +1,65 @@
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: rgb(76, 74, 74)
+}
+
+header {
+    background-color: aqua;
+    background-size: cover;
+    justify-content: space-between;
+    display: flex;
+}
+
+header h1 {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.text {
+    font-size: 200%;
+}
+
+.UserBar li a i:hover {
+    color: green
+}
+
+.UserBar li a i {
+    color: black;
+}
+
+.searchBar input {
+    font-style: italic;
+}
+
+.login-form {
+    position: relative;
+    width: 300px;
+    height: 200px;
+    background-color: green;
+}
+
+.login-form input {
+    margin-left: 30px;
+    margin-top: 30px;
+}
+
+.content-table {
+    background-color: hotpink;
+    padding: 20px;
+    margin-left: 700px;
+    font-size: 150%;
+}
+
+.content-table td {
+    color: lawngreen;
+}
+
+.content-table th {
+    width: 500px;
+}
+
+.vault-all {
+    background-color: lawngreen;
+}
