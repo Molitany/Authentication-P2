@@ -109,6 +109,5 @@ dist
 
 # TernJS port file
 .tern-port
-*.mp4
-*.json
-*.js
+
+*.sqlite
