@@ -88,9 +88,9 @@ const server = http.createServer((request, response) => {
             'Access-Control-Allow-Origin': '*'
         });
         let body = '';
-        let parts;
-        let KeyJSON;
-        let MessageJSON;
+        let parts = [];
+        let KeyJSON = {};
+        let MessageJSON = {};
 
         request.on('data', chunk => {
             body += chunk.toString();
@@ -99,11 +99,13 @@ const server = http.createServer((request, response) => {
             }
             else if (body.includes("\"type\":\"Message\"")) {
                 MessageJSON = JSON.parse(body);
+                console.log(MessageJSON);
             }
             else {
                 parts = body.split("@");
             }
         });
+
 
         request.on('end', () => {
             if (KeyJSON) {
@@ -117,28 +119,24 @@ const server = http.createServer((request, response) => {
                     .then(() => response.end("Keys created"));
             }
 
-            else if (MessageJSON && MessageJSON.Username != '') {
+            else if (MessageJSON) {
                 if (MessageJSON.Update) {
-                    MessageGenerator().then(message => {
-                        Messages.update({
-                            Username: MessageJSON.Username,
-                            Message: message
-                        }, { where: { Username: MessageJSON.Username } })
-                            .then(() => response.end("Message updated"))
-                            .catch(err => console.error(err));
-                    });
+                    Messages.update({
+                        Username: MessageJSON.Username,
+                        Message: MessageGenerator()
+                    }, { where: { Username: MessageJSON.Username } })
+                        .then(() => response.end("Messages updated"));
                 }
+
                 else {
-                    MessageGenerator().then(message => {
-                        Messages.create({
-                            Username: MessageJSON.Username,
-                            Message: message
-                        }).then(() => response.end("Message created"))
-                            .catch(() => response.end("User is already in database"));
-                    });
+                    Messages.create({
+                        Username: MessageJSON.Username,
+                        Message: MessageGenerator()
+                    })
+                        .then(() => response.end("Messages created"));
                 }
             }
-            else if (parts) {
+            else {
                 User.create({
                     id: parts[0],
                     password: parts[1]
@@ -148,14 +146,12 @@ const server = http.createServer((request, response) => {
                     })
                     .then(() => response.end("Password created"));
             }
-            else {
-                console.log("INVALID REQUEST");
-                response.end("INVALID REQUEST");
-            }
         });
     }
 
+
     if (request.method == 'GET' /*&& request.url == "/"*/) {
+
         if (request.url == '/Keys') {
             Keys.findByPk(1).then(key => {
                 response.writeHead(200, {
@@ -174,6 +170,8 @@ const server = http.createServer((request, response) => {
         }
     }
 });
+
+
 
 server.listen(3000, 'localhost', () => {
     console.log('Listening...');
@@ -200,15 +198,15 @@ function sequelize_to_json(model) {
 }
 function MessageGenerator() {
     let message = '';
-    return new Promise(resolve => {
+    new Promise((resolve, reject) => {
         resolve(Keys.findByPk(1)
             .then(publicKey => {
                 let body = publicKey.dataValues.PublicKey;
                 let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
                 for (i = 0; i < 32; i++) message += characters.charAt(Math.floor(Math.random() * characters.length));
-                body = Buffer.from(body);
+                body = Buffer.from(JSON.parse(body));
                 message = Buffer.from(message);
                 return crypto.publicEncrypt(body, message);
-            }));
-    });
+            }))
+    })
 }

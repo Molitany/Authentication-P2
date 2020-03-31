@@ -3,9 +3,6 @@ function MessageGen(update) {
         method: 'POST',
         body: JSON.stringify({ type: 'Message', Username: document.getElementById('employee').value, Update: update })
     })
-        .then(res => {
-            res.text().then(res => document.getElementById("error_Message").innerHTML = res);
-            setTimeout(() => document.getElementById("error_Message").innerHTML = "", 3000);
-        })
+        .then(data => console.log(data))
         .catch(err => console.error(err));
 }
