@@ -1,7 +1,5 @@
 const http = require('http');
 const { Sequelize, Model, DataTypes } = require('sequelize');
-const electron = require('electron');
-const { app, BrowserWindow } = electron;
 const crypto = require('crypto');
 
 const sequelize = new Sequelize({
@@ -119,14 +117,24 @@ const server = http.createServer((request, response) => {
 
             else if (MessageJSON && MessageJSON.Username != '') {
                 if (MessageJSON.Update) {
-                    MessageGenerator().then(message => {
-                        Messages.update({
-                            Username: MessageJSON.Username,
-                            Message: message
-                        }, { where: { Username: MessageJSON.Username } })
-                            .then(() => response.end("Message updated"))
-                            .catch(err => console.error(err));
-                    });
+                    Messages.findByPk(MessageJSON.Username).then(table => {
+                        if (!table) {
+                            response.writeHead(400, {
+                                'Content-Type': '*',
+                                'Access-Control-Allow-Origin': '*'
+                            });
+                            response.end("User not in database");
+                        }
+                    }).then(() => {
+                        MessageGenerator().then(message => {
+                            Messages.update({
+                                Username: MessageJSON.Username,
+                                Message: message
+                            }, { where: { Username: MessageJSON.Username } })
+                                .then(() => response.end("Message updated"))
+                                .catch(err => console.error(err));
+                        });
+                    })
                 }
                 else {
                     MessageGenerator().then(message => {
@@ -134,7 +142,13 @@ const server = http.createServer((request, response) => {
                             Username: MessageJSON.Username,
                             Message: message
                         }).then(() => response.end("Message created"))
-                            .catch(() => response.end("User is already in database"));
+                            .catch(() => {
+                                response.writeHead(400, {
+                                    'Content-Type': '*',
+                                    'Access-Control-Allow-Origin': '*'
+                                });
+                                response.end("User is already in database")
+                            });
                     });
                 }
             }
@@ -149,7 +163,11 @@ const server = http.createServer((request, response) => {
                     .then(() => response.end("Password created"));
             }
             else {
-                console.log("INVALID REQUEST");
+                response.writeHead(400, {
+                    'Content-Type': '*',
+                    'Access-Control-Allow-Origin': '*'
+                });
+                console.error("INVALID REQUEST");
                 response.end("INVALID REQUEST");
             }
         });

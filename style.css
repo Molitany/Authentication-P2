@@ -1,9 +1,35 @@
-button{
-    width: auto;
+body{
+    margin: 0px;
+    background-color: #505050;
+    color: white;
 }
 
-input{
+div#header{
     width: 100%;
-    max-width: 500px;
-    box-sizing: border-box;
+    height: 31px;
+    background-color: #303030;
+    display: block;
+    -webkit-app-region: drag;
+    -webkit-user-select: none;
+    margin: 0px;
+    color: white;
+    font-size: 25px;
+}
+
+.header_button{
+    width: 30px;
+    height: 30px;
+    position: relative;
+    float: right;
+    background-color: #505050;
+    -webkit-app-region: no-drag;
+}
+
+#employee{
+    width: 245px;
+}
+
+p{
+    font-size: 22px;
+    margin: 5px;
 }
