@@ -180,7 +180,7 @@ server.listen(3000, 'localhost', () => {
     sequelize_to_json(User).then(data => { console.log(data) });
 })
 function sequelize_to_json(model) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         let JSON_array = [];
         model.findAll()
             .then(user => {
