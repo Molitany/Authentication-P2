@@ -11,17 +11,16 @@
 
 const electron = require('electron');
 const { app, BrowserWindow } = electron;
-const crypto = require('crypto');
-let message = '';
+//const crypto = require('crypto');
+//let message = '';
 
 app.on('ready', () => {
   let window = new BrowserWindow({
     width: 800,
     height: 600
   });
-  window.on('closed', () => window.close());
   window.loadURL(`file://${__dirname}/CoolAdmin.html`);
-
+  window.on('closed', () => window = null);
 
   /*
   //GET public key from database and use it to encrypt message
