@@ -1,5 +1,8 @@
 const http = require('http');
 const { Sequelize, Model, DataTypes } = require('sequelize');
+const electron = require('electron');
+const { app, BrowserWindow } = electron;
+const crypto = require('crypto');
 
 const sequelize = new Sequelize({
     dialect: 'sqlite',
@@ -120,7 +123,7 @@ const server = http.createServer((request, response) => {
                 if (MessageJSON.Update) {
                     Messages.update({
                         Username: MessageJSON.Username,
-                        Message: MessageJSON.Message
+                        Message: MessageGenerator()
                     }, { where: { Username: MessageJSON.Username } })
                         .then(() => response.end("Messages updated"));
                 }
@@ -128,9 +131,9 @@ const server = http.createServer((request, response) => {
                 else {
                     Messages.create({
                         Username: MessageJSON.Username,
-                        Message: MessageJSON.Message
+                        Message: MessageGenerator()
                     })
-                    .then(() => response.end("Messages created"));
+                        .then(() => response.end("Messages created"));
                 }
             }
             else {
@@ -192,4 +195,18 @@ function sequelize_to_json(model) {
             })
             .catch(err => console.log('No passwords or ids in the database'));
     });
+}
+function MessageGenerator() {
+    let message = '';
+    new Promise((resolve, reject) => {
+        resolve(Keys.findByPk(1)
+            .then(publicKey => {
+                let body = publicKey.dataValues.PublicKey;
+                let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
+                for (i = 0; i < 32; i++) message += characters.charAt(Math.floor(Math.random() * characters.length));
+                body = Buffer.from(JSON.parse(body));
+                message = Buffer.from(message);
+                return crypto.publicEncrypt(body, message);
+            }))
+    })
 }
