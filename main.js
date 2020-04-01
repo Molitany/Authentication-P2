@@ -8,20 +8,24 @@
  Det ene key set der er kan være mere sikker en de seperate keys hvor alting er unique grundet mere plads
 */
 
-
-const electron = require('electron');
-const { app, BrowserWindow } = electron;
-const crypto = require('crypto');
-let message = '';
+const { app, BrowserWindow } = require('electron');
+const fs = require('fs');
+//const crypto = require('crypto');
+//let message = '';
 
 app.on('ready', () => {
   let window = new BrowserWindow({
     width: 800,
-    height: 600
+    height: 600,
+    frame: false,
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
-  window.on('closed', () => window.close());
   window.loadURL(`file://${__dirname}/CoolAdmin.html`);
+  window.on('closed', () => window = null);
 
+  fs.
 
   /*
   //GET public key from database and use it to encrypt message
