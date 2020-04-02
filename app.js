@@ -1,51 +1,6 @@
 const http = require('http');
-const { Sequelize, Model, DataTypes } = require('sequelize');
 const crypto = require('crypto');
-const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: 'database.sqlite'
-});
-const Keysets = new Sequelize({
-    dialect: 'sqlite',
-    storage: 'database.sqlite'
-});
-const Message = new Sequelize({
-    dialect: 'sqlite',
-    storage: 'database.sqlite'
-});
-const User = sequelize.define('User', {
-    id: {
-        type: DataTypes.STRING,
-        primaryKey: true
-    },
-    password: {
-        type: DataTypes.STRING
-    }
-});
-const Keys = Keysets.define('Keys', {
-    id: {
-        type: DataTypes.NUMBER,
-        primaryKey: true
-    },
-    PrivateKey: {
-        type: DataTypes.STRING
-    },
-    PublicKey: {
-        type: DataTypes.STRING
-    },
-    Passphrase: {
-        type: DataTypes.STRING
-    }
-});
-const Messages = Message.define('Message', {
-    Username: {
-        type: DataTypes.STRING,
-        primaryKey: true
-    },
-    Message: {
-        type: DataTypes.BLOB
-    }
-});
+const {User, Messages, Keys} = require('./databasemodule.js')
 
 const server = http.createServer((request, response) => {
     if (request.method == 'POST') {
