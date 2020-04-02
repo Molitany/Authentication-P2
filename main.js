@@ -25,7 +25,6 @@ app.on('ready', () => {
   window.loadURL(`file://${__dirname}/CoolAdmin.html`);
   window.on('closed', () => window = null);
 
-  fs.
 
   /*
   //GET public key from database and use it to encrypt message
