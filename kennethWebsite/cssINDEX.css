@@ -27,7 +27,7 @@ span.m-left {
 
 span:hover {
     color: teal;
-    transition-duration: .5s;
+    transition-duration: .2s;
 }
 
 .text {
@@ -129,13 +129,17 @@ span:hover {
 }
 
 .content-table {
-    background-image: linear-gradient( rgb(34, 34, 34), rgb(76, 74, 74));
     padding: 20px;
     font-size: 150%;
 }
 
+.content-table tbody tr:nth-of-type(even) {
+    background-color: rgba(0, 128, 128, 0.462);
+    border-bottom: black;
+}
+
 .title th {
-    width: 600px;
+    width: 500px;
     color: teal;
     height: 50px;
     border: solid;
