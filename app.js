@@ -1,7 +1,6 @@
 const http = require('http');
 const { Sequelize, Model, DataTypes } = require('sequelize');
 const crypto = require('crypto');
-
 const sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: 'database.sqlite'
@@ -50,6 +49,10 @@ const Messages = Message.define('Message', {
 
 const server = http.createServer((request, response) => {
     if (request.method == 'POST') {
+        response.writeHead(200,{
+            'Content-Type': '*',
+            'Access-Control-Allow-Origin': '*'
+        });
         User.sync()
             .then(() => console.log('Database synced'))
             .catch(err => {
@@ -81,10 +84,9 @@ const server = http.createServer((request, response) => {
                 });
                 response.end('Database couldn\'t handle request right now');
             });
-        response.writeHead(200, {
-            'Content-Type': '*',
-            'Access-Control-Allow-Origin': '*'
-        });
+
+
+        
         let body = '';
         let parts;
         let KeyJSON;
@@ -190,6 +192,44 @@ const server = http.createServer((request, response) => {
             });
             sequelize_to_json(User).then(data => response.end(JSON.stringify(data)));
         }
+    }
+    else if(request.method == 'OPTIONS') {
+        response.writeHead(200,{
+            'Content-Type': '*',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': '*'
+        });
+        response.end("Access granted to 'OPTIONS'");
+    }
+
+    else if(request.method == 'DELETE') {
+        User.sync()
+            .then(() => console.log('Database synced'))
+            .catch(err => {
+                console.log("Database couldn't sync with the error: " + err);
+                response.writeHead(400,{
+                    'Content-Type': '*',
+                    'Access-Control-Allow-Origin': '*'
+                })
+                response.end('Database couldn\'t handle request right now');
+            });       
+        response.writeHead(200,{
+            'Content-Type': '*',
+            'Access-Control-Allow-Origin': '*'
+        });
+        //Reading the id of the element to delete(the child).code
+        let body = '';
+        request.on('data', chunk => {
+            body += chunk.toString();
+        });   
+        //Destorying the users livelyhood when fired because of the corona virus
+        request.on('end', () => {
+             User.destroy({where: {id: body}})
+                .then(deleted => {
+                    console.log(deleted);
+                })
+                .then(()=> response.end("Password deleted"));
+        });
     }
 });
 

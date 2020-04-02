@@ -65,14 +65,33 @@
                     .catch(err => console.log(err));
             }
         }
+        function delete_request(){
+            fetch('http://localhost:3000', {
+                method: 'DELETE',
+                body: prompt("website?") /*+ "@" + prompt("password?")*/
+            })
+            .then((response) => {
+                response.text()
+                .then(data => console.log(data));
+            })
+            .catch(err => console.log(err));
+        }
+
         function request(event) {
-                let website = document.getElementById('website').value;
-                let password = generate_password();
-                post_request(website, password);
+            if (event.keyCode == '80') {
+                post_request();
+            }
+            if (event.keyCode == '71') {
+                get_request();
+            }
+            if (event.keyCode == '68') {
+                delete_request();
+            }
         }
         function generate_password(){
             return "password123";
         }
+
     </script>
 </body>
 
