@@ -1,7 +1,7 @@
 {
   "name": "key-auth",
   "version": "0.1.0",
-  "main": "main.js",
+  "main": "USBDRIVE.js",
   "dependencies": {
     "electron-fetch": "^1.4.0",
     "mysql2": "^2.1.0",

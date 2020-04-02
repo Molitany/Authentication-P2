@@ -1,10 +1,10 @@
 const http = require('http');
 const crypto = require('crypto');
-const {User, Messages, Keys} = require('./databasemodule.js')
+const { User, Messages, Keys } = require('./databasemodule.js')
 
 const server = http.createServer((request, response) => {
     if (request.method == 'POST') {
-        response.writeHead(200,{
+        response.writeHead(200, {
             'Content-Type': '*',
             'Access-Control-Allow-Origin': '*'
         });
@@ -41,18 +41,22 @@ const server = http.createServer((request, response) => {
             });
 
 
-        
+
         let body = '';
         let parts;
         let KeyJSON;
         let MessageJSON;
+        let KeyAuth;
 
         request.on('data', chunk => {
             body += chunk.toString();
-            if (body.includes("\"type\":\"Keys\"")) {
+            if (request.url == '/Auth_User') {
+                KeyAuth = JSON.parse(body);
+            }
+            else if (request.url == '/Keys') {
                 KeyJSON = JSON.parse(body);
             }
-            else if (body.includes("\"type\":\"Message\"")) {
+            else if (request.url == '/Message') {
                 MessageJSON = JSON.parse(body);
             }
             else {
@@ -119,6 +123,19 @@ const server = http.createServer((request, response) => {
                     })
                     .then(() => response.end("Password created"));
             }
+            else if (KeyAuth) {
+                Keys.findByPk(1)
+                    .then(Key => {
+                        Messages.findByPk(KeyAuth.Username)
+                            .then(element => {
+                                let privateKey = Key.dataValues.PrivateKey;
+                                let passphrase = Key.dataValues.Passphrase;
+                                if (crypto.privateDecrypt({key:privateKey, passphrase:passphrase}, element.Message) == KeyAuth.Message) {
+                                    //Send id and confirmation to website!!!!!
+                                }
+                            });
+                    });
+            }
             else {
                 response.writeHead(400, {
                     'Content-Type': '*',
@@ -148,8 +165,8 @@ const server = http.createServer((request, response) => {
             sequelize_to_json(User).then(data => response.end(JSON.stringify(data)));
         }
     }
-    else if(request.method == 'OPTIONS') {
-        response.writeHead(200,{
+    else if (request.method == 'OPTIONS') {
+        response.writeHead(200, {
             'Content-Type': '*',
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': '*'
@@ -157,18 +174,18 @@ const server = http.createServer((request, response) => {
         response.end("Access granted to 'OPTIONS'");
     }
 
-    else if(request.method == 'DELETE') {
+    else if (request.method == 'DELETE') {
         User.sync()
             .then(() => console.log('Database synced'))
             .catch(err => {
                 console.log("Database couldn't sync with the error: " + err);
-                response.writeHead(400,{
+                response.writeHead(400, {
                     'Content-Type': '*',
                     'Access-Control-Allow-Origin': '*'
                 })
                 response.end('Database couldn\'t handle request right now');
-            });       
-        response.writeHead(200,{
+            });
+        response.writeHead(200, {
             'Content-Type': '*',
             'Access-Control-Allow-Origin': '*'
         });
@@ -176,14 +193,14 @@ const server = http.createServer((request, response) => {
         let body = '';
         request.on('data', chunk => {
             body += chunk.toString();
-        });   
+        });
         //Destorying the users livelyhood when fired because of the corona virus
         request.on('end', () => {
-             User.destroy({where: {id: body}})
+            User.destroy({ where: { id: body } })
                 .then(deleted => {
                     console.log(deleted);
                 })
-                .then(()=> response.end("Password deleted"));
+                .then(() => response.end("Password deleted"));
         });
     }
 });
@@ -219,6 +236,7 @@ function MessageGenerator() {
                 let body = publicKey.dataValues.PublicKey;
                 let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
                 for (i = 0; i < 32; i++) message += characters.charAt(Math.floor(Math.random() * characters.length));
+                console.log(message);
                 body = Buffer.from(body);
                 message = Buffer.from(message);
                 return crypto.publicEncrypt(body, message);

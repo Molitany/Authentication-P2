@@ -8,7 +8,7 @@
  Det ene key set der er kan være mere sikker en de seperate keys hvor alting er unique grundet mere plads
 */
 
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, net } = require('electron');
 const fs = require('fs');
 //const crypto = require('crypto');
 //let message = '';
@@ -24,7 +24,6 @@ app.on('ready', () => {
   });
   window.loadURL(`file://${__dirname}/CoolAdmin.html`);
   window.on('closed', () => window = null);
-
 
   /*
   //GET public key from database and use it to encrypt message
@@ -95,8 +94,5 @@ app.on('ready', () => {
   request.end(JSON.stringify({type: 'Keys', PublicKey: keys.publicKey, PrivateKey: keys.privateKey, passphrase: 'VIgIlanT37diRt68GRaftED69RAdIatE55rIgIdity35sHoWdOwn62diSaBLe04pupILs'}));
 
 */
-
-
-
   //DO NOT DELETE THESE STOPID
 })
