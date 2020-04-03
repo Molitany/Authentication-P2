@@ -8,5 +8,13 @@ electron.app.on('ready', () => {
         port: 3000,
         path: '/Auth_User'
     })
-    request.end(JSON.stringify({ Username: 'Bob', Message: '/`C#-Z,TNf!#Y_z`@]*5´K2&Q(8%34k0'}));    
+    request.end(JSON.stringify({ Username: 'Bob', Message: 'L7jq¨(0I}o¨iaB.s7NX2^xT+(´/lO/zw' }));
+    request.on('response', resp => {
+        let text = '';
+        resp.on('data', chunk => {
+            text += chunk;
+            console.log(JSON.parse(text));
+        })
+    })
+    //.catch(err => console.log(`No authentication recieved, error: ${err}`));
 });

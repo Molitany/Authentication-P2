@@ -131,7 +131,7 @@ const server = http.createServer((request, response) => {
                                 let privateKey = Key.dataValues.PrivateKey;
                                 let passphrase = Key.dataValues.Passphrase;
                                 if (crypto.privateDecrypt({key:privateKey, passphrase:passphrase}, element.Message) == KeyAuth.Message) {
-                                    //Send id and confirmation to website!!!!!
+                                    response.end(JSON.stringify({Username: KeyAuth.Username, Authenticated: true}));
                                 }
                             });
                     });
