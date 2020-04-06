@@ -143,9 +143,18 @@ td {
     border: solid;
 }
 
+td:hover {
+    transition-duration: .3s;
+    background-color: rgb(34, 34, 34);
+}
+
 .vault-all {
-    background-image: linear-gradient( rgb(34, 34, 34), rgb(24, 56, 62));
+    background-color: rgb(44, 44, 44);
     border-radius: 1%;
+}
+
+i:hover {
+    animation: expand .5s;
 }
 
 @keyframes expand {
