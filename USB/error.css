@@ -1,0 +1,26 @@
+div#header{
+    width: 100%;
+    height: 31px;
+    display: block;
+    background-color: black;
+    -webkit-app-region: drag;
+    -webkit-user-select: none;
+    margin: 0px;
+    font-size: 25px;
+}
+
+.header_button{
+    width: 30px;
+    height: 30px;
+    position: relative;
+    float: right;
+    -webkit-app-region: no-drag;
+}
+
+h1{
+    color: red;
+}
+
+body{
+    margin: 0px;
+}

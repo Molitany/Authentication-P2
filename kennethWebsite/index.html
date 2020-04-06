@@ -1,116 +1,87 @@
 <!DOCTYPE html>
-
-
 <html lang="en">
+<head>
 
-    <head>
+    <meta charset="UTF-8">
+    <title>HTML5 Sample Document</title>
+    <link rel="stylesheet" href="cssINDEX.css" type="text/css">
+    <script src="https://kit.fontawesome.com/9b0e1113b8.js" crossorigin="anonymous"></script>
+    <script src="https://github.com/datejs/Datejs.git"></script>
+</head>
 
-        <meta charset="UTF-8">
-        <title>HTML5 Sample Document</title>
-        <link rel="stylesheet" href="cssINDEX.css" type="text/css">
-        <script src="https://kit.fontawesome.com/9b0e1113b8.js" crossorigin="anonymous"></script>
-        <script src="https://github.com/datejs/Datejs.git"></script>
-
-    </head>
-
-
-    <body>
-        <header>
-
-            <div class="searchBar">
-                <i class="fas fa-search"></i>
-                <input class="searchtext" type="text" placeholder="Search after your vault...">
-
-            </div>
-
-            <h1>
-                <span>W</span>
-                <span class="m-left">e</span>
-                <span class="m-left">l</span>
-                <span class="m-left">c</span>
-                <span class="m-left">o</span>
-                <span class="m-left">m</span>
-                <span class="m-left">e</span>
-
-                <span>T</span>
-                <span class="m-left">o</span>
-
-                <span>Y</span>
-                <span class="m-left">o</span>
-                <span class="m-left">u</span>
-                <span class="m-left">r</span>
-
-
-                <span>P</span>
-                <span class="m-left">a</span>
-                <span class="m-left">s</span>
-                <span class="m-left">s</span>
-                <span class="m-left">w</span>
-                <span class="m-left">o</span>
-                <span class="m-left">r</span>
-                <span class="m-left">d</span>
-
-                <span class="Name">V</span>
-                <span class="m-left Name">a</span>
-                <span class="m-left Name">u</span>
-                <span class="m-left Name">l</span>
-                <span class="m-left Name">t</span>
-
-            </h1>
-
-
-            <div class="UserBar">
-
-                <div class="text">
-                    User Account
-                </div>
-
-                <li>
-                    <a href="#UserMenu"> <i class="fas fa-address-card"></i></a>
-                </li>
-
-            </div>
-
-        </header>
-
-        <form id="inputForm">
-
-            <div class="login-form">
-                <label for="Website">Enter website name: </label>
-                <input type="text" id="Website" name="Website name" placeholder="                Web name...">
-                <br>
-                <div class="password">
-                    <label for="Password">Enter Password:</label>
-                    <input type="password" id="Password" name="Passwordname" placeholder="                 Password">
-                </div>
-                <br>
-                <button type="submit">Enter new information to your vault</button>
-            </div>
-        </form>
-
-        <div class="vault-all">
-            <table class="content-table">
-
-                <thead>
-                    <tr class="title">
-
-                        <th>Nr.</th>
-                        <th>Website</th>
-                        <th>Password <i class="fas fa-eye-slash"></i></th>
-                    </tr>
-
-
-                </thead>
-                <tbody id="tbody"></tbody>
-            </table>
-
+<body id="usbdevice">
+    <header>
+        <div class="searchBar">
+            <i class="fas fa-search"></i>
+            <input class="searchtext" type="text" placeholder="Search after your vault...">
         </div>
+        <h1>
+            <span>W</span>
+            <span class="m-left">e</span>
+            <span class="m-left">l</span>
+            <span class="m-left">c</span>
+            <span class="m-left">o</span>
+            <span class="m-left">m</span>
+            <span class="m-left">e</span>
 
-        <script src="Website.js"></script>
+            <span>T</span>
+            <span class="m-left">o</span>
 
+            <span>Y</span>
+            <span class="m-left">o</span>
+            <span class="m-left">u</span>
+            <span class="m-left">r</span>
 
-    </body>
+            <span>P</span>
+            <span class="m-left">a</span>
+            <span class="m-left">s</span>
+            <span class="m-left">s</span>
+            <span class="m-left">w</span>
+            <span class="m-left">o</span>
+            <span class="m-left">r</span>
+            <span class="m-left">d</span>
 
+            <span class="Name">V</span>
+            <span class="m-left Name">a</span>
+            <span class="m-left Name">u</span>
+            <span class="m-left Name">l</span>
+            <span class="m-left Name">t</span>
+        </h1>
 
+        <div class="UserBar">
+            <div class="text">
+                User Account
+            </div>
+            <li>
+                <a href="#UserMenu"> <i class="fas fa-address-card"></i></a>
+            </li>
+        </div>
+    </header>
 
-    </html>
+    <div class="login-form">
+        <label for="Website">Enter website name: </label>
+        <input type="text" id="Website" name="Website name" placeholder="                Web name...">
+        <br>
+        <div class="password">
+            <label for="Password">Enter Password:</label>
+            <input type="password" id="Password" name="Passwordname" placeholder="                 Password">
+        </div>
+        <br>
+        <button type="submit" id="submit">Enter new information to your vault</button>
+    </div>
+
+    <div class="vault-all">
+        <table class="content-table">
+            <thead>
+                <tr class="title">
+                    <th>Nr.</th>
+                    <th>Website</th>
+                    <th>Password <i class="fas fa-eye-slash"></i></th>
+                </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+        </table>
+    </div>
+    <script src="Website.js"></script>
+</body>
+</html>

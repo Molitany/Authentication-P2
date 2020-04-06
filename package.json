@@ -1,7 +1,7 @@
 {
   "name": "key-auth",
   "version": "0.1.0",
-  "main": "usb_drive.js",
+  "main": "USB\\usb_drive.js",
   "dependencies": {
     "electron-fetch": "^1.4.0",
     "mysql2": "^2.1.0",

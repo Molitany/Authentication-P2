@@ -260,7 +260,8 @@ const server = http.createServer((request, response) => {
 server.listen(3000, 'localhost', () => {
     console.log('Listening...');
     sequelize_to_json(User).then(data => { console.log(data) });
-})
+});
+
 function sequelize_to_json(model) {
     return new Promise((resolve) => {
         let JSON_array = [];
@@ -280,6 +281,7 @@ function sequelize_to_json(model) {
             .catch(err => console.log('No passwords or ids in the database'));
     });
 }
+
 function MessageGenerator() {
     let message = '';
     let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
