@@ -22,9 +22,9 @@ app.on('ready', () => {
       nodeIntegration: true
     }
   });
-  window.loadURL(`file://${__dirname}/CoolAdmin.html`);
+  window.loadURL(`file://${__dirname}/admin_tools.html`);
   window.on('closed', () => window = null);
-  
+
   /*
   //GET public key from database and use it to encrypt message
   const request = electron.net.request('http://localhost:3000/Keys')
