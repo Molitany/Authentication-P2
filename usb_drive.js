@@ -12,7 +12,7 @@ electron.app.on('ready', () => {
         port: 3000,
         path: '/Auth_User'
     });
-    request.end(JSON.stringify({Username: Key.User, Message: Key.Key}));
+    request.end(JSON.stringify({Username: Key.Username, Message: Key.Message}));
 
     //New request
     request = electron.net.request({
@@ -22,17 +22,5 @@ electron.app.on('ready', () => {
         port: 3001,
         path: ''
     });
-    request.end(JSON.stringify({Username: Key.User, Message: Key.Key}));
-
-    electron.globalShortcut.register('CommandOrControl+X', () => {
-        //New request
-        request = electron.net.request({
-            method: 'GET',
-            protocol: 'http:',
-            hostname: 'localhost',
-            port: 3001,
-            path: ''
-        });
-        request.end();
-    });
+    request.end(JSON.stringify({Username: Key.Username, Message: Key.Message}));
 });

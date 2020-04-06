@@ -1,12 +1,12 @@
 const http = require('http');
-message = '';
+let message = '';
+
 http.createServer(function (req, res) {
     if (req.method == 'GET'){
         res.writeHead(200, {
             'Content-Type': '*',
             'Access-Control-Allow-Origin': '*'
         });
-        console.log(message);
         res.end(message);
     }
     else if (req.method == 'POST'){

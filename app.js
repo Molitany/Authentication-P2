@@ -62,7 +62,6 @@ const server = http.createServer((request, response) => {
             else if (request.url == '/MessageToUSB')
                 MessageUser = chunk.toString();
             else if (request.url == '/Passwords') {
-                console.log('DIKERT12345');
                 WebAuth = JSON.parse(body);
             }
             else {
@@ -99,7 +98,7 @@ const server = http.createServer((request, response) => {
                             .then(publicKey => {
                                 message = Buffer.from(table.dataValues.Message);
                                 body = Buffer.from(publicKey.dataValues.PublicKey);
-                                response.end(JSON.stringify({ User: MessageUser, Key: crypto.publicEncrypt(body, message) }));
+                                response.end(JSON.stringify({ Username: MessageUser, Message: crypto.publicEncrypt(body, message) }));
                             }).catch(err => console.error(err));
                     }
                 }).catch(err => console.log(err));
@@ -176,7 +175,7 @@ const server = http.createServer((request, response) => {
 
                                     let privateKey = Key.dataValues.PrivateKey;
                                     let passphrase = Key.dataValues.Passphrase;
-                                    if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, element.Message) == WebAuth.Message) {
+                                    if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(WebAuth.Message)) == element.Message) {
                                         sequelize_to_json(User).then(data => response.end(JSON.stringify(data)));
                                     }
                                 } else {
