@@ -109,7 +109,4 @@ dist
 
 # TernJS port file
 .tern-port
-<<<<<<< HEAD
-
->>>>>>> Physical-Key
-*.sqlite
+.sqlite
