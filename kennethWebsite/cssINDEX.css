@@ -3,14 +3,14 @@ html {
 }
 
 body {
-    background-color: rgb(76, 74, 74)
+    background-color: rgb(29, 68, 76);
 }
 
 header {
     background-size: cover;
     justify-content: space-between;
     display: flex;
-    background-image: linear-gradient( rgb(34, 34, 34), rgb(76, 74, 74));
+    background-image: linear-gradient( rgb(34, 34, 34), rgb(29, 68, 76));
 }
 
 header h1 {
@@ -40,7 +40,7 @@ span:hover {
 }
 
 .text:hover {
-    animation: expand 1.5s;
+    animation: expand2 .5s;
 }
 
 .UserBar li a i:hover {
@@ -52,9 +52,7 @@ span:hover {
 }
 
 .searchBar {
-    background-color: rgb(57, 57, 57);
-    border-top-left-radius: 50%;
-    border-bottom-right-radius: 50%;
+    background-image: linear-gradient( rgb(34, 34, 34), rgb(29, 68, 76));
 }
 
 .searchBar input {
@@ -133,11 +131,6 @@ span:hover {
     font-size: 150%;
 }
 
-.content-table tbody tr:nth-of-type(even) {
-    background-color: rgba(0, 128, 128, 0.462);
-    border-bottom: black;
-}
-
 .title th {
     width: 500px;
     color: teal;
@@ -150,8 +143,18 @@ td {
     border: solid;
 }
 
+td:hover {
+    transition-duration: .3s;
+    background-color: rgb(34, 34, 34);
+}
+
 .vault-all {
-    background-image: linear-gradient( rgb(34, 34, 34), rgb(76, 74, 74));
+    background-color: rgb(44, 44, 44);
+    border-radius: 1%;
+}
+
+i:hover {
+    animation: expand .5s;
 }
 
 @keyframes expand {
