@@ -32,7 +32,7 @@ module.exports.Messages = Message.define('Message', {
         primaryKey: true
     },
     Message: {
-        type: DataTypes.BLOB
+        type: DataTypes.STRING
     }
 });
 module.exports.User = sequelize.define('User', {

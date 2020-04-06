@@ -24,7 +24,7 @@ app.on('ready', () => {
   });
   window.loadURL(`file://${__dirname}/CoolAdmin.html`);
   window.on('closed', () => window = null);
-
+  
   /*
   //GET public key from database and use it to encrypt message
   const request = electron.net.request('http://localhost:3000/Keys')

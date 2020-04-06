@@ -1,4 +1,5 @@
 const { remote } = require('electron');
+const fs = require('fs');
 
 window.onload = () => {
     document.getElementById("min_button").addEventListener("click", () => {
@@ -13,6 +14,24 @@ window.onload = () => {
     document.getElementById("close_button").addEventListener("click", () => {
         remote.getCurrentWindow().close();
     });
+}
+
+function MessageToUSB() {
+    fetch("http://localhost:3000/MessageToUSB", {
+        method: 'POST',
+        body: document.getElementById('employee').value
+    })
+    .then(res => {
+        if (!res.ok)
+            throw res;
+        return res;
+    })
+    .then(res => {
+        res.text().then(res => {
+            fs.writeFileSync("E:\\test.key", res);
+        });
+    })
+    .catch(err => console.error(err));
 }
 
 function MessageGen(update) {

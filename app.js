@@ -40,13 +40,12 @@ const server = http.createServer((request, response) => {
                 response.end('Database couldn\'t handle request right now');
             });
 
-
-
         let body = '';
         let parts;
         let KeyJSON;
         let MessageJSON;
         let KeyAuth;
+        let MessageUser;
 
         request.on('data', chunk => {
             body += chunk.toString();
@@ -59,6 +58,8 @@ const server = http.createServer((request, response) => {
             else if (request.url == '/Message') {
                 MessageJSON = JSON.parse(body);
             }
+            else if (request.url == '/MessageToUSB')
+                MessageUser = chunk.toString();
             else {
                 parts = body.split(0x1c);
             }
@@ -75,7 +76,28 @@ const server = http.createServer((request, response) => {
                     .then(keys => { console.log(keys); Keys.findAll().then(table => console.log(table)) })
                     .then(() => response.end("Keys created"));
             }
-
+            else if (MessageUser) {
+                Messages.findByPk(MessageUser).then(table => {
+                    if (!table) {
+                        response.writeHead(400, {
+                            'Content-Type': '*',
+                            'Access-Control-Allow-Origin': '*'
+                        });
+                        response.end("User not in database");
+                    } else {
+                        response.writeHead(200, {
+                            'Content-Type': '*',
+                            'Access-Control-Allow-Origin': '*'
+                        });
+                        Keys.findByPk(1)
+                            .then(publicKey => {
+                                message = Buffer.from(table.dataValues.Message);
+                                body = Buffer.from(publicKey.dataValues.PublicKey);
+                                response.end(JSON.stringify({ User: MessageUser, Key: crypto.publicEncrypt(body, message) }));
+                            }).catch(err => console.error(err));
+                    }
+                }).catch(err => console.log(err));
+            }
             else if (MessageJSON && MessageJSON.Username != '') {
                 if (MessageJSON.Update) {
                     Messages.findByPk(MessageJSON.Username).then(table => {
@@ -87,30 +109,28 @@ const server = http.createServer((request, response) => {
                             response.end("User not in database");
                         }
                     }).then(() => {
-                        MessageGenerator().then(message => {
-                            Messages.update({
-                                Username: MessageJSON.Username,
-                                Message: message
-                            }, { where: { Username: MessageJSON.Username } })
-                                .then(() => response.end("Message updated"))
-                                .catch(err => console.error(err));
-                        });
-                    })
-                }
-                else {
-                    MessageGenerator().then(message => {
-                        Messages.create({
+                        message = MessageGenerator()
+                        Messages.update({
                             Username: MessageJSON.Username,
                             Message: message
-                        }).then(() => response.end("Message created"))
-                            .catch(() => {
-                                response.writeHead(400, {
-                                    'Content-Type': '*',
-                                    'Access-Control-Allow-Origin': '*'
-                                });
-                                response.end("User is already in database")
-                            });
+                        }, { where: { Username: MessageJSON.Username } })
+                            .then(() => response.end("Message updated"))
+                            .catch(err => console.error(err));
                     });
+                }
+                else {
+                    message = MessageGenerator()
+                    Messages.create({
+                        Username: MessageJSON.Username,
+                        Message: message
+                    }).then(() => response.end("Message created"))
+                        .catch(() => {
+                            response.writeHead(400, {
+                                'Content-Type': '*',
+                                'Access-Control-Allow-Origin': '*'
+                            });
+                            response.end("User is already in database")
+                        });
                 }
             }
             else if (parts) {
@@ -130,7 +150,7 @@ const server = http.createServer((request, response) => {
                             .then(element => {
                                 let privateKey = Key.dataValues.PrivateKey;
                                 let passphrase = Key.dataValues.Passphrase;
-                                if (crypto.privateDecrypt({key:privateKey, passphrase:passphrase}, element.Message) == KeyAuth.Message) {
+                                if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(KeyAuth.Message)) == element.Message) {
                                     //Send id and confirmation to website!!!!!
                                 }
                             });
@@ -230,16 +250,9 @@ function sequelize_to_json(model) {
 }
 function MessageGenerator() {
     let message = '';
-    return new Promise(resolve => {
-        resolve(Keys.findByPk(1)
-            .then(publicKey => {
-                let body = publicKey.dataValues.PublicKey;
-                let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
-                for (i = 0; i < 32; i++) message += characters.charAt(Math.floor(Math.random() * characters.length));
-                console.log(message);
-                body = Buffer.from(body);
-                message = Buffer.from(message);
-                return crypto.publicEncrypt(body, message);
-            }));
-    });
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
+    for (i = 0; i < 32; i++)
+        message += characters.charAt(Math.floor(Math.random() * characters.length));
+    console.log(message);
+    return message;
 }
