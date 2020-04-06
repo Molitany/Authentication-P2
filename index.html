@@ -12,30 +12,30 @@
         This site has only one purpose and that is sending and recieving information from the app.js server.
     </p>
     <section>
-            <!-- There are all for show, the only working part right now is the website input field, but all the others
+        <!-- There are all for show, the only working part right now is the website input field, but all the others
                  Are being implemented as you read this. Though the computation itself will be serverside, it will be made
                  locally for now, just as a testing thingy doodad.
             -->
-            <label for="website">Which website is your password for?</label>
-            <input id="website" type="text">
-            <label for="uppercase">Does the password require an uppercased letter?</label>
-            <select id="uppercase">
-                <option>Yes</option>
-                <option>No</option>
-            </select>
-            <label for="number">Does the password require a number?</label>
-            <select id="number">
-                <option>Yes</option>
-                <option>No</option>
-            </select>
-            <label for="special">Does the password require a special character?</label>
-            <select id="special">
-                <option>Yes</option>
-                <option>No</option>
-            </select>
-            <label for="special">How long should the password be?</label>
-            <input type="number">
-            <button id="submit">Submit</button>
+        <label for="website">Which website is your password for?</label>
+        <input id="website" type="text">
+        <label for="uppercase">Does the password require an uppercased letter?</label>
+        <select id="uppercase">
+            <option>Yes</option>
+            <option>No</option>
+        </select>
+        <label for="number">Does the password require a number?</label>
+        <select id="number">
+            <option>Yes</option>
+            <option>No</option>
+        </select>
+        <label for="special">Does the password require a special character?</label>
+        <select id="special">
+            <option>Yes</option>
+            <option>No</option>
+        </select>
+        <label for="special">How long should the password be?</label>
+        <input type="number">
+        <button id="submit">Submit</button>
     </section>
     <script>
         document.addEventListener("keydown", get_request);
@@ -47,34 +47,51 @@
                 method: 'POST',
                 body: website + 0x1c + password
             })
-            .then((response) => {
-                response.text()
-                .then(data => console.log(data));
-            })
-            .catch(err => console.log(err));
+                .then((response) => {
+                    response.text()
+                        .then(data => console.log(data));
+                })
+                .catch(err => console.log(err));
         }
-        
-        function get_request(event){
+
+        function get_request(event) {
             //Getting a response from the local server using fetch api
-            if(event.keyCode == '71'){
-                fetch('http://localhost:3000')
+            if (event.keyCode == '71') {
+                fetch('http://localhost:3000/Passwords', {
+                    method: 'POST',
+                    body: JSON.stringify({ Username: 'Bob', Message: 'L7jq¨(0I}o¨iaB.s7NX2^xT+(´/lO/zw' })
+                })
                     .then((response) => {
-                         response.text()
-                            .then(data => console.log(JSON.parse(data)));
+                        response.text()
+                            .then(data => console.log(data));
                     })
-                    .catch(err => console.log(err));
+                    .catch(err => console.log(err + 'BRERWER'));
+                    /*
+                    .then(response => {
+                        if (response == true) {
+                            fetch('http://localhost:3000/Passwords')
+                                .then((response) => {
+                                    response.text()
+                                        .then(data => console.log(JSON.parse(data)));
+                                })
+                                .catch(err => console.log(err));
+                        } else {
+                            console.log('Failed to confirm');
+                            return;
+                        }
+                    }*/
             }
         }
-        function delete_request(){
+        function delete_request() {
             fetch('http://localhost:3000', {
                 method: 'DELETE',
                 body: prompt("website?") /*+ "@" + prompt("password?")*/
             })
-            .then((response) => {
-                response.text()
-                .then(data => console.log(data));
-            })
-            .catch(err => console.log(err));
+                .then((response) => {
+                    response.text()
+                        .then(data => console.log(data));
+                })
+                .catch(err => console.log(err));
         }
 
         function request(event) {
@@ -88,7 +105,7 @@
                 delete_request();
             }
         }
-        function generate_password(){
+        function generate_password() {
             return "password123";
         }
 

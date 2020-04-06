@@ -40,13 +40,12 @@ const server = http.createServer((request, response) => {
                 response.end('Database couldn\'t handle request right now');
             });
 
-
-
         let body = '';
         let parts;
         let KeyJSON;
         let MessageJSON;
         let KeyAuth;
+        let WebAuth;
 
         request.on('data', chunk => {
             body += chunk.toString();
@@ -59,7 +58,12 @@ const server = http.createServer((request, response) => {
             else if (request.url == '/Message') {
                 MessageJSON = JSON.parse(body);
             }
+            else if (request.url == '/Passwords') {
+                console.log('DIKERT12345');
+                WebAuth = JSON.parse(body);
+            }
             else {
+                console.log(request.URL);
                 parts = body.split(0x1c);
             }
         });
@@ -128,13 +132,43 @@ const server = http.createServer((request, response) => {
                     .then(Key => {
                         Messages.findByPk(KeyAuth.Username)
                             .then(element => {
-                                let privateKey = Key.dataValues.PrivateKey;
-                                let passphrase = Key.dataValues.Passphrase;
-                                if (crypto.privateDecrypt({key:privateKey, passphrase:passphrase}, element.Message) == KeyAuth.Message) {
-                                    response.end(JSON.stringify({Username: KeyAuth.Username, Authenticated: true}));
+                                if (element != null) {
+                                    let privateKey = Key.dataValues.PrivateKey;
+                                    let passphrase = Key.dataValues.Passphrase;
+                                    if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, element.Message) == KeyAuth.Message) {
+                                        response.end(JSON.stringify({ Username: KeyAuth.Username, Authenticated: true }));
+                                    }
+                                } else {
+                                    //temporary solution__________________
+                                    response.end('User not found');
                                 }
                             });
                     });
+            }
+            else if (WebAuth) {
+                Keys.findByPk(1)
+                    .then(Key => {
+                        Messages.findByPk(WebAuth.Username)
+                            .then(element => {
+                                if (element != null) {
+
+                                    let privateKey = Key.dataValues.PrivateKey;
+                                    let passphrase = Key.dataValues.Passphrase;
+                                    if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, element.Message) == WebAuth.Message) {
+                                        sequelize_to_json(User).then(data => response.end(JSON.stringify(data)));
+                                    }
+                                } else {
+
+                                    //temporary solution__________________
+                                    response.writeHead(400, {
+                                        'Content-Type': '*',
+                                        'Access-Control-Allow-Origin': '*'
+                                    });
+                                    response.end('User not found');
+                                }
+                            });
+                    });
+
             }
             else {
                 response.writeHead(400, {
@@ -157,13 +191,10 @@ const server = http.createServer((request, response) => {
                 response.end(JSON.stringify(key.dataValues.PublicKey));
             });
         }
-        else {
-            response.writeHead(200, {
-                'Content-Type': '*',
-                'Access-Control-Allow-Origin': '*'
-            });
-            sequelize_to_json(User).then(data => response.end(JSON.stringify(data)));
-        }
+    }
+    // Request.body moght not work
+    else if (request.method == 'POST') {
+
     }
     else if (request.method == 'OPTIONS') {
         response.writeHead(200, {
