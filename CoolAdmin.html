@@ -4,18 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Tools: Thor should not judge his co-programmers inability to program well</title>
+    <title>Admin Tools</title>
 </head>
 
-<body >
-   
+<body>
+    <link rel="stylesheet" href="style.css">
+    <script src="tools.js"></script>
+    <div id="header">
+        <div>
+            Admin Tools
+            <button class="header_button" id="close_button">X</button>
+            <button class="header_button" id="max_button">☐</button>
+            <button class="header_button" id="min_button">_</button>
+        </div>
+    </div>
     <div>
-        <h1>Employee</h1>
-        <input id='employee' placeholder="Which employee do you wish to change?">
+        <p>Employee</p>
+        <input id="employee" placeholder="Which employee do you wish to change?">
     </div>
     <button onclick="MessageGen(true)">Update Message</button>
-    <button onclick = "MessageGen(false)"> Create Message </button>
-    <script src = 'tools.js'></script>
+    <button onclick="MessageGen(false)"> Create Message </button>
+    <p id="response_message"></p>
 
 </body>
 
