@@ -51,6 +51,37 @@ span:hover {
     color: black;
 }
 
+.userAccount {
+    width: 0px;
+    height: 0px;
+    background-color: rgb(34, 34, 34);
+    position: relative;
+    margin-right: 20px;
+    transition: all 0.7s ease-in-out;
+    border-radius: 10%;
+}
+
+.userAccount button {
+    visibility: hidden;
+    background-color: teal;
+    border: none;
+    margin-top: 30px;
+    margin-left: 50px;
+    width: 100px;
+    height: 30px;
+    border-radius: 20%;
+}
+
+.userAccount button:active {
+    transform: scale(0.9);
+}
+
+.userAccount label {
+    visibility: hidden;
+    margin-left: 10px;
+    transition: all .7s ease-in-out;
+}
+
 .searchBar {
     background-image: linear-gradient( rgb(34, 34, 34), rgb(29, 68, 76));
 }
@@ -120,10 +151,11 @@ span:hover {
     width: 250px;
     height: 40px;
     border-radius: 10%;
+    transition: transform 80ms ease-out;
 }
 
-.login-form button:hover {
-    animation: expand2 1.5s;
+.login-form button:active {
+    transform: scale(0.95);
 }
 
 .content-table {
