@@ -17,21 +17,47 @@ function passwordTemplate(password) {
       <table class="box">
         <tr>
             <td class="url-text">${password.id}</td>
-            <td class="psw-text">${password.password}</td>
+            <td id="psw" class="psw-text" onclick="ShowHide()">*********</td>
+            <button onclick="copyToClipboard()" class="button"><i class="fas fa-copy fa-2x"></i></button>
         </tr>
       </table>
       </div>
-    `;
+      `;
 }
-get_request().then(data => {
+
+function ShowHide(password){
+  if (document.getElementById("psw").innerText === "*********"){
+    document.getElementById("psw").innerText = password.password;
+  } else if (document.getElementById("psw").innerText != "*********") {
+    document.getElementById("psw").innerText = "*********";
+  }
+}
+
+const copyToClipboard = () => {
+  const toCopy = document.createElement('textarea');
+  if (document.getElementById("psw").innerText != "*********"){
+    toCopy.value = document.getElementById("psw").innerText;
+    document.body.appendChild(toCopy);
+    toCopy.select();
+    document.execCommand('copy');
+    document.body.removeChild(toCopy);
+    if(toCopy.value != undefined && toCopy.value != "*********"){
+      alert("Copied the password: "+ toCopy.value);
+    }
+  } else {
+    alert("You need to show the password before copying!")
+  }
+};
+
+get_request().then(password => {
   document.getElementById("app").innerHTML = `
-<p class="app-title">Password Vault (${data.length} results)</p>
+<p class="app-title">Password Vault (${password.length} results)</p>
 <table class="box-title">
   <tr>
         <td class="url-text">Website</td>
         <td class="psw-title">Password</td>
   </tr>
 </table>
-${data.map(passwordTemplate).join("")}
+${password.map(passwordTemplate).join("")}
 `
 });
