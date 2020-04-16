@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8"  />
+        <title>Password Vault</title>
+        <link rel="stylesheet" href="cssINDEX.css" type="text/css">
+        <script src="https://kit.fontawesome.com/9b0e1113b8.js" crossorigin="anonymous"></script>
+
+
+    </head>
+
+
+    <body>
+        <header>
+
+            <div class="searchBar">
+                <i class="fas fa-search"></i>
+                <input onkeyup="search()" id="search" class="searchtext" type="text" placeholder="Search after your Website...">
+
+            </div>
+
+            <h1>
+                <span>W</span>
+                <span class="m-left">e</span>
+                <span class="m-left">l</span>
+                <span class="m-left">c</span>
+                <span class="m-left">o</span>
+                <span class="m-left">m</span>
+                <span class="m-left">e</span>
+
+                <span>T</span>
+                <span class="m-left">o</span>
+
+                <span>Y</span>
+                <span class="m-left">o</span>
+                <span class="m-left">u</span>
+                <span class="m-left">r</span>
+
+
+                <span>P</span>
+                <span class="m-left">a</span>
+                <span class="m-left">s</span>
+                <span class="m-left">s</span>
+                <span class="m-left">w</span>
+                <span class="m-left">o</span>
+                <span class="m-left">r</span>
+                <span class="m-left">d</span>
+
+                <span class="Name">V</span>
+                <span class="m-left Name">a</span>
+                <span class="m-left Name">u</span>
+                <span class="m-left Name">l</span>
+                <span class="m-left Name">t</span>
+
+            </h1>
+
+
+            <div class="UserBar">
+                <script src="Website.js"></script>
+                <div class="text">
+                    User Account
+                </div>
+
+                <li>
+                    <a href="#UserMenu" onclick="menu_Nav()"> <i class="fas fa-address-card"></i></a>
+
+                </li>
+                <div class="userAccount">
+                    <label for="Website" style="color: white;">User ID: 235492 </label>
+
+                    <button type="button"> Log-out </button> </div>
+            </div>
+
+
+        </header>
+
+        <form id="inputForm">
+
+            <div class="login-form">
+
+                <label for="Website"><style></style> Enter website name: </label>
+                <input type="text" id="Website" name="Website name" placeholder="                Web name...">
+                <br>
+                <div class="password">
+                    <label for="Password">Enter Password:</label>
+                    <input type="password" id="Password" name="Passwordname" placeholder="                 Password">
+                </div>
+                <br>
+                <button type="submit">Enter new information to your vault</button>
+
+            </div>
+
+
+        </form>
+
+
+
+        <div class="vault-all">
+            <table id="table" class="content-table">
+
+                <thead>
+                    <tr class="title">
+
+                        <th>Nr.</th>
+                        <th>Website</th>
+                        <th>Password <i id="Show" onclick="Show_Hide()" class="fas fa-eye-slash"></i></th>
+                    </tr>
+
+
+                </thead>
+                <tbody id="table_body">
+                    <tr>
+                        <td>1 </td>
+                        <td>www.example.com</td>
+                        <td id="Show1">password123</td>
+                    </tr>
+                    <tr>
+                        <td>2 </td>
+                        <td>www.example-test.com</td>
+                        <td id="Show2">password123</td>
+                    </tr>
+                    <tr>
+                        <td>3 </td>
+                        <td>www.example.com</td>
+                        <td id="Show3">password123</td>
+                    </tr>
+                    <tr>
+                        <td>4 </td>
+                        <td>www.example.com</td>
+                        <td id="Show4">password1233</td>
+                    </tr>
+                    <tr>
+                        <td>5 </td>
+                        <td>www.example.com</td>
+                        <td id="Show5">password123</td>
+                    </tr>
+                    <tr>
+                        <td>6 </td>
+                        <td>www.example.com</td>
+                        <td id="Show6">password123</td>
+                    </tr>
+                    <tr>
+                        <td>7 </td>
+                        <td>www.example.com</td>
+                        <td id="Show7">password123</td>
+                    </tr>
+                    <tr>
+                        <td>8 </td>
+                        <td>www.example.com</td>
+                        <td id="Show8">password123</td>
+                    </tr>
+                    <tr>
+                        <td>9 </td>
+                        <td>www.example.com</td>
+                        <td id="Show9">password123</td>
+                    </tr>
+                    <tr>
+                        <td>10 </td>
+                        <td>www.facebook-test.com</td>
+                        <td id="Show10">Noobmaster69</td>
+                    </tr>
+
+
+                </tbody>
+
+
+
+            </table>
+
+        </div>
+
+
+        <script>
+            let menuStatus = false;
+            let menu_Nav = function() {
+
+                let getSideLenght = document.querySelector(".userAccount");
+                let getSideButton = document.querySelector(".userAccount button");
+                let getsideLabel = document.querySelector(".userAccount label");
+
+
+                if (menuStatus === false) {
+
+                    getSideLenght.style.width = "200px";
+                    getSideLenght.style.height = "100px";
+                    getSideButton.style.visibility = "visible";
+                    getSideLenght.style.margin.top = "500px"
+                    getsideLabel.style.visibility = "visible"
+                    menuStatus = true;
+
+                } else if (menuStatus === true) {
+                    getSideButton.style.visibility = "hidden";
+                    getSideLenght.style.width = "0px";
+                    getSideLenght.style.height = "0px";
+                    getsideLabel.style.visibility = "hidden"
+                    menuStatus = false;
+                }
+            }
+
+            let Show = false;
+            let Show_Hide = function() {
+
+                let Password_text1 = document.getElementById("Show1");
+                let Password_text2 = document.getElementById("Show2");
+                let Password_text3 = document.getElementById("Show3");
+                let Password_text4 = document.getElementById("Show4");
+                let Password_text5 = document.getElementById("Show5");
+                let Password_text6 = document.getElementById("Show6");
+                let Password_text7 = document.getElementById("Show7");
+                let Password_text8 = document.getElementById("Show8");
+                let Password_text9 = document.getElementById("Show9");
+                let Password_text10 = document.getElementById("Show10");
+                if (Show === false) {
+
+                    Password_text1.style.visibility = "hidden";
+                    Password_text2.style.visibility = "hidden";
+                    Password_text3.style.visibility = "hidden";
+                    Password_text4.style.visibility = "hidden";
+                    Password_text5.style.visibility = "hidden";
+                    Password_text6.style.visibility = "hidden";
+                    Password_text7.style.visibility = "hidden";
+
+                    Password_text8.style.visibility = "hidden";
+                    Password_text9.style.visibility = "hidden";
+                    Password_text10.style.visibility = "hidden";
+                    Show = true;
+
+                } else if (Show === true) {
+                    Password_text1.style.visibility = "visible";
+                    Password_text2.style.visibility = "visible";
+                    Password_text3.style.visibility = "visible";
+                    Password_text4.style.visibility = "visible";
+                    Password_text5.style.visibility = "visible";
+                    Password_text6.style.visibility = "visible";
+
+                    Password_text7.style.visibility = "visible";
+                    Password_text8.style.visibility = "visible";
+                    Password_text9.style.visibility = "visible";
+                    Password_text10.style.visibility = "visible";
+
+
+                    Show = false;
+
+                }
+            }
+
+            let search = function() {
+
+                let search_text = document.getElementById("search").value
+                let table = document.getElementById("table_body");
+                let a = table.rows; //let a be all rows
+
+
+                for (i = 0; i < a.length; i++) {
+                    let specific_value = a[i].cells[1].innerText; // specifi what we want to compare
+
+
+                    if (specific_value.indexOf(search_text) != -1) { //it cant be nothing so -1
+
+                        a[i].style.display = "";
+                    } else {
+                        a[i].style.display = "none"; //
+
+                    }
+
+                }
+
+
+            }
+        </script>
+
+
+    </body>
+
+
+
+    </html>
