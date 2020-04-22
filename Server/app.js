@@ -213,10 +213,6 @@ const server = http.createServer((request, response) => {
             });
         }
     }
-    // Request.body moght not work
-    else if (request.method == 'POST') {
-
-    }
     else if (request.method == 'OPTIONS') {
         response.writeHead(200, {
             'Content-Type': '*',

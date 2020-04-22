@@ -56,7 +56,7 @@ app.on('ready', () => {
   request.end(JSON.stringify({ Username: username, Message: message, Update: update }));
 
 
-  /*
+  
   // Generating an RSA keyset to encrypt and decrypt the message 
   const keys = crypto.generateKeyPairSync('rsa', {
     modulusLength: 4096,
