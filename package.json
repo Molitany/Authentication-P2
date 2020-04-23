@@ -1,7 +1,7 @@
 {
   "name": "key-auth",
   "version": "0.1.0",
-  "main": "USB\\usb_drive.js",
+  "main": "USB\\main.js",
   "dependencies": {
     "electron-fetch": "^1.4.0",
     "mysql2": "^2.1.0",
@@ -10,10 +10,10 @@
   },
   "scripts": {
     "start": "electron .",
-    "test": "mocha 'Tests/node.js'"
+    "test": "mocha --recursive './Tests/*.js'"
   },
   "devDependencies": {
     "electron": "^8.1.1",
-    "mocha": "^7.1.1"
+    "mocha": "*"
   }
 }

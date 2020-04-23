@@ -8,11 +8,9 @@
  Det ene key set der er kan være mere sikker en de seperate keys hvor alting er unique grundet mere plads
 */
 
-const { app, BrowserWindow, net } = require('electron');
-const fs = require('fs');
-//const crypto = require('crypto');
-//let message = '';
+const { app, BrowserWindow } = require('electron');
 
+// Opens a window with the admin tools when the app is ready.
 app.on('ready', () => {
   let window = new BrowserWindow({
     width: 800,

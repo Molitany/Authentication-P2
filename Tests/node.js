@@ -5,7 +5,7 @@ const { User, Messages, Keys } = require('../Server/databasemodule.js')
 
 let Message;
 
-beforeEach(function() {
+before(() => {
     Messages.sync().then(()=>{
         Messages.drop();
     }).then(()=>{
@@ -23,23 +23,33 @@ beforeEach(function() {
 });
   
 
-// Read File from USB
-it('Decrypt key if keys and user exists.', function(done) {
-    Keys.findByPk(1)
-    .then(Key => {
-        Messages.findByPk("Bob")
-            .then(element => {
-                if (element != null) {
-                    let privateKey = Key.dataValues.PrivateKey;
-                    let passphrase = Key.dataValues.Passphrase;
-                    if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(Message)) == element.Message) {
-                        done()
+describe("#Key Decryption", () =>{
+    it('Should decrypt the message if keys and user exists.', done => {
+        Keys.findByPk(1)
+        .then(Key => {
+            Messages.findByPk("Bob")
+                .then(element => {
+                    if (element != null) {
+                        let privateKey = Key.dataValues.PrivateKey;
+                        let passphrase = Key.dataValues.Passphrase;
+                        if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(Message)) == element.Message) {
+                            done()
+                        }
+                    } else {
+                        
                     }
-                } else {
-                    //temporary solution__________________
-                }
-            });
+                });
+        });
     });
 });
 
-
+describe("#MessageGenerator()", () =>{
+    it('Should create a 32 length message.', done => {
+        let message = '';
+        let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
+        for (i = 0; i < 32; i++)
+            message += characters.charAt(Math.floor(Math.random() * characters.length));
+        if (message.length === 32)
+            done()
+    });
+});

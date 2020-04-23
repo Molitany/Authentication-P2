@@ -160,7 +160,7 @@ const server = http.createServer((request, response) => {
                                         response.end(JSON.stringify({ Username: KeyAuth.Username, Authenticated: true }));
                                     }
                                 } else {
-                                    //temporary solution__________________
+                                    //temporary solution
                                     response.end('User not found');
                                 }
                             });
@@ -180,7 +180,7 @@ const server = http.createServer((request, response) => {
                                     }
                                 } else {
 
-                                    //temporary solution__________________
+                                    //temporary solution
                                     response.writeHead(400, {
                                         'Content-Type': '*',
                                         'Access-Control-Allow-Origin': '*'
@@ -283,6 +283,5 @@ function MessageGenerator() {
     let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
     for (i = 0; i < 32; i++)
         message += characters.charAt(Math.floor(Math.random() * characters.length));
-    console.log(message);
     return message;
 }

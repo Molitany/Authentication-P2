@@ -1,6 +1,8 @@
 const { remote } = require('electron');
 const fs = require('fs');
 
+let element = "";
+
 window.onload = () => {
     document.getElementById("min_button").addEventListener("click", () => {
         remote.getCurrentWindow().minimize();
@@ -29,6 +31,8 @@ function MessageToUSB() {
     .then(res => {
         res.text().then(res => {
             fs.writeFileSync("E:\\test.key", res);
+            document.getElementById("response_message").style = "color: green;";
+            document.getElementById("response_message").innerText = "USB has been written to"
         });
     })
     .catch(err => console.error(err));
@@ -40,17 +44,19 @@ function MessageGen(update) {
         body: JSON.stringify({ type: 'Message', Username: document.getElementById('employee').value, Update: update })
     })
         .then(res => {
+            element = document.getElementById("response_message");
             if (!res.ok)
                 throw res;
             return res;
         })
         .then(res => {
-            let element = document.getElementById("response_message");
-            res.text().then(res => element.innerHTML = res);
+            res.text().then(res => {
+                element.style = "color: green;";
+                element.innerHTML = res;
+            });
             setTimeout(() => element.innerHTML = "", 5000);
         })
         .catch(err => {
-            let element = document.getElementById("response_message");
             try{
                 err.text().then(res => {
                     if (err.status === 400) {
