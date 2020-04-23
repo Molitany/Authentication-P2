@@ -17,36 +17,30 @@ function passwordTemplate(password) {
       <table class="box">
         <tr>
             <td class="url-text">${password.id}</td>
-            <td id="psw" class="psw-text" onclick="ShowHide()">*********</td>
-            <button onclick="copyToClipboard()" class="button"><i class="fas fa-copy fa-2x"></i></button>
+            <td id="psw" title="${password.password}" class="psw-text" onclick="ShowHide(this)">*********</td>
+            <button onclick="copyToClipboard(this)" class="button"><i class="fas fa-copy fa-2x"></i></button>
         </tr>
       </table>
       </div>
       `;
 }
 
-function ShowHide(password){
-  if (document.getElementById("psw").innerText === "*********"){
-    document.getElementById("psw").innerText = password.password;
-  } else if (document.getElementById("psw").innerText != "*********") {
-    document.getElementById("psw").innerText = "*********";
+function ShowHide(id){
+  if (id.innerText === "*********"){
+    id.innerText = id.title;
+  } else if (id.innerText != "*********") {
+    id.innerText = "*********";
   }
 }
 
-const copyToClipboard = () => {
+const copyToClipboard = (id) => {
   const toCopy = document.createElement('textarea');
-  if (document.getElementById("psw").innerText != "*********"){
-    toCopy.value = document.getElementById("psw").innerText;
+  
+    toCopy.value = id.parentElement.children[1].children[0].children[0].children[1].title;
     document.body.appendChild(toCopy);
     toCopy.select();
     document.execCommand('copy');
     document.body.removeChild(toCopy);
-    if(toCopy.value != undefined && toCopy.value != "*********"){
-      alert("Copied the password: "+ toCopy.value);
-    }
-  } else {
-    alert("You need to show the password before copying!")
-  }
 };
 
 get_request().then(password => {
@@ -59,5 +53,9 @@ get_request().then(password => {
   </tr>
 </table>
 ${password.map(passwordTemplate).join("")}
+
+<p><br /><br /><br /><br /></p>
+<h1 class="footer">This password vault was made by the P2 group at Aalborg University: Thomas Damsgaard, Thor
+    Beregaard, Simon Preuss, Sebastian Lindhart, Kenneth Køpke and Andreas Poulsen</h1>
 `
 });
