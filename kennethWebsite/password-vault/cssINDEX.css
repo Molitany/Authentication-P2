@@ -26,10 +26,7 @@
         margin-left: -10px;
     }
     
-    span:hover {
-        color: teal;
-        transition-duration: .2s;
-    }
+
     
     .text {
         font-size: 200%;
@@ -41,9 +38,9 @@
     }
     
     .text:hover {
-        animation: expand2 .5s;
+        font-size: 210%;
+        transition-duration: 0.5s;
     }
-    
     .UserBar li a i:hover {
         color: teal;
     }
