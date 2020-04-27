@@ -1,6 +1,6 @@
 const http = require('http');
 const crypto = require('crypto');
-const { User, Messages, Keys } = require('./databasemodule.js')
+const { WebsiteInfo, Messages, Keys } = require('./databasemodule.js')
 
 const server = http.createServer((request, response) => {
     if (request.method == 'POST') {
@@ -8,7 +8,7 @@ const server = http.createServer((request, response) => {
             'Content-Type': '*',
             'Access-Control-Allow-Origin': '*'
         });
-        User.sync()
+        WebsiteInfo.sync()
             .then(() => console.log('Database synced'))
             .catch(err => {
                 console.log("Database couldn't sync with the error: " + err);
@@ -52,19 +52,15 @@ const server = http.createServer((request, response) => {
             body += chunk.toString();
             if (request.url == '/Auth_User') {
                 KeyAuth = JSON.parse(body);
-            }
-            else if (request.url == '/Keys') {
+            } else if (request.url == '/Keys') {
                 KeyJSON = JSON.parse(body);
-            }
-            else if (request.url == '/Message') {
+            } else if (request.url == '/Message') {
                 MessageJSON = JSON.parse(body);
-            }
-            else if (request.url == '/MessageToUSB')
+            } else if (request.url == '/MessageToUSB')
                 MessageUser = chunk.toString();
             else if (request.url == '/Passwords') {
                 WebAuth = JSON.parse(body);
-            }
-            else {
+            } else {
                 console.log(request.URL);
                 parts = body.split(0x1c);
             }
@@ -73,15 +69,15 @@ const server = http.createServer((request, response) => {
         request.on('end', () => {
             if (KeyJSON) {
                 Keys.update({
-                    id: 1,
-                    PublicKey: KeyJSON.PublicKey,
-                    PrivateKey: KeyJSON.PrivateKey,
-                    Passphrase: KeyJSON.passphrase
-                }, { where: {} })
-                    .then(keys => { console.log(keys); Keys.findAll().then(table => console.log(table)) })
+                        id: 1,
+                        PublicKey: KeyJSON.PublicKey,
+                        PrivateKey: KeyJSON.PrivateKey,
+                        Passphrase: KeyJSON.passphrase
+                    }, { where: {} })
+                    .then(keys => { console.log(keys);
+                        Keys.findAll().then(table => console.log(table)) })
                     .then(() => response.end("Keys created"));
-            }
-            else if (MessageUser) {
+            } else if (MessageUser) {
                 Messages.findByPk(MessageUser).then(table => {
                     if (!table) {
                         response.writeHead(400, {
@@ -102,8 +98,7 @@ const server = http.createServer((request, response) => {
                             }).catch(err => console.error(err));
                     }
                 }).catch(err => console.log(err));
-            }
-            else if (MessageJSON && MessageJSON.Username != '') {
+            } else if (MessageJSON && MessageJSON.Username != '') {
                 if (MessageJSON.Update) {
                     Messages.findByPk(MessageJSON.Username).then(table => {
                         if (!table) {
@@ -114,21 +109,20 @@ const server = http.createServer((request, response) => {
                             response.end("User not in database");
                         }
                     }).then(() => {
-                        message = MessageGenerator()
+                        message = MessageGenerator() /*update*/
                         Messages.update({
-                            Username: MessageJSON.Username,
-                            Message: message
-                        }, { where: { Username: MessageJSON.Username } })
+                                Username: MessageJSON.Username,
+                                Message: message
+                            }, { where: { Username: MessageJSON.Username } })
                             .then(() => response.end("Message updated"))
                             .catch(err => console.error(err));
                     });
-                }
-                else {
+                } else {
                     message = MessageGenerator()
                     Messages.create({
-                        Username: MessageJSON.Username,
-                        Message: message
-                    }).then(() => response.end("Message created"))
+                            Username: MessageJSON.Username,
+                            Message: message
+                        }).then(() => response.end("Message created"))
                         .catch(() => {
                             response.writeHead(400, {
                                 'Content-Type': '*',
@@ -137,18 +131,16 @@ const server = http.createServer((request, response) => {
                             response.end("User is already in database")
                         });
                 }
-            }
-            else if (parts) {
-                User.create({
-                    id: parts[0],
-                    password: parts[1]
-                })
-                    .then(user => {
-                        console.log(user.toJSON());
+            } else if (parts) {
+                WebsiteInfo.create({
+                        id: parts[0],
+                        password: parts[1]
+                    })
+                    .then(table => {
+                        console.log(table.toJSON());
                     })
                     .then(() => response.end("Password created"));
-            }
-            else if (KeyAuth) {
+            } else if (KeyAuth) {
                 Keys.findByPk(1)
                     .then(Key => {
                         Messages.findByPk(KeyAuth.Username)
@@ -165,8 +157,7 @@ const server = http.createServer((request, response) => {
                                 }
                             });
                     });
-            }
-            else if (WebAuth) {
+            } else if (WebAuth) {
                 Keys.findByPk(1)
                     .then(Key => {
                         Messages.findByPk(WebAuth.Username)
@@ -190,8 +181,7 @@ const server = http.createServer((request, response) => {
                             });
                     });
 
-            }
-            else {
+            } else {
                 response.writeHead(400, {
                     'Content-Type': '*',
                     'Access-Control-Allow-Origin': '*'
@@ -202,7 +192,7 @@ const server = http.createServer((request, response) => {
         });
     }
 
-    if (request.method == 'GET' /*&& request.url == "/"*/) {
+    if (request.method == 'GET' /*&& request.url == "/"*/ ) {
         if (request.url == '/Keys') {
             Keys.findByPk(1).then(key => {
                 response.writeHead(200, {
@@ -212,18 +202,15 @@ const server = http.createServer((request, response) => {
                 response.end(JSON.stringify(key.dataValues.PublicKey));
             });
         }
-    }
-    else if (request.method == 'OPTIONS') {
+    } else if (request.method == 'OPTIONS') {
         response.writeHead(200, {
             'Content-Type': '*',
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': '*'
         });
         response.end("Access granted to 'OPTIONS'");
-    }
-
-    else if (request.method == 'DELETE') {
-        User.sync()
+    } else if (request.method == 'DELETE') {
+        WebsiteInfo.sync()
             .then(() => console.log('Database synced'))
             .catch(err => {
                 console.log("Database couldn't sync with the error: " + err);
@@ -244,7 +231,7 @@ const server = http.createServer((request, response) => {
         });
         //Destorying the users livelyhood when fired because of the corona virus
         request.on('end', () => {
-            User.destroy({ where: { id: body } })
+            WebsiteInfo.destroy({ where: { id: body } })
                 .then(deleted => {
                     console.log(deleted);
                 })
@@ -262,13 +249,13 @@ function sequelize_to_json(model) {
     return new Promise((resolve) => {
         let JSON_array = [];
         model.findAll()
-            .then(user => {
-                for (let i = 0; i < user.length; i++) {
-                    let JSON_User = {
-                        id: user[i].dataValues.id,
-                        password: user[i].dataValues.password
+            .then(table => {
+                for (let i = 0; i < table.length; i++) {
+                    let JSON_table = {
+                        id: table[i].dataValues.id,
+                        password: table[i].dataValues.password
                     }
-                    JSON_array.push(JSON_User);
+                    JSON_array.push(JSON_table);
                 }
             })
             .then(() => {

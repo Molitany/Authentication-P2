@@ -35,7 +35,8 @@ module.exports.Messages = Message.define('Message', {
         type: DataTypes.STRING
     }
 });
-module.exports.User = sequelize.define('User', {
+module.exports.WebsiteInfo = sequelize.define('WebsiteInfo', {
+
     id: {
         type: DataTypes.STRING,
         primaryKey: true
@@ -43,4 +44,20 @@ module.exports.User = sequelize.define('User', {
     password: {
         type: DataTypes.STRING
     }
+
+
 });
+
+
+/*Website = sequelize.define('user', {     
+    
+       user_ID: {
+        type: DataTypes.STRING,
+        primaryKey: true
+    },
+    password: {
+        type: DataTypes.STRING
+    } 
+    
+    
+});*/
