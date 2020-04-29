@@ -23,7 +23,7 @@ electron.app.on('ready', () => {
             port: 3000,
             path: '/Auth_User'
         });
-        request.end(JSON.stringify({ Username: Key.Username, Message: Key.Message }));
+        request.end(JSON.stringify({ Username: Key.Username, UserId: Key.UserId, Message: Key.Message }));
 
         //Send the user infomation to the local server.
         request = electron.net.request({
@@ -33,7 +33,7 @@ electron.app.on('ready', () => {
             port: 3001,
             path: ''
         });
-        request.end(JSON.stringify({ Username: Key.Username, Message: Key.Message }));
+        request.end(JSON.stringify({ Username: Key.Username, UserId: Key.UserId, Message: Key.Message }));
     })
         //Display an error message if it fails.
         .catch(err => {
