@@ -173,12 +173,18 @@ const server = http.createServer((request, response) => {
                 Keys.findByPk(1)
                     .then(Key => {
                         Messages.findByPk(WebAuth.Username)
-                            .then(element => {
-                                if (element != null) {
-
+                            .then(message => {
+                                if (message != null) {
                                     let privateKey = Key.dataValues.PrivateKey;
                                     let passphrase = Key.dataValues.Passphrase;
-                                    if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(WebAuth.Message)) == element.Message) {
+                                    if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(WebAuth.Message)) == message.Message) {
+                                        console.log(
+                                            UserTable.findAll({
+                                                where: {
+                                                    userID: Messages.findByPk(message.UserId)
+                                                }
+                                            })
+                                        );
                                         sequelize_to_json(User).then(data => response.end(JSON.stringify(data)));
                                     }
                                 } else {
