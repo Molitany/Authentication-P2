@@ -103,7 +103,7 @@ const server = http.createServer((request, response) => {
                             .then(publicKey => {
                                 message = Buffer.from(table.dataValues.Message);
                                 body = Buffer.from(publicKey.dataValues.PublicKey);
-                                response.end(JSON.stringify({ Username: MessageUser, Message: crypto.publicEncrypt(body, message) }));
+                     response.end(JSON.stringify({ Username: MessageUser, Message: crypto.publicEncrypt(body, message) }));
                             }).catch(err => console.error(err));
                     }
                 }).catch(err => console.log(err));
