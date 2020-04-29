@@ -26,7 +26,7 @@ function delete_table(table_id){
 function insert_table(table_id, data_obj) {
     data_obj = JSON.parse(data_obj)
     for (let i = 0; i < data_obj.length; i++) {
-        create_row(i + 1, data_obj[i].id, data_obj[i].password, table_id);
+        create_row(i + 1, data_obj[i].WebsiteId, data_obj[i].password, table_id);
     }
 }
 

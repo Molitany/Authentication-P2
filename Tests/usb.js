@@ -1,4 +1,3 @@
-const assert = require('assert');
 const fs = require('fs');
 
 describe("#Read File from USB", () =>{

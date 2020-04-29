@@ -36,6 +36,9 @@ module.exports.Messages = Message.define('Message', {
         type: DataTypes.STRING,
         primaryKey: true
     },
+    UserId: {
+        type: DataTypes.INTEGER
+    },
     Message: {
         type: DataTypes.STRING
     }

@@ -1,6 +1,6 @@
 const http = require('http');
 const crypto = require('crypto');
-const {UserTable, WebsiteInfo, Messages, Keys } = require('./databasemodule.js');
+const { UserTable, WebsiteInfo, Messages, Keys } = require('./databasemodule.js');
 const server = http.createServer((request, response) => {
     if (request.method == 'POST') {
         response.writeHead(200, {
@@ -39,7 +39,7 @@ const server = http.createServer((request, response) => {
                 response.end('Database couldn\'t handle request right now');
             });
         UserTable.sync()
-        .then(() => console.log("Messages synced"))
+            .then(() => console.log("Messages synced"))
             .catch(err => {
                 console.log("Messages could not be synced");
                 response.writeHead(400, {
@@ -103,7 +103,7 @@ const server = http.createServer((request, response) => {
                             .then(publicKey => {
                                 message = Buffer.from(table.dataValues.Message);
                                 body = Buffer.from(publicKey.dataValues.PublicKey);
-                     response.end(JSON.stringify({ Username: MessageUser, Message: crypto.publicEncrypt(body, message) }));
+                                response.end(JSON.stringify({ Username: MessageUser, Id: id, Message: crypto.publicEncrypt(body, message) }));
                             }).catch(err => console.error(err));
                     }
                 }).catch(err => console.log(err));
@@ -142,11 +142,11 @@ const server = http.createServer((request, response) => {
                 }
             } else if (parts) {
                 console.log(request.headers);
-                UserTable.create({  
+                UserTable.create({
                     userID: request.headers['user-id'],
                     MasterPw: 'hej',
                     WebsiteId: parts[0],
-                    password: parts[1]
+                    password: parts[1]//await Feistal(parts[1])
                 }).then(table => {
                     console.log(table.toJSON());
                 })
@@ -173,13 +173,21 @@ const server = http.createServer((request, response) => {
                 Keys.findByPk(1)
                     .then(Key => {
                         Messages.findByPk(WebAuth.Username)
-                            .then(element => {
-                                if (element != null) {
-
+                            .then(message => {
+                                if (message != null) {
                                     let privateKey = Key.dataValues.PrivateKey;
                                     let passphrase = Key.dataValues.Passphrase;
-                                    if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(WebAuth.Message)) == element.Message) {
-                                        sequelize_to_json(User).then(data => response.end(JSON.stringify(data)));
+                                    if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(WebAuth.Message)) == message.Message) {
+                                        UserTable.findAll({
+                                            where: {
+                                                userID: WebAuth.UserId
+                                            }
+                                        })
+                                        .then(data => {
+                                            response.end(JSON.stringify(data));
+                                        })
+
+                                        //sequelize_to_json(User).then(data => response.end(JSON.stringify(data)));
                                     }
                                 } else {
 
