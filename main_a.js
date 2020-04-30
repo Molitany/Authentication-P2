@@ -13,15 +13,11 @@ function get_request() {
 
 function passwordTemplate(password) {
   return `
-      <div>
-      <table class="box">
         <tr>
             <td class="url-text">${password.id}</td>
             <td id="psw" title="${password.password}" class="psw-text" onclick="ShowHide(this)">*********</td>
             <button onclick="copyToClipboard(this)" class="button"><i class="fas fa-copy fa-2x"></i></button>
         </tr>
-      </table>
-      </div>
       `;
 }
 
@@ -45,14 +41,16 @@ const copyToClipboard = (id) => {
 
 get_request().then(password => {
   document.getElementById("app").innerHTML = `
-<p class="app-title">Password Vault (${password.length} results)</p>
+  <p class="app-title">Password Vault (${password.length} results)</p>
 <table class="box-title">
   <tr>
         <td class="url-text">Website</td>
         <td class="psw-title">Password</td>
   </tr>
 </table>
+<table class="box" id="table_body">
 ${password.map(passwordTemplate).join("")}
+</table>
 
 <p><br /><br /><br /><br /></p>
 <h1 class="footer">This password vault was made by the P2 group at Aalborg University: Thomas Damsgaard, Thor
