@@ -1,7 +1,5 @@
-const assert = require('assert');
-const http = require('http');
 const crypto = require('crypto');
-const { User, Messages, Keys } = require('../Server/databasemodule.js')
+const { Messages, Keys } = require('../Server/databasemodule.js')
 
 let Message;
 

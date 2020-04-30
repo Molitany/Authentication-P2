@@ -8,8 +8,8 @@
  Det ene key set der er kan være mere sikker en de seperate keys hvor alting er unique grundet mere plads
 */
 
-const { app, BrowserWindow } = require('electron');
-
+const { app, BrowserWindow, net } = require('electron');
+/* const crypto = require('crypto') */
 // Opens a window with the admin tools when the app is ready.
 app.on('ready', () => {
   let window = new BrowserWindow({
@@ -23,6 +23,29 @@ app.on('ready', () => {
   window.loadURL(`file://${__dirname}/admin_tools.html`);
   window.on('closed', () => window = null);
 
+/*   const keys = crypto.generateKeyPairSync('rsa', {
+    modulusLength: 4096,
+    publicKeyEncoding: {
+        type: 'spki',
+        format: 'pem'
+      },
+      privateKeyEncoding: {
+        type: 'pkcs8',
+        format: 'pem',
+        cipher: 'aes-256-cbc',
+        passphrase: 'VIgIlanT37diRt68GRaftED69RAdIatE55rIgIdity35sHoWdOwn62diSaBLe04pupILs'
+      }
+  });
+  const request = net.request({
+    method: 'POST',
+    protocol: 'http:',
+    hostname: 'localhost',
+    port: 3000,
+    path: 'Keys'
+    })
+    console.log(keys.privateKey);
+    
+    request.end(JSON.stringify({type: 'Keys', PublicKey: keys.publicKey, PrivateKey: keys.privateKey, passphrase: 'VIgIlanT37diRt68GRaftED69RAdIatE55rIgIdity35sHoWdOwn62diSaBLe04pupILs'})); */
   /*
   //GET public key from database and use it to encrypt message
   const request = electron.net.request('http://localhost:3000/Keys')
@@ -56,19 +79,6 @@ app.on('ready', () => {
 
   
   // Generating an RSA keyset to encrypt and decrypt the message 
-  const keys = crypto.generateKeyPairSync('rsa', {
-    modulusLength: 4096,
-    publicKeyEncoding: {
-        type: 'spki',
-        format: 'pem'
-      },
-      privateKeyEncoding: {
-        type: 'pkcs8',
-        format: 'pem',
-        cipher: 'aes-256-cbc',
-        passphrase: 'VIgIlanT37diRt68GRaftED69RAdIatE55rIgIdity35sHoWdOwn62diSaBLe04pupILs'
-      }
-  });
 
   /*
   To encrypt use
@@ -80,16 +90,7 @@ app.on('ready', () => {
 
 
   /*Sending a POST request to the server
-  const request = electron.net.request({
-  method: 'POST',
-  protocol: 'http:',
-  hostname: 'localhost',
-  port: 3000,
-  path: '/'
-  })
-  console.log(keys.privateKey);
-  
-  request.end(JSON.stringify({type: 'Keys', PublicKey: keys.publicKey, PrivateKey: keys.privateKey, passphrase: 'VIgIlanT37diRt68GRaftED69RAdIatE55rIgIdity35sHoWdOwn62diSaBLe04pupILs'}));
+
 
 */
   //DO NOT DELETE THESE STOPID

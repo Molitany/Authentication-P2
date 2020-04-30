@@ -45,7 +45,7 @@
         function post_request(website, password) {
             fetch('http://localhost:3000', {
                 method: 'POST',
-                body: website + 0x1c + password
+                body: website + '~' + password
             })
                 .then((response) => {
                     response.text()
@@ -95,9 +95,8 @@
         }
 
         function request(event) {
-            if (event.keyCode == '80') {
-                post_request();
-            }
+            post_request();
+            
             if (event.keyCode == '71') {
                 get_request();
             }

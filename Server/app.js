@@ -1,7 +1,6 @@
 const http = require('http');
 const crypto = require('crypto');
-const { WebsiteInfo, Messages, Keys } = require('./databasemodule.js')
-
+const { UserTable, WebsiteInfo, Messages, Keys } = require('./databasemodule.js');
 const server = http.createServer((request, response) => {
     if (request.method == 'POST') {
         response.writeHead(200, {
@@ -39,7 +38,16 @@ const server = http.createServer((request, response) => {
                 });
                 response.end('Database couldn\'t handle request right now');
             });
-
+        UserTable.sync()
+            .then(() => console.log("Messages synced"))
+            .catch(err => {
+                console.log("Messages could not be synced");
+                response.writeHead(400, {
+                    'Content-Type': '*',
+                    'Access-Control-Allow-Origin': '*'
+                });
+                response.end('Database couldn\'t handle request right now');
+            });
         let body = '';
         let parts;
         let KeyJSON;
@@ -61,21 +69,22 @@ const server = http.createServer((request, response) => {
             else if (request.url == '/Passwords') {
                 WebAuth = JSON.parse(body);
             } else {
-                console.log(request.URL);
-                parts = body.split(0x1c);
+                parts = body.split('~');
             }
         });
 
         request.on('end', () => {
             if (KeyJSON) {
                 Keys.update({
-                        id: 1,
-                        PublicKey: KeyJSON.PublicKey,
-                        PrivateKey: KeyJSON.PrivateKey,
-                        Passphrase: KeyJSON.passphrase
-                    }, { where: {} })
-                    .then(keys => { console.log(keys);
-                        Keys.findAll().then(table => console.log(table)) })
+                    id: 1,
+                    PublicKey: KeyJSON.PublicKey,
+                    PrivateKey: KeyJSON.PrivateKey,
+                    Passphrase: KeyJSON.passphrase
+                }, { where: {} })
+                    .then(keys => {
+                        console.log(keys);
+                        Keys.findAll().then(table => console.log(table))
+                    })
                     .then(() => response.end("Keys created"));
             } else if (MessageUser) {
                 Messages.findByPk(MessageUser).then(table => {
@@ -94,7 +103,7 @@ const server = http.createServer((request, response) => {
                             .then(publicKey => {
                                 message = Buffer.from(table.dataValues.Message);
                                 body = Buffer.from(publicKey.dataValues.PublicKey);
-                                response.end(JSON.stringify({ Username: MessageUser, Message: crypto.publicEncrypt(body, message) }));
+                                response.end(JSON.stringify({ Username: MessageUser, Id: id, Message: crypto.publicEncrypt(body, message) }));
                             }).catch(err => console.error(err));
                     }
                 }).catch(err => console.log(err));
@@ -111,18 +120,18 @@ const server = http.createServer((request, response) => {
                     }).then(() => {
                         message = MessageGenerator() /*update*/
                         Messages.update({
-                                Username: MessageJSON.Username,
-                                Message: message
-                            }, { where: { Username: MessageJSON.Username } })
+                            Username: MessageJSON.Username,
+                            Message: message
+                        }, { where: { Username: MessageJSON.Username } })
                             .then(() => response.end("Message updated"))
                             .catch(err => console.error(err));
                     });
                 } else {
                     message = MessageGenerator()
                     Messages.create({
-                            Username: MessageJSON.Username,
-                            Message: message
-                        }).then(() => response.end("Message created"))
+                        Username: MessageJSON.Username,
+                        Message: message
+                    }).then(() => response.end("Message created"))
                         .catch(() => {
                             response.writeHead(400, {
                                 'Content-Type': '*',
@@ -132,14 +141,17 @@ const server = http.createServer((request, response) => {
                         });
                 }
             } else if (parts) {
-                WebsiteInfo.create({
-                        id: parts[0],
-                        password: parts[1]
-                    })
-                    .then(table => {
-                        console.log(table.toJSON());
-                    })
+                console.log(request.headers);
+                UserTable.create({
+                    userID: request.headers['user-id'],
+                    MasterPw: 'hej',
+                    WebsiteId: parts[0],
+                    password: parts[1]//await Feistal(parts[1])
+                }).then(table => {
+                    console.log(table.toJSON());
+                })
                     .then(() => response.end("Password created"));
+
             } else if (KeyAuth) {
                 Keys.findByPk(1)
                     .then(Key => {
@@ -161,13 +173,21 @@ const server = http.createServer((request, response) => {
                 Keys.findByPk(1)
                     .then(Key => {
                         Messages.findByPk(WebAuth.Username)
-                            .then(element => {
-                                if (element != null) {
-
+                            .then(message => {
+                                if (message != null) {
                                     let privateKey = Key.dataValues.PrivateKey;
                                     let passphrase = Key.dataValues.Passphrase;
-                                    if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(WebAuth.Message)) == element.Message) {
-                                        sequelize_to_json(User).then(data => response.end(JSON.stringify(data)));
+                                    if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(WebAuth.Message)) == message.Message) {
+                                        UserTable.findAll({
+                                            where: {
+                                                userID: WebAuth.UserId
+                                            }
+                                        })
+                                        .then(data => {
+                                            response.end(JSON.stringify(data));
+                                        })
+
+                                        //sequelize_to_json(User).then(data => response.end(JSON.stringify(data)));
                                     }
                                 } else {
 
@@ -192,7 +212,7 @@ const server = http.createServer((request, response) => {
         });
     }
 
-    if (request.method == 'GET' /*&& request.url == "/"*/ ) {
+    if (request.method == 'GET' /*&& request.url == "/"*/) {
         if (request.url == '/Keys') {
             Keys.findByPk(1).then(key => {
                 response.writeHead(200, {
@@ -242,7 +262,7 @@ const server = http.createServer((request, response) => {
 
 server.listen(3000, 'localhost', () => {
     console.log('Listening...');
-    sequelize_to_json(User).then(data => { console.log(data) });
+    sequelize_to_json(WebsiteInfo).then(data => { console.log(data) });
 });
 
 function sequelize_to_json(model) {
