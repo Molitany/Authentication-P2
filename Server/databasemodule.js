@@ -49,15 +49,15 @@ module.exports.WebsiteInfo = sequelize.define('WebsiteInfo', {
 });
 
 
-/*Website = sequelize.define('user', {     
-    
-       user_ID: {
+Website = sequelize.define('user', {
+
+    user_ID: {
         type: DataTypes.STRING,
         primaryKey: true
     },
     password: {
         type: DataTypes.STRING
-    } 
-    
-    
-});*/
+    }
+
+
+});

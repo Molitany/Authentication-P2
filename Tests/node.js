@@ -6,10 +6,10 @@ const { User, Messages, Keys } = require('../Server/databasemodule.js')
 let Message;
 
 before(() => {
-    Messages.sync().then(()=>{
+    Messages.sync().then(() => {
         Messages.drop();
-    }).then(()=>{
-        Messages.sync().then(()=>{
+    }).then(() => {
+        Messages.sync().then(() => {
             Messages.create({
                 Username: "Bob",
                 Message: "]{%E€_g2C_gDf´jx¤nfTv?P¨rzy=!Gt$"
@@ -21,29 +21,29 @@ before(() => {
             Message = crypto.publicEncrypt(Key.dataValues.PublicKey, Buffer.from("]{%E€_g2C_gDf´jx¤nfTv?P¨rzy=!Gt$"));
         });
 });
-  
 
-describe("#Key Decryption", () =>{
+
+describe("#Key Decryption", () => {
     it('Should decrypt the message if keys and user exists.', done => {
         Keys.findByPk(1)
-        .then(Key => {
-            Messages.findByPk("Bob")
-                .then(element => {
-                    if (element != null) {
-                        let privateKey = Key.dataValues.PrivateKey;
-                        let passphrase = Key.dataValues.Passphrase;
-                        if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(Message)) == element.Message) {
-                            done()
+            .then(Key => {
+                Messages.findByPk("Bob")
+                    .then(element => {
+                        if (element != null) {
+                            let privateKey = Key.dataValues.PrivateKey;
+                            let passphrase = Key.dataValues.Passphrase;
+                            if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(Message)) == element.Message) {
+                                done()
+                            }
+                        } else {
+
                         }
-                    } else {
-                        
-                    }
-                });
-        });
+                    });
+            });
     });
 });
 
-describe("#MessageGenerator()", () =>{
+describe("#MessageGenerator()", () => {
     it('Should create a 32 length message.', done => {
         let message = '';
         let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
