@@ -11,7 +11,11 @@ const Message = new Sequelize({
     dialect: 'sqlite',
     storage: 'database.sqlite'
 });
-const UserTable = new Sequelize({
+const User = new Sequelize({
+    dialect: 'sqlite',
+    storage: 'database.sqlite'
+});
+const Website = new Sequelize({
     dialect: 'sqlite',
     storage: 'database.sqlite'
 });
@@ -43,17 +47,7 @@ module.exports.Messages = Message.define('Message', {
         type: DataTypes.STRING
     }
 });
-module.exports.WebsiteInfo = sequelize.define('WebsiteInfo', {
-    id: {
-        type: DataTypes.STRING,
-        primaryKey: true
-    },
-    password: {
-        type: DataTypes.STRING
-    }
-});
-
-module.exports.UserTable = UserTable.define('UserTable', {
+module.exports.Website = sequelize.define('Website', {
     index: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -62,19 +56,23 @@ module.exports.UserTable = UserTable.define('UserTable', {
     userID: {
         type: DataTypes.INTEGER,
     },
-    MasterPw: {
-        type: DataTypes.STRING,
-    },
-    WebsiteId: {
-        type: DataTypes.STRING,
+    id: {
+        type: DataTypes.STRING
     },
     password: {
         type: DataTypes.STRING
     }
 });
-
-module.exports.Website = sequelize.define('user', {
-    user_ID: {
+module.exports.User = User.define('User', {
+    index: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },   
+    userID: {
+        type: DataTypes.INTEGER,
+    },
+    MasterPw: {
         type: DataTypes.STRING,
     }
 });
