@@ -51,36 +51,30 @@ module.exports.WebsiteInfo = sequelize.define('WebsiteInfo', {
     password: {
         type: DataTypes.STRING
     }
-}); <<
-<< << < HEAD
+});
 
+module.exports.UserTable = UserTable.define('UserTable', {
+    index: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    userID: {
+        type: DataTypes.INTEGER,
+    },
+    MasterPw: {
+        type: DataTypes.STRING,
+    },
+    WebsiteId: {
+        type: DataTypes.STRING,
+    },
+    password: {
+        type: DataTypes.STRING
+    }
+});
 
-Website = sequelize.define('user', {
-
-            user_ID: {
-                type: DataTypes.STRING,
-                ===
-                === =
-                module.exports.UserTable = UserTable.define('UserTable', {
-                    index: {
-                        type: DataTypes.INTEGER,
-                        autoIncrement: true,
-                        >>>
-                        >>> > b699061d2dee982a06ca129c5b3eba16e61affbc
-                        primaryKey: true
-                    },
-                    userID: {
-                        type: DataTypes.INTEGER,
-                    },
-                    MasterPw: {
-                        type: DataTypes.STRING,
-                    },
-                    WebsiteId: {
-                        type: DataTypes.STRING,
-                    },
-                    password: {
-                        type: DataTypes.STRING
-                    }
-
-
-                });
+module.exports.Website = sequelize.define('user', {
+    user_ID: {
+        type: DataTypes.STRING,
+    }
+});
