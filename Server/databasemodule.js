@@ -11,7 +11,11 @@ const Message = new Sequelize({
     dialect: 'sqlite',
     storage: 'database.sqlite'
 });
-const UserTable = new Sequelize({
+const User = new Sequelize({
+    dialect: 'sqlite',
+    storage: 'database.sqlite'
+});
+const Website = new Sequelize({
     dialect: 'sqlite',
     storage: 'database.sqlite'
 });
@@ -43,10 +47,14 @@ module.exports.Messages = Message.define('Message', {
         type: DataTypes.STRING
     }
 });
-module.exports.WebsiteTable = sequelize.define('WebsiteTable', {
+module.exports.Website = sequelize.define('Website', {
+    index: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
     userID: {
         type: DataTypes.INTEGER,
-        primaryKey: true
     },
     id: {
         type: DataTypes.STRING
@@ -55,7 +63,7 @@ module.exports.WebsiteTable = sequelize.define('WebsiteTable', {
         type: DataTypes.STRING
     }
 });
-module.exports.UserTable = UserTable.define('UserTable', {
+module.exports.User = User.define('User', {
     index: {
         type: DataTypes.INTEGER,
         autoIncrement: true,

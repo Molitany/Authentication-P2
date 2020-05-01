@@ -1,13 +1,19 @@
 const http = require('http');
 const crypto = require('crypto');
-const { UserTable, WebsiteInfo, Messages, Keys } = require('./databasemodule.js');
+const { User, Website, Messages, Keys } = require('./databasemodule.js');
 const server = http.createServer((request, response) => {
+   
     if (request.method == 'POST') {
         response.writeHead(200, {
             'Content-Type': '*',
             'Access-Control-Allow-Origin': '*'
         });
-        WebsiteInfo.sync()
+        Website.sync();
+        User.sync();
+
+        User.hasMany(Website);
+        /* 
+        Website.sync()
             .then(() => console.log('Database synced'))
             .catch(err => {
                 console.log("Database couldn't sync with the error: " + err);
@@ -38,7 +44,7 @@ const server = http.createServer((request, response) => {
                 });
                 response.end('Database couldn\'t handle request right now');
             });
-        UserTable.sync()
+        User.sync()
             .then(() => console.log("Messages synced"))
             .catch(err => {
                 console.log("Messages could not be synced");
@@ -118,7 +124,7 @@ const server = http.createServer((request, response) => {
                             response.end("User not in database");
                         }
                     }).then(() => {
-                        message = MessageGenerator() /*update*/
+                        message = MessageGenerator() 
                         Messages.update({
                             Username: MessageJSON.Username,
                             Message: message
@@ -142,7 +148,7 @@ const server = http.createServer((request, response) => {
                 }
             } else if (parts) {
                 console.log(request.headers);
-                UserTable.create({
+                User.create({
                     userID: request.headers['user-id'],
                     MasterPw: 'hej',
                     WebsiteId: parts[0],
@@ -178,7 +184,7 @@ const server = http.createServer((request, response) => {
                                     let privateKey = Key.dataValues.PrivateKey;
                                     let passphrase = Key.dataValues.Passphrase;
                                     if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(WebAuth.Message)) == message.Message) {
-                                        UserTable.findAll({
+                                        User.findAll({
                                             where: {
                                                 userID: WebAuth.UserId
                                             }
@@ -209,7 +215,7 @@ const server = http.createServer((request, response) => {
                 console.error("INVALID REQUEST");
                 response.end("INVALID REQUEST");
             }
-        });
+        }); */
     }
 
     if (request.method == 'GET' /*&& request.url == "/"*/) {
@@ -230,7 +236,7 @@ const server = http.createServer((request, response) => {
         });
         response.end("Access granted to 'OPTIONS'");
     } else if (request.method == 'DELETE') {
-        WebsiteInfo.sync()
+        Website.sync()
             .then(() => console.log('Database synced'))
             .catch(err => {
                 console.log("Database couldn't sync with the error: " + err);
@@ -251,7 +257,7 @@ const server = http.createServer((request, response) => {
         });
         //Destorying the users livelyhood when fired because of the corona virus
         request.on('end', () => {
-            WebsiteInfo.destroy({ where: { id: body } })
+            Website.destroy({ where: { id: body } })
                 .then(deleted => {
                     console.log(deleted);
                 })
@@ -262,28 +268,7 @@ const server = http.createServer((request, response) => {
 
 server.listen(3000, 'localhost', () => {
     console.log('Listening...');
-    sequelize_to_json(WebsiteInfo).then(data => { console.log(data) });
 });
-
-function sequelize_to_json(model) {
-    return new Promise((resolve) => {
-        let JSON_array = [];
-        model.findAll()
-            .then(table => {
-                for (let i = 0; i < table.length; i++) {
-                    let JSON_table = {
-                        id: table[i].dataValues.id,
-                        password: table[i].dataValues.password
-                    }
-                    JSON_array.push(JSON_table);
-                }
-            })
-            .then(() => {
-                resolve(JSON_array);
-            })
-            .catch(err => console.log('No passwords or ids in the database'));
-    });
-}
 
 function MessageGenerator() {
     let message = '';
