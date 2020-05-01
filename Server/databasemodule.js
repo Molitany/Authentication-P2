@@ -43,10 +43,13 @@ module.exports.Messages = Message.define('Message', {
         type: DataTypes.STRING
     }
 });
-module.exports.WebsiteInfo = sequelize.define('WebsiteInfo', {
-    id: {
-        type: DataTypes.STRING,
+module.exports.WebsiteTable = sequelize.define('WebsiteTable', {
+    userID: {
+        type: DataTypes.INTEGER,
         primaryKey: true
+    },
+    id: {
+        type: DataTypes.STRING
     },
     password: {
         type: DataTypes.STRING
@@ -63,11 +66,5 @@ module.exports.UserTable = UserTable.define('UserTable', {
     },
     MasterPw: {
         type: DataTypes.STRING,
-    },
-    WebsiteId: {
-        type: DataTypes.STRING,
-    },
-    password: {
-        type: DataTypes.STRING
     }
 });
