@@ -22,7 +22,7 @@ const server = http.createServer((request, response) => {
                     break;
 
                 // Public/Private key pair update
-                case 'PriPubKeys':
+                case 'ChangePriPubKey':
                     UpdateKeys(HandledRequest, response);
                     break;
 
@@ -55,9 +55,9 @@ const server = http.createServer((request, response) => {
                     break;
                 //Create password website pair
                 case 'PostPassword':
-                    User.findByPk(request.headers['User-ID'])
-                        .then(User => {
-                            CreateWebPas(HandledRequest, response, User);
+                    Messages.findOne({where: {UserId: request.headers['user-id']}})
+                        .then(User => {//do something with user at some point
+                            CreateWebPas(HandledRequest, request, response);
                         })
                         .catch(error => {
                             RejectRequest(response, `User not in database\n ${error}`);
@@ -90,16 +90,6 @@ const server = http.createServer((request, response) => {
         });
         response.end("Access granted to 'OPTIONS'");
     } else if (request.method == 'DELETE') {
-        Website.sync()
-            .then(() => console.log('Database synced'))
-            .catch(err => {
-                console.log("Database couldn't sync with the error: " + err);
-                response.writeHead(400, {
-                    'Content-Type': '*',
-                    'Access-Control-Allow-Origin': '*'
-                })
-                response.end('Database couldn\'t handle request right now');
-            });
         response.writeHead(200, {
             'Content-Type': '*',
             'Access-Control-Allow-Origin': '*'
@@ -200,6 +190,7 @@ function MessageUpdate(HandledRequest, response) {
     message = MessageGenerator()
     Messages.create({
         Username: HandledRequest.body.Username,
+        UserID: HandledRequest.body.ID,
         Message: message
     }).then(() => response.end("Message created"))
         .catch(() => {
@@ -251,9 +242,9 @@ function AuthenticateUser(HandledRequest, response) {
                 });
         });
 }
-function CreateWebPas(HandledRequest, response, User) {
+function CreateWebPas(HandledRequest, request, response) {
     Website.create({
-        userID: request.headers['user-ID'],
+        userID: request.headers['user-id'],
         ID: HandledRequest.body[0],
         password: HandledRequest.body[1]
     }).then(table => {
