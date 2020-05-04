@@ -1,6 +1,6 @@
 const { remote } = require('electron');
 const fs = require('fs');
-
+console.log(fs);
 
 let element = "";
 
@@ -20,37 +20,34 @@ window.onload = () => {
 }
 
 function MessageToUSB() {
-    fetch("http://localhost:3000/MessageToUSB", {
+    fetch("http://localhost:3000/PDIDToUSB", {
         method: 'POST',
         body: document.getElementById('employee').value
     })
-    .then(res => {
-        if (!res.ok)
-            throw res;
-        return res;
-    })
-    .then(res => {
-        res.text().then(res => {
-            fs.writeFileSync("E:\\test.key", res);
-            document.getElementById("response_message").style = "color: green;";
-            document.getElementById("response_message").innerText = "USB has been written to"
-        });
-    })
-    .catch(err => console.error(err));
+        .then(res => {
+            if (!res.ok)
+                throw res;
+            return res;
+        })
+        .then(res => {
+            res.text().then(res => {
+                fs.writeFileSync("E:\\test.key", res);
+                document.getElementById("response_message").style = "color: green;";
+                document.getElementById("response_message").innerText = "USB has been written to"
+            });
+        })
+        .catch(err => console.error(err));
 }
 
-function MessageGen(update, id) {
-    if(id == 1){
-        let data = fs.readFileSync('\\USB\\pog.Json', 'utf8');
-        id = JSON.parse(data);
-        console.log(id);
-        fs.writeFile('\\USB\\pog.Json', id+1, (err) => {
-            if (err) console.log(err); 
-        });
+function MessageGen(update) {
+    let UserID;
+    if (update == false) {
+        UserID = parseInt(fs.readFileSync('user_id.ini', 'utf8'));
+        fs.writeFileSync('user_id.ini', UserID + 1);
     }
-    fetch("http://localhost:3000/Message", {
+    fetch("http://localhost:3000/UpdateCreatePDID", {
         method: 'POST',
-        body: JSON.stringify({ type: 'Message', Username: document.getElementById('employee').value, Update: update, id: id })
+        body: JSON.stringify({ Username: document.getElementById('employee').value, Update: update, ID: UserID })
     })
         .then(res => {
             element = document.getElementById("response_message");
@@ -66,7 +63,7 @@ function MessageGen(update, id) {
             setTimeout(() => element.innerHTML = "", 5000);
         })
         .catch(err => {
-            try{
+            try {
                 err.text().then(res => {
                     if (err.status === 400) {
                         element.innerHTML = res;
