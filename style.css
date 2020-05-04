@@ -106,9 +106,9 @@ body {
   border-radius: 50px;
   border: 5px solid #fff;
   overflow: hidden;
-  width: 10vh;
+  width: 15vh;
   height: 6vh;
-  margin-left: 40vh;
+  margin-left: 35vh;
   margin-top: 0vh;
   background: none;
   z-index: 0;
@@ -116,7 +116,7 @@ body {
 }
 
 .plus i {
-  margin-left: 2vh;
+  margin-left: 6.7vh;
 }
 
 .plus button:hover {
@@ -131,13 +131,15 @@ body {
   margin-top: 0vh;
   z-index: 1;
   box-shadow: .1vh .1vh 2vh black;
+  border-radius: 30px;
 }
 
 .login-form input {
   font-style: italic;
-  color: #BDBDBD;
+  text-align: center;
+  color: black;
   margin-top: 3vh;
-  margin-left: 5vh;
+  margin-left: 6vh;
   font-size: 120%;
   background: none;
   border: none;
@@ -149,12 +151,18 @@ body {
 }
 
 .login-form button {
+  border-radius: 50px;
+  border: 5px solid #fff;
+  overflow: hidden;
   font-style: italic;
   color: black;
-  margin-top: 3vh;
-  margin-left: 5vh;
+  margin-left: 6vh;
+  margin-top: 1.5vh;
   font-size: 120%;
   width: 30vh;
+  border: none;
+  background: none;
+  box-shadow: .1vh .1vh 2vh black;
 }
 
 .input-form {

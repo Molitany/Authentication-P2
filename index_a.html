@@ -33,13 +33,13 @@
 
             <div class="login-form">
 
-                <input type="text" id="Website" name="Website name" placeholder="                Web name...">
+                <input text-align: center; type="text" id="Website" name="Website name" placeholder="Web name...">
                 <br>
                 <div class="password">
-                    <input type="password" id="Password" name="Passwordname" placeholder="                 Password">
+                    <input type="password" id="Password" name="Passwordname" placeholder="Password">
                 </div>
                 <br>
-                <button type="submit">Submit information to database</button>
+                <button type="submit"><i class="fas fa-cloud-upload-alt"></i>   Submit to database</button>
 
             </div>
             <div class="plus"><button type="button" onclick="menu()"><i class="fas fa-angle-double-right fa-3x"></i></button></div>
@@ -72,7 +72,7 @@
         let menu = function() {
             let menulength = document.querySelector(".input-form");
             if (menustatus === true) {
-                menulength.style.marginLeft = "0vh"
+                menulength.style.marginLeft = "-3vh"
                 menustatus = false;
             } else if (menustatus === false) {
                 menulength.style.marginLeft = "-43.3vh";
