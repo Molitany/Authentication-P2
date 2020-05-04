@@ -20,7 +20,7 @@ window.onload = () => {
 }
 
 function MessageToUSB() {
-    fetch("http://localhost:3000/MessageToUSB", {
+    fetch("http://localhost:3000/PDIDToUSB", {
         method: 'POST',
         body: document.getElementById('employee').value
     })
@@ -39,18 +39,18 @@ function MessageToUSB() {
     .catch(err => console.error(err));
 }
 
-function MessageGen(update, id) {
-    if(id == 1){
-        let data = fs.readFileSync('\\USB\\pog.Json', 'utf8');
-        id = JSON.parse(data);
-        console.log(id);
-        fs.writeFile('\\USB\\pog.Json', id+1, (err) => {
+function MessageGen(update, ID) {
+    if(ID == 1){
+        let data = fs.readFileSync('pog.Json', 'utf8');
+        ID = JSON.parse(data);
+        console.log(ID);
+        fs.writeFile('pog.Json', ID+1, (err) => {
             if (err) console.log(err); 
         });
     }
-    fetch("http://localhost:3000/Message", {
+    fetch("http://localhost:3000/UpdateCreatePDID", {
         method: 'POST',
-        body: JSON.stringify({ type: 'Message', Username: document.getElementById('employee').value, Update: update, id: id })
+        body: JSON.stringify({Username: document.getElementById('employee').value, Update: update, ID: ID })
     })
         .then(res => {
             element = document.getElementById("response_message");
