@@ -2,13 +2,12 @@ const http = require('http');
 const crypto = require('crypto');
 const { User, Website, Messages, Keys } = require('./databasemodule.js');
 
+Messages.hasMany(Website);
+Website.belongsTo(Messages);
+
+TableSync([Website.sync(), Keys.sync(), Messages.sync()]);
 const hash = crypto.createHash('sha256');
 const server = http.createServer((request, response) => {
-    Messages.hasMany(Website, {
-        foreignKey: 'UserID',
-        allowNull: false
-    });
-    Website.belongsTo(Messages);
     TableSync([Website.sync(), Keys.sync(), Messages.sync()]);
     let body = '', HandledRequest;
     if (request.method == 'POST') {
@@ -78,7 +77,11 @@ const server = http.createServer((request, response) => {
     }
 
     else if (request.method == 'GET') {
-        response.end(GetPasswords());
+        response.writeHead(200, {
+            'Content-Type': '*',
+            'Access-Control-Allow-Origin': '*'
+        });
+        GetPasswords(request, response);
     }
     else if (request.method == 'OPTIONS') {
         response.writeHead(200, {
@@ -244,14 +247,27 @@ function AuthenticateUser(HandledRequest, response) {
 }
 function CreateWebPas(HandledRequest, request, response) {
     Messages.findByPk(request.headers['user-id']).then(User => {
-        Website.create({
+        User.createWebsite({
             ID: HandledRequest.body[0],
-            password: HandledRequest.body[1],
-            UserID: request.headers['user-id']
+            password: HandledRequest.body[1]
         }).then(table => {
             console.log(table.toJSON());
         })
             .then(() => response.end("Password created"));
     })
-    .catch(err => console.error(err));
+        .catch(err => console.error(err));
+}
+function GetPasswords(request, response) {
+    Messages.findByPk(request.headers['user-id'])
+        .then(User => {
+            User.getWebsites().then(data => {
+                let websites = []
+                console.log(data[0].dataValues);
+                data.forEach(website => {
+                    websites.push(website.dataValues);      
+                });
+                response.end(JSON.stringify(websites));
+            });
+        })
+        .catch(err => console.error(err));
 }
