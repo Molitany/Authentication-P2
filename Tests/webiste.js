@@ -5,7 +5,7 @@ describe("#Filter through the table", () => {
         let search = function() {
 
             let search_text = "f";
-            let table = ["www.facebook.com", "www.example.com", "www.fixitfelix.com"];
+            let table = ["www.facebook.com"];
             let a = table; //let a be all rows
 
 
@@ -15,8 +15,8 @@ describe("#Filter through the table", () => {
 
 
                 if (specific_value.indexOf(search_text)) {
-                    console.log(specific_value);
-                }
+                    done()
+                } else {}
 
             }
 

@@ -8,31 +8,48 @@
 </head>
 
 <body>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin_style.css">
     <script src="admin_tools.js"></script>
-    <script src="pog.Json"></script>
-    <div id="header">
-        <div>
+    <<<<<<< HEAD <script src="pog.Json">
+        </script>
+        <header>
             Admin Tools
-            <button class="header_button" id="close_button">X</button>
-            <button class="header_button" id="max_button">☐</button>
-            <button class="header_button" id="min_button">_</button>
+            <button id="max_button">☐</button>
+            <button id="min_button">_</button>
+            <button id="close_button">X</button>
+        </header>
+        <div class="test"><button onclick="fileRead()">Test</button></div>
+
+
+
+        <div class="title">
+            <p>Employee Management</p>
+            <input id="employee" placeholder="Which employee do you wish to change?">
         </div>
-    </div>
-    <div>
-        <p>Employee</p>
-        <input id="employee" placeholder="Which employee do you wish to change?">
-    </div>
-    <button onclick="MessageGen(true, 0)">Update Message</button>
-    <button onclick="MessageGen(false, 1)"> Create Message </button>
-    <button onclick="MessageToUSB()"> Write to USB </button>
+        =======
+        <div id="header">
+            <div>
+                Admin Tools
+                <button class="header_button" id="close_button">X</button>
+                <button class="header_button" id="max_button">☐</button>
+                <button class="header_button" id="min_button">_</button>
+            </div>
+        </div>
+        <div>
+            <p>Employee</p>
+            <input id="employee" placeholder="Which employee do you wish to change?">
+        </div>
+        <button onclick="MessageGen(true)">Update Message</button>
+        <button onclick="MessageGen(false)"> Create Message </button>
+        <button onclick="MessageToUSB()"> Write to USB </button> >>>>>>> 53b66546eea53dcfbf4da1873e4335fce0df58ca
 
-    <button onclick="fileRead()">Test</button>
+        <div class="button">
 
-    <p id="response_message"></p>
-
-    
-
+            <button onclick="MessageGen(true, 0)">Update Message</button>
+            <button onclick="MessageGen(false, 1)"> Create Message </button>
+            <button onclick="MessageToUSB()"> Write to USB </button>
+        </div>
+        <p id="response_message"></p>
 </body>
 
 </html>

@@ -9,7 +9,7 @@
 */
 
 const { app, BrowserWindow, net } = require('electron');
-/* const crypto = require('crypto') */
+ const crypto = require('crypto') 
 // Opens a window with the admin tools when the app is ready.
 app.on('ready', () => {
   let window = new BrowserWindow({
@@ -22,8 +22,8 @@ app.on('ready', () => {
   });
   window.loadURL(`file://${__dirname}/admin_tools.html`);
   window.on('closed', () => window = null);
-
-/*   const keys = crypto.generateKeyPairSync('rsa', {
+/*
+   const keys = crypto.generateKeyPairSync('rsa', {
     modulusLength: 4096,
     publicKeyEncoding: {
         type: 'spki',
@@ -41,11 +41,12 @@ app.on('ready', () => {
     protocol: 'http:',
     hostname: 'localhost',
     port: 3000,
-    path: 'Keys'
+    path: 'PriPubKeys'
     })
     console.log(keys.privateKey);
     
-    request.end(JSON.stringify({type: 'Keys', PublicKey: keys.publicKey, PrivateKey: keys.privateKey, passphrase: 'VIgIlanT37diRt68GRaftED69RAdIatE55rIgIdity35sHoWdOwn62diSaBLe04pupILs'})); */
+    request.end(JSON.stringify({PublicKey: keys.publicKey, PrivateKey: keys.privateKey, passphrase: 'VIgIlanT37diRt68GRaftED69RAdIatE55rIgIdity35sHoWdOwn62diSaBLe04pupILs'})); 
+    
   /*
   //GET public key from database and use it to encrypt message
   const request = electron.net.request('http://localhost:3000/Keys')

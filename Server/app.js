@@ -4,223 +4,77 @@ const { User, Website, Messages, Keys } = require('./databasemodule.js');
 
 const hash = crypto.createHash('sha256');
 const server = http.createServer((request, response) => {
-   
+    User.hasMany(Website);
+    TableSync([Website.sync(), Keys.sync(), Messages.sync(), User.sync()]);
+    let body = '', HandledRequest;
     if (request.method == 'POST') {
-        response.writeHead(200, {
-            'Content-Type': '*',
-            'Access-Control-Allow-Origin': '*'
-        });
-        Website.sync();
-        User.sync();
-
-        User.hasMany(Website);
-        /* 
-        Website.sync()
-            .then(() => console.log('Database synced'))
-            .catch(err => {
-                console.log("Database couldn't sync with the error: " + err);
-                response.writeHead(400, {
-                    'Content-Type': '*',
-                    'Access-Control-Allow-Origin': '*'
-                });
-                response.end('Database couldn\'t handle request right now');
-            });
-
-        Keys.sync()
-            .then(() => console.log("Keys synced"))
-            .catch(err => {
-                console.log("Keys could not be synced");
-                response.writeHead(400, {
-                    'Content-Type': '*',
-                    'Access-Control-Allow-Origin': '*'
-                });
-                response.end('Database couldn\'t handle request right now');
-            });
-        Messages.sync()
-            .then(() => console.log("Messages synced"))
-            .catch(err => {
-                console.log("Messages could not be synced");
-                response.writeHead(400, {
-                    'Content-Type': '*',
-                    'Access-Control-Allow-Origin': '*'
-                });
-                response.end('Database couldn\'t handle request right now');
-            });
-        User.sync()
-            .then(() => console.log("Messages synced"))
-            .catch(err => {
-                console.log("Messages could not be synced");
-                response.writeHead(400, {
-                    'Content-Type': '*',
-                    'Access-Control-Allow-Origin': '*'
-                });
-                response.end('Database couldn\'t handle request right now');
-            });
-        let body = '';
-        let parts;
-        let KeyJSON;
-        let MessageJSON;
-        let KeyAuth;
-        let MessageUser;
-        let WebAuth;
-
+        //Reading data from the request
         request.on('data', chunk => {
             body += chunk.toString();
-            if (request.url == '/Auth_User') {
-                KeyAuth = JSON.parse(body);
-            } else if (request.url == '/Keys') {
-                KeyJSON = JSON.parse(body);
-            } else if (request.url == '/Message') {
-                MessageJSON = JSON.parse(body);
-            } else if (request.url == '/MessageToUSB')
-                MessageUser = chunk.toString();
-            else if (request.url == '/Passwords') {
-                WebAuth = JSON.parse(body);
-            } else {
-                parts = body.split('~');
-            }
+            HandledRequest = PostRequestHandler(request, body)
         });
 
+        // After all data has been recieved we handle the requests.
         request.on('end', () => {
-            if (KeyJSON) {
-                Keys.update({
-                    id: 1,
-                    PublicKey: KeyJSON.PublicKey,
-                    PrivateKey: KeyJSON.PrivateKey,
-                    Passphrase: KeyJSON.passphrase
-                }, { where: {} })
-                    .then(keys => {
-                        console.log(keys);
-                        Keys.findAll().then(table => console.log(table))
-                    })
-                    .then(() => response.end("Keys created"));
-            } else if (MessageUser) {
-                Messages.findByPk(MessageUser).then(table => {
-                    if (!table) {
-                        response.writeHead(400, {
-                            'Content-Type': '*',
-                            'Access-Control-Allow-Origin': '*'
-                        });
-                        response.end("User not in database");
-                    } else {
-                        response.writeHead(200, {
-                            'Content-Type': '*',
-                            'Access-Control-Allow-Origin': '*'
-                        });
-                        Keys.findByPk(1)
-                            .then(publicKey => {
-                                message = Buffer.from(table.dataValues.Message);
-                                body = Buffer.from(publicKey.dataValues.PublicKey);
-                                response.end(JSON.stringify({ Username: MessageUser, Id: id, Message: crypto.publicEncrypt(body, message) }));
-                            }).catch(err => console.error(err));
-                    }
-                }).catch(err => console.log(err));
-            } else if (MessageJSON && MessageJSON.Username != '') {
-                if (MessageJSON.Update) {
-                    Messages.findByPk(MessageJSON.Username).then(table => {
-                        if (!table) {
-                            response.writeHead(400, {
-                                'Content-Type': '*',
-                                'Access-Control-Allow-Origin': '*'
-                            });
-                            response.end("User not in database");
+
+            switch (HandledRequest.type) {
+                // Gives response back whether or not the user is in the database
+                case 'AuthUser':
+                    AuthenticateUser(HandledRequest, response);
+                    break;
+
+                // Public/Private key pair update
+                case 'ChangePriPubKey':
+                    UpdateKeys(HandledRequest, response);
+                    break;
+
+                // Requesting user in database
+                case 'ChangePDID':
+                    Messages.findByPk(HandledRequest.body.Username).then(table => {
+                        if (HandledRequest.body.Update) {
+                            if (!table) {
+                                RejectRequest(response, 'User not in databaseSKIRT');
+                            } else {
+                                MessageCreate(HandledRequest, response);
+                            }
+                        } else {
+                            if (table) {
+                                RejectRequest(response, 'User already in databaseTRIKS');
+                            } else {
+                                MessageUpdate(HandledRequest, response);
+                            }
                         }
-                    }).then(() => {
-                        message = MessageGenerator() 
-                        Messages.update({
-                            Username: MessageJSON.Username,
-                            Message: message
-                        }, { where: { Username: MessageJSON.Username } })
-                            .then(() => response.end("Message updated"))
-                            .catch(err => console.error(err));
-                    });
-                } else {
-                    message = MessageGenerator()
-                    Messages.create({
-                        Username: MessageJSON.Username,
-                        Message: message
-                    }).then(() => response.end("Message created"))
-                        .catch(() => {
-                            response.writeHead(400, {
-                                'Content-Type': '*',
-                                'Access-Control-Allow-Origin': '*'
-                            });
-                            response.end("User is already in database")
-                        });
-                }
-            } else if (parts) {
-                console.log(request.headers);
-                User.create({
-                    userID: request.headers['user-id'],
-                    MasterPw: 'hej',
-                    WebsiteId: parts[0],
-                    password: Feistal(parts[1])
-                }).then(table => {
-                    console.log(table.toJSON());
-                })
-                    .then(() => response.end("Password created"));
+                    }).catch(err => console.log(err));
+                    break;
 
-            } else if (KeyAuth) {
-                Keys.findByPk(1)
-                    .then(Key => {
-                        Messages.findByPk(KeyAuth.Username)
-                            .then(element => {
-                                if (element != null) {
-                                    let privateKey = Key.dataValues.PrivateKey;
-                                    let passphrase = Key.dataValues.Passphrase;
-                                    if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(KeyAuth.Message)) == element.Message) {
-                                        response.end(JSON.stringify({ Username: KeyAuth.Username, Authenticated: true }));
-                                    }
-                                } else {
-                                    //temporary solution
-                                    response.end('User not found');
-                                }
-                            });
-                    });
-            } else if (WebAuth) {
-                Keys.findByPk(1)
-                    .then(Key => {
-                        Messages.findByPk(WebAuth.Username)
-                            .then(message => {
-                                if (message != null) {
-                                    let privateKey = Key.dataValues.PrivateKey;
-                                    let passphrase = Key.dataValues.Passphrase;
-                                    if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(WebAuth.Message)) == message.Message) {
-                                        User.findAll({
-                                            where: {
-                                                userID: WebAuth.UserId
-                                            }
-                                        })
-                                        .then(data => {
-                                            response.end(JSON.stringify(data));
-                                        })
+                // Physical key ID    
+                case 'WritePDID':
+                    if (HandledRequest.body.Username = '')                          // If requested username is empty, then we do nothing.
+                        break;
+                    else
+                        if (HandledRequest.body.Update)                             // If the admin wants to update an existing user
+                            USBIDReponse(HandledRequest, table, response);
+                    break;
+                //Create password website pair
+                case 'PostPassword':
+                    Messages.findOne({where: {UserId: request.headers['user-id']}})
+                        .then(User => {//do something with user at some point
+                            CreateWebPas(HandledRequest, request, response);
+                        })
+                        .catch(error => {
+                            RejectRequest(response, `User not in database\n ${error}`);
+                        })
+                    break;
 
-                                        //sequelize_to_json(User).then(data => response.end(JSON.stringify(data)));
-                                    }
-                                } else {
-
-                                    //temporary solution
-                                    response.writeHead(400, {
-                                        'Content-Type': '*',
-                                        'Access-Control-Allow-Origin': '*'
-                                    });
-                                    response.end('User not found');
-                                }
-                            });
-                    });
-
-            } else {
-                response.writeHead(400, {
-                    'Content-Type': '*',
-                    'Access-Control-Allow-Origin': '*'
-                });
-                console.error("INVALID REQUEST");
-                response.end("INVALID REQUEST");
+                // Failsafe in case of other request type
+                default:
+                    RejectRequest(response, 'INVALID REQUEST TYPE');
+                    break;
             }
-        }); */
+        })
     }
 
-    if (request.method == 'GET' /*&& request.url == "/"*/) {
+    if (request.method == 'GET') {
         if (request.url == '/Keys') {
             Keys.findByPk(1).then(key => {
                 response.writeHead(200, {
@@ -238,28 +92,18 @@ const server = http.createServer((request, response) => {
         });
         response.end("Access granted to 'OPTIONS'");
     } else if (request.method == 'DELETE') {
-        Website.sync()
-            .then(() => console.log('Database synced'))
-            .catch(err => {
-                console.log("Database couldn't sync with the error: " + err);
-                response.writeHead(400, {
-                    'Content-Type': '*',
-                    'Access-Control-Allow-Origin': '*'
-                })
-                response.end('Database couldn\'t handle request right now');
-            });
         response.writeHead(200, {
             'Content-Type': '*',
             'Access-Control-Allow-Origin': '*'
         });
-        //Reading the id of the element to delete(the child).code
+        //Reading the ID of the element to delete(the child).code
         let body = '';
         request.on('data', chunk => {
             body += chunk.toString();
         });
         //Destorying the users livelyhood when fired because of the corona virus
         request.on('end', () => {
-            Website.destroy({ where: { id: body } })
+            Website.destroy({ where: { ID: body } })
                 .then(deleted => {
                     console.log(deleted);
                 })
@@ -272,6 +116,54 @@ server.listen(3000, 'localhost', () => {
     console.log('Listening...');
 });
 
+function TableSync(TableArray) {
+    Promise.all(TableArray)
+        .then(data => console.log(data))
+        .catch(err => {
+            console.log(err);
+            response.writeHead(400, {
+                'Content-Type': '*',
+                'Access-Control-Allow-Origin': '*'
+            });
+        });
+}
+function PostRequestHandler(request, body) {
+    let HandledRequest = {
+        body: '',
+        type: ''
+    }
+
+    switch (request.url) {
+        case '/AuthUser':
+            HandledRequest.body = JSON.parse(body);
+            HandledRequest.type = 'AuthUser'
+            break;
+        case '/PriPubKeys':
+            HandledRequest.body = JSON.parse(body);
+            HandledRequest.type = 'ChangePriPubKey'
+            break;
+        case '/UpdateCreatePDID':
+            HandledRequest.body = JSON.parse(body);
+            HandledRequest.type = 'ChangePDID'
+            break;
+        case '/PDIDToUSB':
+            HandledRequest.body = chunk.toString();
+            HandledRequest.type = 'WritePDID';
+            break;
+        case '/PostPassword':
+            HandledRequest.body = body.split('~');
+            HandledRequest.type = 'PostPassword'
+            break;
+    }
+    return HandledRequest;
+}
+function RejectRequest(response, message) {
+    response.writeHead(400, {
+        'Content-Type': '*',
+        'Access-Control-Allow-Origin': '*'
+    });
+    response.end(message);
+}
 function MessageGenerator() {
     let message = '';
     let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
@@ -280,48 +172,85 @@ function MessageGenerator() {
     return message;
 }
 
-function Feistal(password) {
-    const XORBuffer = (buffer1, buffer2) => {
-        let len = Math.max(buffer1.length, buffer1.length);
-        let result = Buffer.allocUnsafe(len)
-
-        for (let i = 0; i < len; i++) {
-            result[i] = buffer1[i] ^ buffer2[i]
+function MessageCreate(HandledRequest, response) {
+    Messages.findByPk(HandledRequest.body.Username).then(table => {
+        if (!table) {
+            RejectRequest(response, 'User not in database');
         }
-
-        return result
-    }
-    split = [password.slice(0, password.length / 2), password.slice(password.length / 2, password.length)];
-    let l1, r1, l2, r2;
-    l1 = Buffer.from(split[0]).toString('hex');
-    r1 = Buffer.from(split[1]).toString('hex');
-    l2 = r1;
-    r2 = XORBuffer(Buffer.from(l1, 'hex'), hash.copy().update(Buffer.from(r1, 'hex')).digest('hex')).toString('hex');
-    console.log({ r1, l1 });
-    console.log({ r2, l2 });
-
-    return r2 + l2
+    }).then(() => {
+        message = MessageGenerator()
+        Messages.update({
+            Username: HandledRequest.body.Username,
+            UserID: HandledRequest.body.ID,
+            Message: message
+        }, { where: { Username: HandledRequest.body.Username } })
+            .then(() => response.end("Message updated"))
+            .catch(err => console.error(err));
+    });
+}
+function MessageUpdate(HandledRequest, response) {
+    message = MessageGenerator()
+    Messages.create({
+        Username: HandledRequest.body.Username,
+        UserID: HandledRequest.body.ID,
+        Message: message
+    }).then(() => response.end("Message created"))
+        .catch(() => {
+            RejectRequest(response, 'User is already in database');
+        });
+}
+function UpdateKeys(HandledRequest, response) {
+    Keys.update({
+        ID: 1,
+        PublicKey: HandledRequest.body.PublicKey,
+        PrivateKey: HandledRequest.body.PrivateKey,
+        Passphrase: HandledRequest.body.passphrase
+    }, { where: {} })
+        .then(keys => {
+            console.log(keys);
+            Keys.findAll().then(table => console.log(table))
+        })
+        .then(() => response.end("Keys created"));
 }
 
-function ReverseFeistal(password) {
-    const XORBuffer = (buffer1, buffer2) => {
-        let len = Math.max(buffer1.length, buffer1.length);
-        let result = Buffer.allocUnsafe(len)
-
-        for (let i = 0; i < len; i++) {
-            result[i] = buffer1[i] ^ buffer2[i]
-        }
-
-        return result
-    }
-    split = [password.slice(0, password.length / 2 - 1), password.slice(password.length / 2 - 1, password.length)];
-    let l1, r1, l2, r2;
-    l1 = split[0];
-    r1 = split[1];
-    l2 = r1;
-    r2 = XORBuffer(Buffer.from(l1, 'hex'), hash.copy().update(Buffer.from(r1, 'hex')).digest('hex')).toString('hex');
-    console.log({ r1, l1 });
-    console.log({ r2, l2 });
-
-    return r2 + l2
+function USBIDReponse(HandledRequest, table, response) {
+    response.writeHead(200, {
+        'Content-Type': '*',
+        'Access-Control-Allow-Origin': '*'
+    });
+    Keys.findByPk(1)
+        .then(publicKey => {
+            console.error(`USBIDRESPONSE: ${table}`);
+            message = Buffer.from(table.dataValues.Message);
+            body = Buffer.from(publicKey.dataValues.PublicKey);
+            response.end(JSON.stringify({ Username: HandledRequest.body, ID: 1, Message: crypto.publicEncrypt(body, message) }));
+        }).catch(err => console.error(err));
+}
+function AuthenticateUser(HandledRequest, response) {
+    Keys.findByPk(1)
+        .then(Key => {
+            Messages.findByPk(HandledRequest.body.Username)
+                .then(element => {
+                    if (element != null) {
+                        let privateKey = Key.dataValues.PrivateKey;
+                        let passphrase = Key.dataValues.Passphrase;
+                        if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(HandledRequest.body.Message)) == element.Message) {
+                            response.end(JSON.stringify({ Username: HandledRequest.body.Username, Authenticated: true }));
+                        }
+                    } else {
+                        //temporary solution
+                        response.end('User not found');
+                    }
+                });
+        });
+}
+function CreateWebPas(HandledRequest, request, response) {
+    Website.create({
+        userID: request.headers['user-id'],
+        ID: HandledRequest.body[0],
+        password: HandledRequest.body[1]
+    }).then(table => {
+        console.log(table.toJSON());
+    })
+        .then(() => response.end("Password created"));
 }

@@ -21,7 +21,7 @@ const Website = new Sequelize({
 });
 
 module.exports.Keys = Keysets.define('Keys', {
-    id: {
+    ID: {
         type: DataTypes.NUMBER,
         primaryKey: true
     },
@@ -40,7 +40,7 @@ module.exports.Messages = Message.define('Message', {
         type: DataTypes.STRING,
         primaryKey: true
     },
-    UserId: {
+    UserID: {
         type: DataTypes.INTEGER
     },
     Message: {
@@ -56,7 +56,7 @@ module.exports.Website = sequelize.define('Website', {
     userID: {
         type: DataTypes.INTEGER,
     },
-    id: {
+    ID: {
         type: DataTypes.STRING
     },
     password: {
