@@ -16,6 +16,7 @@ header button {
     float: right;
     height: 6vh;
     background-color: #303030;
+    color: white;
     border: none;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     -webkit-app-region: no-drag

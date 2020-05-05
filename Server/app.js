@@ -52,12 +52,11 @@ const server = http.createServer((request, response) => {
                     if (HandledRequest.body.Username = '')                          // If requested username is empty, then we do nothing.
                         break;
                     else
-                        if (HandledRequest.body.Update)                             // If the admin wants to update an existing user
-                            USBIDReponse(HandledRequest, table, response);
+                        USBIDReponse(HandledRequest, response);
                     break;
                 //Create password website pair
                 case 'PostPassword':
-                    Messages.findOne({where: {UserId: request.headers['user-id']}})
+                    Messages.findOne({ where: { UserId: request.headers['user-id'] } })
                         .then(User => {//do something with user at some point
                             CreateWebPas(HandledRequest, request, response);
                         })
@@ -147,7 +146,7 @@ function PostRequestHandler(request, body) {
             HandledRequest.type = 'ChangePDID'
             break;
         case '/PDIDToUSB':
-            HandledRequest.body = chunk.toString();
+            HandledRequest.body = body;
             HandledRequest.type = 'WritePDID';
             break;
         case '/PostPassword':
@@ -213,18 +212,20 @@ function UpdateKeys(HandledRequest, response) {
         .then(() => response.end("Keys created"));
 }
 
-function USBIDReponse(HandledRequest, table, response) {
+function USBIDReponse(HandledRequest, response) {
     response.writeHead(200, {
         'Content-Type': '*',
         'Access-Control-Allow-Origin': '*'
     });
-    Keys.findByPk(1)
-        .then(publicKey => {
-            console.error(`USBIDRESPONSE: ${table}`);
-            message = Buffer.from(table.dataValues.Message);
-            body = Buffer.from(publicKey.dataValues.PublicKey);
-            response.end(JSON.stringify({ Username: HandledRequest.body, ID: 1, Message: crypto.publicEncrypt(body, message) }));
-        }).catch(err => console.error(err));
+    Messages.findByPk(HandledRequest.body)
+        .then(table => {
+            Keys.findByPk(1)
+                .then(publicKey => {
+                    message = Buffer.from(table.dataValues.Message);
+                    body = Buffer.from(publicKey.dataValues.PublicKey);
+                    response.end(JSON.stringify({ Username: HandledRequest.body, ID: table.UserID, Message: crypto.publicEncrypt(body, message) }));
+                }).catch(err => console.error(err));
+        })
 }
 function AuthenticateUser(HandledRequest, response) {
     Keys.findByPk(1)
