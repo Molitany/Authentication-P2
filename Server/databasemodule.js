@@ -15,10 +15,6 @@ const User = new Sequelize({
     dialect: 'sqlite',
     storage: 'database.sqlite'
 });
-const Website = new Sequelize({
-    dialect: 'sqlite',
-    storage: 'database.sqlite'
-});
 
 module.exports.Keys = Keysets.define('Keys', {
     ID: {
@@ -36,15 +32,18 @@ module.exports.Keys = Keysets.define('Keys', {
     }
 });
 module.exports.Messages = Message.define('Message', {
-    Username: {
-        type: DataTypes.STRING,
+    UserID: {
+        type: DataTypes.INTEGER,
         primaryKey: true
     },
-    UserID: {
-        type: DataTypes.INTEGER
+    Username: {
+        type: DataTypes.STRING,
     },
     Message: {
         type: DataTypes.STRING
+    },
+    MasterPw: {
+        type: DataTypes.STRING,
     }
 });
 module.exports.Website = sequelize.define('Website', {
@@ -53,9 +52,6 @@ module.exports.Website = sequelize.define('Website', {
         autoIncrement: true,
         primaryKey: true
     },
-    userID: {
-        type: DataTypes.INTEGER,
-    },
     ID: {
         type: DataTypes.STRING
     },
@@ -63,16 +59,4 @@ module.exports.Website = sequelize.define('Website', {
         type: DataTypes.STRING
     }
 });
-module.exports.User = User.define('User', {
-    index: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true
-    },   
-    userID: {
-        type: DataTypes.INTEGER,
-    },
-    MasterPw: {
-        type: DataTypes.STRING,
-    }
-});
+
