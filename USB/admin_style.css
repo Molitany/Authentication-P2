@@ -9,6 +9,7 @@ header {
     font-size: 200%;
     height: 6vh;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
+    -webkit-app-region: drag
 }
 
 header button {
@@ -17,6 +18,7 @@ header button {
     background-color: #303030;
     border: none;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
+    -webkit-app-region: no-drag
 }
 
 header button:hover {
