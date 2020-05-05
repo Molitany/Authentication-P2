@@ -4,8 +4,12 @@ const { User, Website, Messages, Keys } = require('./databasemodule.js');
 
 const hash = crypto.createHash('sha256');
 const server = http.createServer((request, response) => {
-    User.hasMany(Website);
-    TableSync([Website.sync(), Keys.sync(), Messages.sync(), User.sync()]);
+    Messages.hasMany(Website, {
+        foreignKey: 'UserID',
+        allowNull: false
+    });
+    Website.belongsTo(Messages);
+    TableSync([Website.sync(), Keys.sync(), Messages.sync()]);
     let body = '', HandledRequest;
     if (request.method == 'POST') {
         //Reading data from the request
@@ -35,13 +39,13 @@ const server = http.createServer((request, response) => {
                             if (!table) {
                                 RejectRequest(response, 'User not in databaseSKIRT');
                             } else {
-                                MessageCreate(HandledRequest, response);
+                                MessageUpdate(HandledRequest, response);
                             }
                         } else {
                             if (table) {
                                 RejectRequest(response, 'User already in databaseTRIKS');
                             } else {
-                                MessageUpdate(HandledRequest, response);
+                                MessageCreate(HandledRequest, response);
                             }
                         }
                     }).catch(err => console.log(err));
@@ -73,17 +77,10 @@ const server = http.createServer((request, response) => {
         })
     }
 
-    if (request.method == 'GET') {
-        if (request.url == '/Keys') {
-            Keys.findByPk(1).then(key => {
-                response.writeHead(200, {
-                    'Content-Type': '*',
-                    'Access-Control-Allow-Origin': '*'
-                });
-                response.end(JSON.stringify(key.dataValues.PublicKey));
-            });
-        }
-    } else if (request.method == 'OPTIONS') {
+    else if (request.method == 'GET') {
+        response.end(GetPasswords());
+    }
+    else if (request.method == 'OPTIONS') {
         response.writeHead(200, {
             'Content-Type': '*',
             'Access-Control-Allow-Origin': '*',
@@ -171,7 +168,7 @@ function MessageGenerator() {
     return message;
 }
 
-function MessageCreate(HandledRequest, response) {
+function MessageUpdate(HandledRequest, response) {
     Messages.findByPk(HandledRequest.body.Username).then(table => {
         if (!table) {
             RejectRequest(response, 'User not in database');
@@ -187,8 +184,8 @@ function MessageCreate(HandledRequest, response) {
             .catch(err => console.error(err));
     });
 }
-function MessageUpdate(HandledRequest, response) {
-    message = MessageGenerator()
+function MessageCreate(HandledRequest, response) {
+    message = MessageGenerator();
     Messages.create({
         Username: HandledRequest.body.Username,
         UserID: HandledRequest.body.ID,
@@ -246,12 +243,15 @@ function AuthenticateUser(HandledRequest, response) {
         });
 }
 function CreateWebPas(HandledRequest, request, response) {
-    Website.create({
-        userID: request.headers['user-id'],
-        ID: HandledRequest.body[0],
-        password: HandledRequest.body[1]
-    }).then(table => {
-        console.log(table.toJSON());
+    Messages.findByPk(request.headers['user-id']).then(User => {
+        Website.create({
+            ID: HandledRequest.body[0],
+            password: HandledRequest.body[1],
+            UserID: request.headers['user-id']
+        }).then(table => {
+            console.log(table.toJSON());
+        })
+            .then(() => response.end("Password created"));
     })
-        .then(() => response.end("Password created"));
+    .catch(err => console.error(err));
 }
