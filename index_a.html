@@ -16,69 +16,80 @@
         margin: 0px;
         padding: 0px;
     }
-
 </style>
 
 <body>
-        <header> 
-            <div class="searchBar">
-                <i class="fas fa-search"></i>
-                <input onkeyup="search()" id="search" type="text" placeholder="Search for your website...">
+    <header>
+        <div class="searchBar">
+            <i class="fas fa-search"></i>
+            <input onkeyup="search()" id="search" type="text" placeholder="Search for your website...">
+        </div>
+    </header>
+
+    <div class="addh1">
+        <h1> Add website</h1>
+    </div>
+    <form autocomplete="off" class="input-form" id="inputForm">
+        <i fas></i>
+
+        <div class="login-form">
+
+            <input autcomplete="off" text-align: center; type="text" id="Website" name="Website name"
+                placeholder="Web name..." required>
+            <br>
+            <div class="password">
+                <input autocomplete="off" type="password" id="Password" name="Passwordname" placeholder="Password"
+                    required>
             </div>
-        </header>
+            <br>
+            <button id="submit" class="submit" type="submit"><i class="fas fa-cloud-upload-alt"></i> Submit to
+                database</button>
+
+        </div>
+        <div class="plus"><button type="button" onclick="menu()"><i id="arrow"
+                    class="fas fa-angle-double-right fa-3x"></i></button></div>
+
+    </form>
     
-        <div class="addh1"><h1> Add website</h1></div>
-        <form class="input-form" id="inputForm">
-            <i fas></i>
-
-            <div class="login-form">
-
-                <input text-align: center; type="text" id="Website" name="Website name" placeholder="Web name...">
-                <br>
-                <div class="password">
-                    <input type="password" id="Password" name="Passwordname" placeholder="Password">
-                </div>
-                <br>
-                <button type="submit"><i class="fas fa-cloud-upload-alt"></i>   Submit to database</button>
-
-            </div>
-            <div class="plus"><button type="button" onclick="menu()"><i class="fas fa-angle-double-right fa-3x"></i></button></div>
-
-        </form>
     <div id="app">
         <script src="main_a.js"></script>
+        
         <p><br /></p>
         <h1 class="footer">This password vault was made by the P2 group at Aalborg University: Thomas Damsgaard, Thor
             Beregaard, Simon Preuss, Sebastian Lindhart, Kenneth Køpke and Andreas Poulsen</h1>
     </div>
+
     <script>
-        let search = function() {
-          let search_text = document.getElementById("search").value;
-          let table = document.getElementById("table_body");
-          let a = table.rows;
+        let search = function () {
+            let search_text = document.getElementById("search").value;
+            let table = document.getElementById("table_body");
+            let a = table.rows;
             console.log(a);
-          for (i = 0; i < a.length; i++) {
-            let specific_value = a[i].cells[0].innerText;
-        
-            if(specific_value.indexOf(search_text) != -1) {
-              a[i].style.display = "";
-            } else {
-              a[i].style.display = "none";
+            for (i = 0; i < a.length; i++) {
+                let specific_value = a[i].cells[0].innerText;
+                if (specific_value.indexOf(search_text) != -1) {
+                    a[i].style.display = "";
+                } else {
+                    a[i].style.display = "none";
+                }
             }
-          }
         }
 
         let menustatus = true;
-        let menu = function() {
+        let menu = function () {
             let menulength = document.querySelector(".input-form");
+            let arrow = document.getElementById("arrow");
             if (menustatus === true) {
                 menulength.style.marginLeft = "-3vh"
+                arrow.style.transform = "rotate(180deg)";
                 menustatus = false;
             } else if (menustatus === false) {
                 menulength.style.marginLeft = "-43.3vh";
+                arrow.style.transform = "rotate(360deg)";
                 menustatus = true
             }
         }
-        </script>
+    </script>
 </body>
+
 </html>
