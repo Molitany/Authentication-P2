@@ -11,13 +11,13 @@ const Message = new Sequelize({
     dialect: 'sqlite',
     storage: 'database.sqlite'
 });
-const UserTable = new Sequelize({
+const User = new Sequelize({
     dialect: 'sqlite',
     storage: 'database.sqlite'
 });
 
 module.exports.Keys = Keysets.define('Keys', {
-    id: {
+    ID: {
         type: DataTypes.NUMBER,
         primaryKey: true
     },
@@ -32,55 +32,34 @@ module.exports.Keys = Keysets.define('Keys', {
     }
 });
 module.exports.Messages = Message.define('Message', {
-    Username: {
-        type: DataTypes.STRING,
+    UserID: {
+        type: DataTypes.INTEGER,
         primaryKey: true
     },
-    UserId: {
-        type: DataTypes.INTEGER
+    Username: {
+        type: DataTypes.STRING,
     },
     Message: {
         type: DataTypes.STRING
+    },
+    MasterPw: {
+        type: DataTypes.STRING
+    },
+    Salt: {
+        type: DataTypes.STRING
     }
 });
-module.exports.WebsiteInfo = sequelize.define('WebsiteInfo', {
-    id: {
-        type: DataTypes.STRING,
+module.exports.Website = sequelize.define('Website', {
+    index: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
         primaryKey: true
+    },
+    ID: {
+        type: DataTypes.STRING
     },
     password: {
         type: DataTypes.STRING
     }
-}); <<
-<< << < HEAD
+});
 
-
-Website = sequelize.define('user', {
-
-            user_ID: {
-                type: DataTypes.STRING,
-                ===
-                === =
-                module.exports.UserTable = UserTable.define('UserTable', {
-                    index: {
-                        type: DataTypes.INTEGER,
-                        autoIncrement: true,
-                        >>>
-                        >>> > b699061d2dee982a06ca129c5b3eba16e61affbc
-                        primaryKey: true
-                    },
-                    userID: {
-                        type: DataTypes.INTEGER,
-                    },
-                    MasterPw: {
-                        type: DataTypes.STRING,
-                    },
-                    WebsiteId: {
-                        type: DataTypes.STRING,
-                    },
-                    password: {
-                        type: DataTypes.STRING
-                    }
-
-
-                });
