@@ -40,7 +40,7 @@ module.exports.Messages = Message.define('Message', {
         type: DataTypes.STRING,
     },
     Message: {
-        type: DataTypes.STRING
+        type: DataTypes.BLOB
     },
     MasterPw: {
         type: DataTypes.STRING

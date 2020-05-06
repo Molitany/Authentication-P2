@@ -36,19 +36,30 @@ const server = http.createServer((request, response) => {
                 // Requesting user in database
                 case 'ChangePDID':
                     Messages.findOne({ where: { Username: HandledRequest.body.Username } }).then(User => {
-                        if (HandledRequest.body.Update) {
-                            if (!User) {
-                                RejectRequest(response, 'User not in databaseSKIRT');
-                            } else {
-                                UserUpdate(HandledRequest, response, User);
-                            }
-                        } else {
-                            if (User) {
-                                RejectRequest(response, 'User already in databaseTRIKS');
-                            } else {
-                                UserCreate(HandledRequest, response, User);
-                            }
-                        }
+                        let encryptObj = { message: '', body: '' }
+                        // Encryption object created to secure messages in database
+                        Keys.findByPk(1)
+                            .then(publicKey => {
+                                // Generating encryption buffers
+                                encryptObj.message = Buffer.from(MessageGenerator());
+                                encryptObj.body = Buffer.from(publicKey.dataValues.PublicKey);
+
+                                //Handling the request itself
+                                if (HandledRequest.body.Update) {
+                                    if (!User) {
+                                        RejectRequest(response, 'User not in databaseSKIRT');
+                                    } else {
+                                        UserUpdate(HandledRequest, response, User, encryptObj);
+                                    }
+                                } else {
+                                    if (User) {
+                                        RejectRequest(response, 'User already in databaseTRIKS');
+                                    } else {
+                                        UserCreate(HandledRequest, response, encryptObj);
+                                    }
+
+                                }
+                            })
                     }).catch(err => console.log(err));
                     break;
 
@@ -168,19 +179,16 @@ function MessageGenerator() {
     return message;
 }
 
-function UserUpdate(HandledRequest, response, User) {
+function UserUpdate(HandledRequest, response, User, encryptObj) {
     // Generating salt for the master password
     let salt = MessageGenerator();
-    hash.update(HandledRequest.body.MasterPw + salt)
-
-    // Generating new message for user
-    message = MessageGenerator();
-
+    hash.update(HandledRequest.body.MasterPw + salt);
+    console.log(encryptObj.message.toString());
     // Updating user
     User.update({
         Username: HandledRequest.body.Username,
         UserID: HandledRequest.body.ID,
-        Message: message,
+        Message: crypto.publicEncrypt(encryptObj.body, encryptObj.message),
         MasterPw: hash.copy().digest('hex'),
         Salt: salt
     })
@@ -188,17 +196,16 @@ function UserUpdate(HandledRequest, response, User) {
         .catch(err => console.error(err));
 }
 
-function UserCreate(HandledRequest, response, User) {
+function UserCreate(HandledRequest, response, encryptObj) {
     // Generating salt for the master password
-    let salt = MessageGenerator();
+    let salt = MessageGenerator(), message, body;
     hash.update(HandledRequest.body.MasterPw + salt)
 
     //Generating User
-    message = MessageGenerator();
     Messages.create({
         Username: HandledRequest.body.Username,
         UserID: HandledRequest.body.ID,
-        Message: message,
+        Message: crypto.publicEncrypt(encryptObj.body, encryptObj.message),
         MasterPw: hash.copy().digest('hex'),
         Salt: salt
     }).then(() => response.end("Message created"))
@@ -227,29 +234,29 @@ function USBIDReponse(HandledRequest, response) {
         'Access-Control-Allow-Origin': '*'
     });
     Messages.findByPk(HandledRequest.body)
-        .then(table => {
-            Keys.findByPk(1)
-                .then(publicKey => {
-                    message = Buffer.from(table.dataValues.Message);
-                    body = Buffer.from(publicKey.dataValues.PublicKey);
-                    response.end(JSON.stringify({ Username: HandledRequest.body, ID: table.UserID, Message: crypto.publicEncrypt(body, message) }));
-                }).catch(err => console.error(err));
+        .then(User => {
+            response.end(JSON.stringify({ Username: HandledRequest.body, ID: User.UserID, Message: User.Message }));
         })
+        .catch(err => console.error(err));
 }
 
 function AuthenticateUser(HandledRequest, response) {
     Keys.findByPk(1)
         .then(Key => {
             Messages.findByPk(HandledRequest.body.UserID)
-                .then(User => {
+                .then(User => { 
                     if (User != null) {
-                        let privateKey = Key.dataValues.PrivateKey;
-                        let passphrase = Key.dataValues.Passphrase;
-                        if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(HandledRequest.body.Message)) == User.Message) {
+                        console.log(crypto.privateDecrypt({key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase}, User.Message).toString());
+                        console.log(HandledRequest.body.Message.toString());
+                        if (HandledRequest.body.Message == crypto.privateDecrypt({key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase}, User.Message)) {
                             hash.update(HandledRequest.body.MasterPw + User.salt)
+                            console.log('TRIKS LUNCH');
                             if (hash.copy().digest('hex') == User.MasterPw) {
                                 response.end('User authed xD TRIKS');
                             }
+                        }else{
+                            console.log('No TRIKS');
+                            response.end('User not found');
                         }
                     } else {
                         //temporary solution
