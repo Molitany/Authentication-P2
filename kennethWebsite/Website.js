@@ -3,11 +3,7 @@ document.getElementById("submit").addEventListener("click", e => {
     delete_table("tbody")
     bigfetch()
 })
-document.addEventListener('keypress', event => {
-    console.log('dab');
-    LightMode();
 
-})
 function create_row(number, website, password, table_id) {
     table = document.getElementById(table_id);
     row = document.createElement('TR');
@@ -75,7 +71,5 @@ function bigfetch() {
         document.getElementById("usbdevice").innerHTML = "Please input USB device and start the server";
     })
 }
-function LightMode(){
-    document.getElementById('stylesheet').href = 'lightmode.css';
-}
-//bigfetch()
+
+bigfetch()

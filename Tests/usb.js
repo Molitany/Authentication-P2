@@ -7,7 +7,9 @@ describe("#Read File from USB", () => {
                     if (err) {
                         reject(err);
                     } else {
+
                         resolve(JSON.parse(data));
+
                     }
                 });
             })
@@ -15,4 +17,3 @@ describe("#Read File from USB", () => {
             .catch(err => done(err))
     });
 });
-
