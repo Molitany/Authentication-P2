@@ -187,9 +187,35 @@ const server = http.createServer((request, response) => {
                                             response.end(JSON.stringify(data));
                                         })
 
-                                        //sequelize_to_json(User).then(data => response.end(JSON.stringify(data)));
+                // Requesting user in database
+                case 'ChangePDID':
+                    Messages.findOne({ where: { Username: HandledRequest.body.Username } }).then(User => {
+                        let encryptObj = { message: '', body: '' }
+                        // Encryption object created to secure messages in database
+                        Keys.findByPk(1)
+                            .then(publicKey => {
+                                // Generating encryption buffers
+                                encryptObj.message = Buffer.from(MessageGenerator());
+                                encryptObj.body = Buffer.from(publicKey.dataValues.PublicKey);
+
+                                //Handling the request itself
+                                if (HandledRequest.body.Update) {
+                                    if (!User) {
+                                        RejectRequest(response, 'User not in databaseSKIRT');
+                                    } else {
+                                        UserUpdate(HandledRequest, response, User, encryptObj);
                                     }
                                 } else {
+                                    if (User) {
+                                        RejectRequest(response, 'User already in databaseTRIKS');
+                                    } else {
+                                        UserCreate(HandledRequest, response, encryptObj);
+                                    }
+
+                                }
+                            })
+                    }).catch(err => console.log(err));
+                    break;
 
                                     //temporary solution
                                     response.writeHead(400, {
@@ -291,4 +317,117 @@ function MessageGenerator() {
     for (i = 0; i < 32; i++)
         message += characters.charAt(Math.floor(Math.random() * characters.length));
     return message;
+}
+
+function UserUpdate(HandledRequest, response, User, encryptObj) {
+    // Generating salt for the master password
+    let salt = MessageGenerator();
+    hash.update(HandledRequest.body.MasterPw + salt);
+    console.log(encryptObj.message.toString());
+    // Updating user
+    User.update({
+        Username: HandledRequest.body.Username,
+        UserID: HandledRequest.body.ID,
+        Message: crypto.publicEncrypt(encryptObj.body, encryptObj.message),
+        MasterPw: hash.copy().digest('hex'),
+        Salt: salt
+    })
+        .then(() => response.end("User updated updated"))
+        .catch(err => console.error(err));
+}
+
+function UserCreate(HandledRequest, response, encryptObj) {
+    // Generating salt for the master password
+    let salt = MessageGenerator(), message, body;
+    hash.update(HandledRequest.body.MasterPw + salt)
+
+    //Generating User
+    Messages.create({
+        Username: HandledRequest.body.Username,
+        UserID: HandledRequest.body.ID,
+        Message: crypto.publicEncrypt(encryptObj.body, encryptObj.message),
+        MasterPw: hash.copy().digest('hex'),
+        Salt: salt
+    }).then(() => response.end("Message created"))
+        .catch(() => {
+            RejectRequest(response, 'User is already in database');
+        });
+}
+
+function UpdateKeys(HandledRequest, response) {
+    Keys.update({
+        ID: 1,
+        PublicKey: HandledRequest.body.PublicKey,
+        PrivateKey: HandledRequest.body.PrivateKey,
+        Passphrase: HandledRequest.body.passphrase
+    }, { where: {} })
+        .then(keys => {
+            console.log(keys);
+            Keys.findAll().then(table => console.log(table))
+        })
+        .then(() => response.end("Keys created"));
+}
+
+function USBIDReponse(HandledRequest, response) {
+    response.writeHead(200, {
+        'Content-Type': '*',
+        'Access-Control-Allow-Origin': '*'
+    });
+    Messages.findByPk(HandledRequest.body)
+        .then(User => {
+            response.end(JSON.stringify({ Username: HandledRequest.body, ID: User.UserID, Message: User.Message }));
+        })
+        .catch(err => console.error(err));
+}
+
+function AuthenticateUser(HandledRequest, response) {
+    Keys.findByPk(1)
+        .then(Key => {
+            Messages.findByPk(HandledRequest.body.UserID)
+                .then(User => { 
+                    if (User != null) {
+                        console.log(crypto.privateDecrypt({key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase}, User.Message).toString());
+                        console.log(HandledRequest.body.Message.toString());
+                        if (HandledRequest.body.Message == crypto.privateDecrypt({key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase}, User.Message)) {
+                            hash.update(HandledRequest.body.MasterPw + User.salt)
+                            console.log('TRIKS LUNCH');
+                            if (hash.copy().digest('hex') == User.MasterPw) {
+                                response.end('User authed xD TRIKS');
+                            }
+                        }else{
+                            console.log('No TRIKS');
+                            response.end('User not found');
+                        }
+                    } else {
+                        //temporary solution
+                        response.end('User not found');
+                    }
+                });
+        });
+}
+function CreateWebPas(HandledRequest, request, response) {
+    Messages.findByPk(request.headers['user-id']).then(User => {
+        User.createWebsite({
+            ID: HandledRequest.body[0],
+            password: HandledRequest.body[1]
+        }).then(table => {
+            console.log(table.toJSON());
+        })
+            .then(() => response.end("Password created"));
+    })
+        .catch(err => console.error(err));
+}
+function GetPasswords(request, response) {
+    Messages.findByPk(request.headers['user-id'])
+        .then(User => {
+            User.getWebsites().then(data => {
+                let websites = []
+                console.log(data[0].dataValues);
+                data.forEach(website => {
+                    websites.push(website.dataValues);
+                });
+                response.end(JSON.stringify(websites));
+            });
+        })
+        .catch(err => console.error(err));
 }
