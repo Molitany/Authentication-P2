@@ -12,6 +12,7 @@ function get_request() {
 }
 
 function post_request(website, password) {
+  console.log(password + website)
   fetch('http://localhost:3000', {
     method: 'POST',
     body: website + 0x1c + password
@@ -54,29 +55,6 @@ function post_request(website, password) {
 // }
 // bigfetch()
 
-// > function check() {
-
-//   let User1 = {
-//     id: 12345,
-//     password: 123
-
-//   }
-//   let input_username = document.getElementById("IDnumber");
-//   let input_password = document.getElementById("password");
-//   try {
-//     if (input_username.value == User1.id && input_password.value == User1.password) {
-//       console.log("2");
-//       return true;
-
-
-//     } else {
-//       console.log("3");
-//       return false;
-//     }
-//   } catch (error) {
-
-//   }
-// }
 
 function passwordTemplate(password) {
   return `
@@ -90,7 +68,7 @@ function passwordTemplate(password) {
 
 document.getElementById("submit").addEventListener("click", e => {
   post_request(document.getElementById("Website").value, document.getElementById("Password").value);
-  bigfetch();
+  // bigfetch();
 })
 
 function ShowHide(id) {
