@@ -43,7 +43,10 @@ module.exports.Messages = Message.define('Message', {
         type: DataTypes.STRING
     },
     MasterPw: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING
+    },
+    Salt: {
+        type: DataTypes.STRING
     }
 });
 module.exports.Website = sequelize.define('Website', {

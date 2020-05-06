@@ -47,7 +47,7 @@ function MessageGen(update) {
     }
     fetch("http://localhost:3000/UpdateCreatePDID", {
         method: 'POST',
-        body: JSON.stringify({ Username: document.getElementById('employee').value, Update: update, ID: UserID })
+        body: JSON.stringify({ Username: document.getElementById('employee').value, Update: update, ID: UserID, MasterPw: 'hej' })
     })
         .then(res => {
             element = document.getElementById("response_message");

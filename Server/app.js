@@ -1,14 +1,17 @@
 const http = require('http');
 const crypto = require('crypto');
-const { User, Website, Messages, Keys } = require('./databasemodule.js');
+const { Website, Messages, Keys } = require('./databasemodule.js');
+const hash = crypto.createHash('sha256');
 
+// Creating table associations
 Messages.hasMany(Website);
 Website.belongsTo(Messages);
 
+// Syncing the database
 TableSync([Website.sync(), Keys.sync(), Messages.sync()]);
-const hash = crypto.createHash('sha256');
+
 const server = http.createServer((request, response) => {
-    TableSync([Website.sync(), Keys.sync(), Messages.sync()]);
+    TableSync([Website.sync(), Keys.sync(), Messages.sync()], response);
     let body = '', HandledRequest;
     if (request.method == 'POST') {
         //Reading data from the request
@@ -19,7 +22,6 @@ const server = http.createServer((request, response) => {
 
         // After all data has been recieved we handle the requests.
         request.on('end', () => {
-
             switch (HandledRequest.type) {
                 // Gives response back whether or not the user is in the database
                 case 'AuthUser':
@@ -33,18 +35,18 @@ const server = http.createServer((request, response) => {
 
                 // Requesting user in database
                 case 'ChangePDID':
-                    Messages.findByPk(HandledRequest.body.Username).then(table => {
+                    Messages.findOne({ where: { Username: HandledRequest.body.Username } }).then(User => {
                         if (HandledRequest.body.Update) {
-                            if (!table) {
+                            if (!User) {
                                 RejectRequest(response, 'User not in databaseSKIRT');
                             } else {
-                                MessageUpdate(HandledRequest, response);
+                                UserUpdate(HandledRequest, response, User);
                             }
                         } else {
-                            if (table) {
+                            if (User) {
                                 RejectRequest(response, 'User already in databaseTRIKS');
                             } else {
-                                MessageCreate(HandledRequest, response);
+                                UserCreate(HandledRequest, response, User);
                             }
                         }
                     }).catch(err => console.log(err));
@@ -82,8 +84,7 @@ const server = http.createServer((request, response) => {
             'Access-Control-Allow-Origin': '*'
         });
         GetPasswords(request, response);
-    }
-    else if (request.method == 'OPTIONS') {
+    } else if (request.method == 'OPTIONS') {
         response.writeHead(200, {
             'Content-Type': '*',
             'Access-Control-Allow-Origin': '*',
@@ -115,15 +116,11 @@ server.listen(3000, 'localhost', () => {
     console.log('Listening...');
 });
 
-function TableSync(TableArray) {
+function TableSync(TableArray, response) {
     Promise.all(TableArray)
         .then(data => console.log(data))
         .catch(err => {
-            console.log(err);
-            response.writeHead(400, {
-                'Content-Type': '*',
-                'Access-Control-Allow-Origin': '*'
-            });
+            RejectRequest(response, err);
         });
 }
 function PostRequestHandler(request, body) {
@@ -171,33 +168,45 @@ function MessageGenerator() {
     return message;
 }
 
-function MessageUpdate(HandledRequest, response) {
-    Messages.findByPk(HandledRequest.body.Username).then(table => {
-        if (!table) {
-            RejectRequest(response, 'User not in database');
-        }
-    }).then(() => {
-        message = MessageGenerator()
-        Messages.update({
-            Username: HandledRequest.body.Username,
-            UserID: HandledRequest.body.ID,
-            Message: message
-        }, { where: { Username: HandledRequest.body.Username } })
-            .then(() => response.end("Message updated"))
-            .catch(err => console.error(err));
-    });
+function UserUpdate(HandledRequest, response, User) {
+    // Generating salt for the master password
+    let salt = MessageGenerator();
+    hash.update(HandledRequest.body.MasterPw + salt)
+
+    // Generating new message for user
+    message = MessageGenerator();
+
+    // Updating user
+    User.update({
+        Username: HandledRequest.body.Username,
+        UserID: HandledRequest.body.ID,
+        Message: message,
+        MasterPw: hash.copy().digest('hex'),
+        Salt: salt
+    })
+        .then(() => response.end("User updated updated"))
+        .catch(err => console.error(err));
 }
-function MessageCreate(HandledRequest, response) {
+
+function UserCreate(HandledRequest, response, User) {
+    // Generating salt for the master password
+    let salt = MessageGenerator();
+    hash.update(HandledRequest.body.MasterPw + salt)
+
+    //Generating User
     message = MessageGenerator();
     Messages.create({
         Username: HandledRequest.body.Username,
         UserID: HandledRequest.body.ID,
-        Message: message
+        Message: message,
+        MasterPw: hash.copy().digest('hex'),
+        Salt: salt
     }).then(() => response.end("Message created"))
         .catch(() => {
             RejectRequest(response, 'User is already in database');
         });
 }
+
 function UpdateKeys(HandledRequest, response) {
     Keys.update({
         ID: 1,
@@ -227,16 +236,20 @@ function USBIDReponse(HandledRequest, response) {
                 }).catch(err => console.error(err));
         })
 }
+
 function AuthenticateUser(HandledRequest, response) {
     Keys.findByPk(1)
         .then(Key => {
-            Messages.findByPk(HandledRequest.body.Username)
-                .then(element => {
-                    if (element != null) {
+            Messages.findByPk(HandledRequest.body.UserID)
+                .then(User => {
+                    if (User != null) {
                         let privateKey = Key.dataValues.PrivateKey;
                         let passphrase = Key.dataValues.Passphrase;
-                        if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(HandledRequest.body.Message)) == element.Message) {
-                            response.end(JSON.stringify({ Username: HandledRequest.body.Username, Authenticated: true }));
+                        if (crypto.privateDecrypt({ key: privateKey, passphrase: passphrase }, Buffer.from(HandledRequest.body.Message)) == User.Message) {
+                            hash.update(HandledRequest.body.MasterPw + User.salt)
+                            if (hash.copy().digest('hex') == User.MasterPw) {
+                                response.end('User authed xD TRIKS');
+                            }
                         }
                     } else {
                         //temporary solution
@@ -264,7 +277,7 @@ function GetPasswords(request, response) {
                 let websites = []
                 console.log(data[0].dataValues);
                 data.forEach(website => {
-                    websites.push(website.dataValues);      
+                    websites.push(website.dataValues);
                 });
                 response.end(JSON.stringify(websites));
             });
