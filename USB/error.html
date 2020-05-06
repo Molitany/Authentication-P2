@@ -18,6 +18,24 @@
         </div>
     </div>
     <h1>Please input the USB Device</h1>
+    <script>
+        const { remote } = require('electron');
 
+        window.onload = () => {
+            document.getElementById("min_button").addEventListener("click", () => {
+                remote.getCurrentWindow().minimize();
+            });
+            document.getElementById("max_button").addEventListener("click", () => {
+                if (remote.getCurrentWindow().isMaximized())
+                    remote.getCurrentWindow().unmaximize();
+                else
+                    remote.getCurrentWindow().maximize();
+            });
+            document.getElementById("close_button").addEventListener("click", () => {
+                remote.getCurrentWindow().close();
+            });
+        }
+    </script>
 </body>
+
 </html>

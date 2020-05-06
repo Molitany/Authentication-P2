@@ -11,8 +11,13 @@ const Message = new Sequelize({
     dialect: 'sqlite',
     storage: 'database.sqlite'
 });
+const User = new Sequelize({
+    dialect: 'sqlite',
+    storage: 'database.sqlite'
+});
+
 module.exports.Keys = Keysets.define('Keys', {
-    id: {
+    ID: {
         type: DataTypes.NUMBER,
         primaryKey: true
     },
@@ -27,20 +32,34 @@ module.exports.Keys = Keysets.define('Keys', {
     }
 });
 module.exports.Messages = Message.define('Message', {
-    Username: {
-        type: DataTypes.STRING,
+    UserID: {
+        type: DataTypes.INTEGER,
         primaryKey: true
     },
+    Username: {
+        type: DataTypes.STRING,
+    },
     Message: {
+        type: DataTypes.BLOB
+    },
+    MasterPw: {
+        type: DataTypes.STRING
+    },
+    Salt: {
         type: DataTypes.STRING
     }
 });
-module.exports.User = sequelize.define('User', {
-    id: {
-        type: DataTypes.STRING,
+module.exports.Website = sequelize.define('Website', {
+    index: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
         primaryKey: true
+    },
+    ID: {
+        type: DataTypes.STRING
     },
     password: {
         type: DataTypes.STRING
     }
 });
+

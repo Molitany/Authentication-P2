@@ -3,7 +3,11 @@ document.getElementById("submit").addEventListener("click", e => {
     delete_table("tbody")
     bigfetch()
 })
+document.addEventListener('keypress', event => {
+    console.log('dab');
+    LightMode();
 
+})
 function create_row(number, website, password, table_id) {
     table = document.getElementById(table_id);
     row = document.createElement('TR');
@@ -26,7 +30,7 @@ function delete_table(table_id){
 function insert_table(table_id, data_obj) {
     data_obj = JSON.parse(data_obj)
     for (let i = 0; i < data_obj.length; i++) {
-        create_row(i + 1, data_obj[i].id, data_obj[i].password, table_id);
+        create_row(i + 1, data_obj[i].WebsiteId, data_obj[i].password, table_id);
     }
 }
 
@@ -71,5 +75,7 @@ function bigfetch() {
         document.getElementById("usbdevice").innerHTML = "Please input USB device and start the server";
     })
 }
-
-bigfetch()
+function LightMode(){
+    document.getElementById('stylesheet').href = 'lightmode.css';
+}
+//bigfetch()
