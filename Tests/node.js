@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { Messages, Keys } = require('../Server/databasemodule.js')
+const { User, Website, Messages, Keys } = require('../Server/databasemodule.js');
 
 let Message;
 
