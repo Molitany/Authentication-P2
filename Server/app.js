@@ -134,6 +134,7 @@ function TableSync(TableArray, response) {
             RejectRequest(response, err);
         });
 }
+
 function PostRequestHandler(request, body) {
     let HandledRequest = {
         body: '',
@@ -164,6 +165,7 @@ function PostRequestHandler(request, body) {
     }
     return HandledRequest;
 }
+
 function RejectRequest(response, message) {
     response.writeHead(400, {
         'Content-Type': '*',
@@ -171,6 +173,7 @@ function RejectRequest(response, message) {
     });
     response.end(message);
 }
+
 function MessageGenerator() {
     let message = '';
     let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
@@ -215,17 +218,36 @@ function UserCreate(HandledRequest, response, encryptObj) {
 }
 
 function UpdateKeys(HandledRequest, response) {
-    Keys.update({
-        ID: 1,
-        PublicKey: HandledRequest.body.PublicKey,
-        PrivateKey: HandledRequest.body.PrivateKey,
-        Passphrase: HandledRequest.body.passphrase
-    }, { where: {} })
-        .then(keys => {
-            console.log(keys);
-            Keys.findAll().then(table => console.log(table))
-        })
-        .then(() => response.end("Keys created"));
+    Keys.findByPk(1).then(Key => {
+        if (Key == null) {
+            Keys.create({
+                ID: 1,
+                PublicKey: HandledRequest.body.PublicKey,
+                PrivateKey: HandledRequest.body.PrivateKey,
+                Passphrase: HandledRequest.body.passphrase
+            }, { where: {} })
+                .then(keys => {
+                    console.log(keys);
+                    Keys.findAll().then(table => console.log(table))
+                })
+                .then(() => response.end("Keys created"));
+        
+        }
+        else {
+            Keys.update({
+                ID: 1,
+                PublicKey: HandledRequest.body.PublicKey,
+                PrivateKey: HandledRequest.body.PrivateKey,
+                Passphrase: HandledRequest.body.passphrase
+            }, { where: {} })
+                .then(keys => {
+                    console.log(keys);
+                    Keys.findAll().then(table => console.log(table))
+                })
+                .then(() => response.end("Keys updated"));
+
+        }
+    })
 }
 
 function USBIDReponse(HandledRequest, response) {
@@ -244,17 +266,17 @@ function AuthenticateUser(HandledRequest, response) {
     Keys.findByPk(1)
         .then(Key => {
             Messages.findByPk(HandledRequest.body.UserID)
-                .then(User => { 
+                .then(User => {
                     if (User != null) {
-                        console.log(crypto.privateDecrypt({key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase}, User.Message).toString());
+                        console.log(crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, User.Message).toString());
                         console.log(HandledRequest.body.Message.toString());
-                        if (HandledRequest.body.Message == crypto.privateDecrypt({key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase}, User.Message)) {
+                        if (HandledRequest.body.Message == crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, User.Message)) {
                             hash.update(HandledRequest.body.MasterPw + User.salt)
                             console.log('TRIKS LUNCH');
                             if (hash.copy().digest('hex') == User.MasterPw) {
                                 response.end('User authed xD TRIKS');
                             }
-                        }else{
+                        } else {
                             console.log('No TRIKS');
                             response.end('User not found');
                         }
@@ -265,6 +287,7 @@ function AuthenticateUser(HandledRequest, response) {
                 });
         });
 }
+
 function CreateWebPas(HandledRequest, request, response) {
     Messages.findByPk(request.headers['user-id']).then(User => {
         User.createWebsite({
@@ -277,6 +300,7 @@ function CreateWebPas(HandledRequest, request, response) {
     })
         .catch(err => console.error(err));
 }
+
 function GetPasswords(request, response) {
     Messages.findByPk(request.headers['user-id'])
         .then(User => {
