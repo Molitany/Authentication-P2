@@ -35,7 +35,7 @@ const server = http.createServer((request, response) => {
 
                 // Requesting user in database
                 case 'ChangePDID':
-                    Messages.findOne({ where: { Username: HandledRequest.body.Username } }).then(User => {
+                    Messages.findOne({ where: { UserID: HandledRequest.body.ID } }).then(User => {
                         let encryptObj = { message: '', body: '' }
                         // Encryption object created to secure messages in database
                         Keys.findByPk(1)
@@ -186,7 +186,7 @@ function UserUpdate(HandledRequest, response, User, encryptObj) {
     console.log(encryptObj.message.toString());
     // Updating user
     User.update({
-        Username: HandledRequest.body.Username,
+        //Username: HandledRequest.body.Username,
         UserID: HandledRequest.body.ID,
         Message: crypto.publicEncrypt(encryptObj.body, encryptObj.message),
         MasterPw: hash.copy().digest('hex'),
@@ -203,7 +203,7 @@ function UserCreate(HandledRequest, response, encryptObj) {
 
     //Generating User
     Messages.create({
-        Username: HandledRequest.body.Username,
+        //Username: HandledRequest.body.Username,
         UserID: HandledRequest.body.ID,
         Message: crypto.publicEncrypt(encryptObj.body, encryptObj.message),
         MasterPw: hash.copy().digest('hex'),
@@ -233,9 +233,9 @@ function USBIDReponse(HandledRequest, response) {
         'Content-Type': '*',
         'Access-Control-Allow-Origin': '*'
     });
-    Messages.findByPk(HandledRequest.body)
+    Messages.findByPk(49)
         .then(User => {
-            response.end(JSON.stringify({ Username: HandledRequest.body, ID: User.UserID, Message: User.Message }));
+            response.end(JSON.stringify({ Username: HandledRequest.body, ID: 49, Message: User.dataValues.Message }));
         })
         .catch(err => console.error(err));
 }

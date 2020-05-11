@@ -42,12 +42,6 @@ module.exports.Messages = Message.define('Message', {
     MasterPw: {
         type: DataTypes.STRING
     },
-    Message: {
-        type: DataTypes.STRING
-    },
-    MasterPw: {
-        type: DataTypes.STRING
-    },
     Salt: {
         type: DataTypes.STRING
     }
