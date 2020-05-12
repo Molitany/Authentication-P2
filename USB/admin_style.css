@@ -84,7 +84,8 @@ input:hover {
 }
 
 #table{
-    align-self: center;
+    margin: 0 auto;
+    border-collapse: collapse;
 }
 
 #tableHeader th {

@@ -12,12 +12,15 @@ TableSync([Website.sync(), Keys.sync(), Messages.sync()]);
 
 const server = http.createServer((request, response) => {
     TableSync([Website.sync(), Keys.sync(), Messages.sync()], response);
-    let body = '', HandledRequest;
+    let body = '', HandledRequest = {
+        body: '',
+        type: ''
+    };
     if (request.method == 'POST') {
         //Reading data from the request
         request.on('data', chunk => {
             body += chunk.toString();
-            HandledRequest = PostRequestHandler(request, body)
+            HandledRequest = PostRequestHandler(HandledRequest, request, body)
         });
 
         // After all data has been recieved we handle the requests.
@@ -129,11 +132,7 @@ function TableSync(TableArray, response) {
         });
 }
 
-function PostRequestHandler(request, body) {
-    let HandledRequest = {
-        body: '',
-        type: ''
-    }
+function PostRequestHandler(HandledRequest, request, body) {
 
     switch (request.url) {
         case '/AuthUser':
@@ -159,6 +158,9 @@ function PostRequestHandler(request, body) {
         case '/ChooseUser':
             HandledRequest.body = body;
             HandledRequest.type = 'ChooseUser';
+            break;
+        default:
+            break;
     }
     return HandledRequest;
 }
@@ -211,7 +213,8 @@ function UserCreate(HandledRequest, response, encryptObj) {
         Salt: salt,
         Info: HandledRequest.body.Info
     }).then(() => response.end("Message created"))
-        .catch(() => {
+        .catch(err => {
+            console.error(err)
             RejectRequest(response, 'User is already in database');
         });
 }

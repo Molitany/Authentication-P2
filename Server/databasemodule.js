@@ -37,19 +37,39 @@ module.exports.Messages = Message.define('Message', {
         primaryKey: true
     },
     Username: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }        
     },
     Message: {
-        type: DataTypes.BLOB
+        type: DataTypes.BLOB,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }        
     },
     Info: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }        
     },
     MasterPw: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }        
     },
     Salt: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }        
     }
 });
 module.exports.Website = sequelize.define('Website', {
