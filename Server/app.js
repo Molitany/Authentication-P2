@@ -39,7 +39,7 @@ const server = http.createServer((request, response) => {
                 // Requesting user in database
                 case 'ChangePDID':
                     //FindUsersByName(HandledRequest);
-                    Messages.findOne({ where: { UserID: USBIDReponse } }).then(User => {
+                    Messages.findOne({ where: { UserID: HandledRequest.body.ID } }).then(User => {
                         let encryptObj = { message: '', body: '' }
                         // Encryption object created to secure messages in database
                         Keys.findByPk(1)
@@ -157,8 +157,8 @@ function PostRequestHandler(request, body) {
             HandledRequest.type = 'PostPassword'
             break;
         case '/ChooseUser':
-            HandledRequest.body = JSON.parse(body);
-            HandledRequest.type = 'ChooseUser'
+            HandledRequest.body = body;
+            HandledRequest.type = 'ChooseUser';
     }
     return HandledRequest;
 }
@@ -248,44 +248,58 @@ function UpdateKeys(HandledRequest, response) {
         }
     })
 }
-
+/*
+else if (Users.length == 1) {
+    AcceptRequest(response, 200);
+    response.end(JSON.stringify({ Username: Users[0].dataValues.Username, ID: Users[0].dataValues.UserID, Message: Users[0].dataValues.Message }))
+}
+*/
 function USBIDReponse(HandledRequest, response) {
-    if (HandledRequest.body.type == 'ChooseUser') {
-        Messages.findByPk(HandledRequest.body.ID)
+    if (HandledRequest.type == 'ChooseUser') {
+        GetUserByInfo(HandledRequest.body)
             .then(User => {
-                return User
+                response.end(JSON.stringify({Message: User.dataValues.Message, UserID: User.dataValues.UserID, Username: User.dataValues.Username}))
             })
     } else {
-        Messages.findAll({ where: { Username: HandledRequest.body } })
-            .then(Users => {
-                /*  First we find out how many users are in the database, with the same name.
-                    if the amount of users is 1, then we proceed to update that user, else we
-                    return a list of users to the admin tools website for them to decide.*/
-                if (Users.length == 0) {
-                    RejectRequest(response, 'User not found');
-                    return;
-                }
-                else if (Users.length == 1) {
-                    AcceptRequest(response, 200);
-                    response.end(JSON.stringify({ Username: Users[0].dataValues.Username, ID: Users[0].dataValues.UserID, Message: Users[0].dataValues.Message }));
-                }
-                else {
-                    // ask for a get request instead to handle which user is chosen
-                    AcceptRequest(response, 202);
-                    let userArray = []
-                    Users.forEach(User => {
-                        formattedUser = {
-                            Username: User.Username,
-                            Info: User.Info
-                        }
-                        userArray.push(formattedUser)
-                    })
-                    response.end(JSON.stringify(userArray))
-                }
-            })
+        MultipleUsersInDatabase(HandledRequest, response)
     }
 }
+function GetUserByInfo(info) {
+    console.log(info);
+    return new Promise(resolve => {
+        resolve(Messages.findOne({ where: { Info: info } })
+            .then(User => {
+                return User
+            }))
+    })
+}
+function MultipleUsersInDatabase(HandledRequest, response) {
+    Messages.findAll({ where: { Username: HandledRequest.body } })
+        .then(Users => {
+            /*  First we find out how many users are in the database, with the same name.
+                if the amount of users is 1, then we proceed to update that user, else we
+                return a list of users to the admin tools website for them to decide.*/
+            if (Users.length == 0) {
+                console.log('User not found');
+                RejectRequest(response, 'User not found');
+                return;
+            }
+            else {
+                // ask for a get request instead to handle which user is chosen
+                AcceptRequest(response, 202);
+                let userArray = []
+                Users.forEach(User => {
+                    formattedUser = {
+                        Username: User.Username,
+                        Info: User.Info
+                    }
+                    userArray.push(formattedUser)
+                })
+                response.end(JSON.stringify(userArray))
+            }
+        })
 
+}
 function AuthenticateUser(HandledRequest, response) {
     Keys.findByPk(1)
         .then(Key => {
