@@ -32,9 +32,13 @@ const server = http.createServer((request, response) => {
                 case 'ChangePriPubKey':
                     UpdateKeys(HandledRequest, response);
                     break;
+                case 'ChooseUser':
+                    USBIDReponse(HandledRequest, response)
+                    break;
 
                 // Requesting user in database
                 case 'ChangePDID':
+                    //FindUsersByName(HandledRequest);
                     Messages.findOne({ where: { UserID: HandledRequest.body.ID } }).then(User => {
                         let encryptObj = { message: '', body: '' }
                         // Encryption object created to secure messages in database
@@ -90,23 +94,13 @@ const server = http.createServer((request, response) => {
     }
 
     else if (request.method == 'GET') {
-        response.writeHead(200, {
-            'Content-Type': '*',
-            'Access-Control-Allow-Origin': '*'
-        });
+        AcceptRequest(response, 200);
         GetPasswords(request, response);
     } else if (request.method == 'OPTIONS') {
-        response.writeHead(200, {
-            'Content-Type': '*',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': '*'
-        });
+        AcceptRequest(response, 200);
         response.end("Access granted to 'OPTIONS'");
     } else if (request.method == 'DELETE') {
-        response.writeHead(200, {
-            'Content-Type': '*',
-            'Access-Control-Allow-Origin': '*'
-        });
+        AcceptRequest(response, 200);
         //Reading the ID of the element to delete(the child).code
         let body = '';
         request.on('data', chunk => {
@@ -162,6 +156,9 @@ function PostRequestHandler(request, body) {
             HandledRequest.body = body.split('~');
             HandledRequest.type = 'PostPassword'
             break;
+        case '/ChooseUser':
+            HandledRequest.body = JSON.parse(body);
+            HandledRequest.type = 'ChooseUser'
     }
     return HandledRequest;
 }
@@ -195,7 +192,7 @@ function UserUpdate(HandledRequest, response, User, encryptObj) {
         MasterPw: hash.copy().digest('hex'),
         Salt: salt
     })
-        .then(() => response.end("User updated updated"))
+        .then(() => response.end('User updated'))
         .catch(err => console.error(err));
 }
 
@@ -206,7 +203,7 @@ function UserCreate(HandledRequest, response, encryptObj) {
 
     //Generating User
     Messages.create({
-        //Username: HandledRequest.body.Username,
+        Username: HandledRequest.body.Username,
         UserID: HandledRequest.body.ID,
         Message: crypto.publicEncrypt(encryptObj.body, encryptObj.message),
         MasterPw: hash.copy().digest('hex'),
@@ -231,7 +228,7 @@ function UpdateKeys(HandledRequest, response) {
                     Keys.findAll().then(table => console.log(table))
                 })
                 .then(() => response.end("Keys created"));
-        
+
         }
         else {
             Keys.update({
@@ -251,15 +248,40 @@ function UpdateKeys(HandledRequest, response) {
 }
 
 function USBIDReponse(HandledRequest, response) {
-    response.writeHead(200, {
-        'Content-Type': '*',
-        'Access-Control-Allow-Origin': '*'
-    });
-    Messages.findByPk(49)
-        .then(User => {
-            response.end(JSON.stringify({ Username: HandledRequest.body, ID: 49, Message: User.dataValues.Message }));
-        })
-        .catch(err => console.error(err));
+    if (HandledRequest.body.type == 'ChooseUser') {
+        Messages.findByPk(HandledRequest.body.UserID)
+            .then(User => {
+                response.end(JSON.stringify({ Username: User.dataValues.Username, ID: User.dataValues.UserID, Message: User.dataValues.Message }));
+            })
+    } else {
+        Messages.findAll({ where: { Username: HandledRequest.body } })
+            .then(Users => {
+                /*  First we find out how many users are in the database, with the same name.
+                    if the amount of users is 1, then we proceed to update that user, else we
+                    return a list of users to the admin tools website for them to decide.*/
+                if (Users.length == 0) {
+                    RejectRequest(response, 'User not found');
+                    return;
+                }
+                else if (Users.length == 1) {
+                    AcceptRequest(response, '200');
+                    response.end(JSON.stringify({ Username: Users[0].dataValues.Username, ID: Users[0].dataValues.UserID, Message: Users[0].dataValues.Message }));
+                }
+                else {
+                    // ask for a get request instead to handle which user is chosen
+                    AcceptRequest(response, '169');
+                    let userArray = []
+                    Users.forEach(User => {
+                        formattedUser = {
+                            Username: User.Username,
+                            Info: User.Info
+                        }
+                        userArray.push(formattedUser)
+                    })
+                    response.end(JSON.stringify(userArray))
+                }
+            })
+    }
 }
 
 function AuthenticateUser(HandledRequest, response) {
@@ -272,7 +294,6 @@ function AuthenticateUser(HandledRequest, response) {
                         console.log(HandledRequest.body.Message.toString());
                         if (HandledRequest.body.Message == crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, User.Message)) {
                             hash.update(HandledRequest.body.MasterPw + User.salt)
-                            console.log('TRIKS LUNCH');
                             if (hash.copy().digest('hex') == User.MasterPw) {
                                 response.end('User authed xD TRIKS');
                             }
@@ -314,4 +335,11 @@ function GetPasswords(request, response) {
             });
         })
         .catch(err => console.error(err));
+}
+
+function AcceptRequest(response, statusCode) {
+    response.writeHead(statusCode, {
+        'Content-Type': '*',
+        'Access-Control-Allow-Origin': '*'
+    });
 }
