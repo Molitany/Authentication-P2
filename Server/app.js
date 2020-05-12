@@ -39,7 +39,7 @@ const server = http.createServer((request, response) => {
                 // Requesting user in database
                 case 'ChangePDID':
                     //FindUsersByName(HandledRequest);
-                    Messages.findOne({ where: { UserID: HandledRequest.body.ID } }).then(User => {
+                    Messages.findOne({ where: { UserID: USBIDReponse } }).then(User => {
                         let encryptObj = { message: '', body: '' }
                         // Encryption object created to secure messages in database
                         Keys.findByPk(1)
@@ -186,11 +186,12 @@ function UserUpdate(HandledRequest, response, User, encryptObj) {
     console.log(encryptObj.message.toString());
     // Updating user
     User.update({
-        //Username: HandledRequest.body.Username,
+        Username: HandledRequest.body.Username,
         UserID: HandledRequest.body.ID,
         Message: crypto.publicEncrypt(encryptObj.body, encryptObj.message),
         MasterPw: hash.copy().digest('hex'),
-        Salt: salt
+        Salt: salt,
+        Info: HandledRequest.body.Info
     })
         .then(() => response.end('User updated'))
         .catch(err => console.error(err));
@@ -207,7 +208,8 @@ function UserCreate(HandledRequest, response, encryptObj) {
         UserID: HandledRequest.body.ID,
         Message: crypto.publicEncrypt(encryptObj.body, encryptObj.message),
         MasterPw: hash.copy().digest('hex'),
-        Salt: salt
+        Salt: salt,
+        Info: HandledRequest.body.Info
     }).then(() => response.end("Message created"))
         .catch(() => {
             RejectRequest(response, 'User is already in database');
@@ -249,9 +251,9 @@ function UpdateKeys(HandledRequest, response) {
 
 function USBIDReponse(HandledRequest, response) {
     if (HandledRequest.body.type == 'ChooseUser') {
-        Messages.findByPk(HandledRequest.body.UserID)
+        Messages.findByPk(HandledRequest.body.ID)
             .then(User => {
-                response.end(JSON.stringify({ Username: User.dataValues.Username, ID: User.dataValues.UserID, Message: User.dataValues.Message }));
+                return User
             })
     } else {
         Messages.findAll({ where: { Username: HandledRequest.body } })
@@ -264,12 +266,12 @@ function USBIDReponse(HandledRequest, response) {
                     return;
                 }
                 else if (Users.length == 1) {
-                    AcceptRequest(response, '200');
+                    AcceptRequest(response, 200);
                     response.end(JSON.stringify({ Username: Users[0].dataValues.Username, ID: Users[0].dataValues.UserID, Message: Users[0].dataValues.Message }));
                 }
                 else {
                     // ask for a get request instead to handle which user is chosen
-                    AcceptRequest(response, '169');
+                    AcceptRequest(response, 202);
                     let userArray = []
                     Users.forEach(User => {
                         formattedUser = {
@@ -343,3 +345,4 @@ function AcceptRequest(response, statusCode) {
         'Access-Control-Allow-Origin': '*'
     });
 }
+

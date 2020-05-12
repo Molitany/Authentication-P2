@@ -82,3 +82,28 @@ input:hover {
 .test button {
     font-size: 200%;
 }
+
+#table{
+    align-self: center;
+}
+
+#tableHeader th {
+    width: 500px;
+    color: teal;
+    height: 50px;
+    border: solid;
+}
+
+tr {
+    height: 50px;
+    border: solid;
+}
+
+tr:hover {
+    transition-duration: .3s;
+    background-color: rgb(34, 34, 34);
+}
+
+td {
+    text-align: center;
+}

@@ -1,7 +1,5 @@
 const { remote } = require('electron');
 const fs = require('fs');
-console.log(fs);
-
 let element = "";
 
 window.onload = () => {
@@ -25,6 +23,11 @@ function MessageToUSB() {
         body: document.getElementById('employee').value
     })
         .then(res => {
+            if (res.status === 202){
+                res.json().then(users => {
+                    ShowUsersFound(users);
+                })
+            }
             if (!res.ok)
                 throw res;
             return res;
@@ -39,15 +42,21 @@ function MessageToUSB() {
         .catch(err => console.error(err));
 }
 
+function ShowUsersFound(users){
+    insert_table('tbody', users)
+    
+}
+
 function MessageGen(update) {
     let UserID;
     if (update == false) {
         UserID = parseInt(fs.readFileSync('user_id.ini', 'utf8'));
         fs.writeFileSync('user_id.ini', UserID + 1);
     }
+    console.log(UserID)
     fetch("http://localhost:3000/UpdateCreatePDID", {
         method: 'POST',
-        body: JSON.stringify({ Username: document.getElementById('employee').value, Update: update, ID: UserID, MasterPw: document.getElementById('masterpw').value})
+        body: JSON.stringify({ Username: document.getElementById('employee').value, Update: update, ID: UserID, MasterPw: document.getElementById('masterpw').value, Info: document.getElementById('info').value})
     })
         .then(res => {
             element = document.getElementById("response_message");
@@ -84,4 +93,22 @@ function MessageGen(update) {
                 }, 4000);
             }
         });
+}
+
+function insert_table(table_id, data_obj) {
+    for (let i = 0; i < data_obj.length; i++) {
+        create_row(data_obj[i].Username, data_obj[i].Info, table_id);
+    }
+}
+
+function create_row(username, info, table_id) {
+    table = document.getElementById(table_id);
+    row = document.createElement('TR');
+    table.appendChild(row);
+    for (let i = 0; i < 3; i++) {
+        td = document.createElement('TD');
+        row.appendChild(td);
+    }
+    row.childNodes[0].innerHTML = username;
+    row.childNodes[1].innerHTML = info;
 }
