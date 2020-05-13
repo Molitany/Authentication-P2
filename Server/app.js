@@ -10,6 +10,7 @@ Website.belongsTo(Messages);
 // Syncing the database
 TableSync([Website.sync(), Keys.sync(), Messages.sync()]);
 
+//Creating a http server
 const server = http.createServer((request, response) => {
     TableSync([Website.sync(), Keys.sync(), Messages.sync()], response);
     let body = '', HandledRequest;
@@ -20,7 +21,7 @@ const server = http.createServer((request, response) => {
             HandledRequest = PostRequestHandler(request, body)
         });
 
-        // After all data has been recieved we handle the requests.
+        // After all data has been recieved we handle the requests
         request.on('end', () => {
             switch (HandledRequest.type) {
                 // Gives response back whether or not the user is in the database
@@ -134,7 +135,8 @@ function TableSync(TableArray, response) {
             RejectRequest(response, err);
         });
 }
-
+//Function used to handle whether a request is supposed to authendicate user, change privateKey,
+//Change physical device ID or write physical device ID, post password
 function PostRequestHandler(request, body) {
     let HandledRequest = {
         body: '',
