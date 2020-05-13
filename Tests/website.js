@@ -6,10 +6,11 @@ describe("#Filter through the table", () => {
 
         for (let i = 0; i < a.length; i++) {
             let specific_value = a[i]; // specify what we want to compare
-
-            if (specific_value.indexOf(search_text)) {
+            if (specific_value.indexOf(search_text) != -1) {
                 done()
-            } else {}
+            } else {
+                //do nothing
+            }
         }
     });
 });
