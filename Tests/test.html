@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8"  />
+        <title>Test Area</title>
+
+
+    </head>
+
+    <body>
+
+        <table id="table">
+
+            <tr id="tableheader">
+                <th>random_1</th>
+                <th>random_2</th>
+                <th>random_3</th>
+            </tr>
+            <tbody id="tablebody">
+
+
+                <tr>
+                    <td>1</td>
+                    <td>there</td>
+                    <td>1</td>
+
+
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>there</td>
+                    <td>12</td>
+
+
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>there</td>
+                    <td>123</td>
+
+
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>there</td>
+                    <td>1234</td>
+
+
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>there</td>
+                    <td>12345</td>
+
+
+                </tr>
+
+            </tbody>
+
+        </table>when you Press the button it should take the third row and third colune and copy it: <br>
+
+        <button type="button" onclick="copy()">test</button><br><br><br><br>
+        <script src="copyToClipboard.js"></script>
+        <style>
+            html {
+                text-align: center;
+            }
+            
+            table {
+                width: 300px;
+                margin: auto;
+                font-size: 230%;
+            }
+            
+            table,
+            th,
+            td {
+                border: solid;
+                text-align: center;
+            }
+            
+            button {
+                position: absolute;
+                font-size: 300%;
+            }
+        </style>
+        <script>
+            function copy() {
+                let x = document.getElementById("tablebody");
+                let y = x.rows;
+                const toCopy = document.createElement("textarea");
+                console.log(y.length);
+                let copy = y[2].cells[2].innerHTML;
+                console.log(copy);
+                if (copy == y[2].cells[2].innerHTML) {
+                    toCopy.value = copy;
+                    document.body.appendChild(toCopy)
+                    toCopy.select();
+                    document.execCommand('copy');
+                    console.log("DONE!!!!");
+                }
+            }
+        </script>
+
+    </body>
+
+    </html>
