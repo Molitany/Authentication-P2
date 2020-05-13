@@ -1,5 +1,5 @@
 describe("#Filter through the table", () => {
-    it("should show us the  website with the keyword from search", function (done) {
+    it("should show us the  website with the keyword from search", function(done) {
         let search_text = "f";
         let table = ["www.facebook.com"];
         let a = table; //let a be all rows
@@ -9,7 +9,7 @@ describe("#Filter through the table", () => {
 
             if (specific_value.indexOf(search_text)) {
                 done()
-            } else { } 
+            } else {}
         }
     });
 });
