@@ -186,14 +186,13 @@ function MessageGenerator() {
 function UserUpdate(HandledRequest, response, User, encryptObj) {
     // Generating salt for the master password
     let salt = MessageGenerator();
-    hash.update(HandledRequest.body.MasterPw + salt);
     console.log(encryptObj.message.toString());
     // Updating user
     User.update({
         Username: HandledRequest.body.Username,
         UserID: HandledRequest.body.ID,
         Message: crypto.publicEncrypt(encryptObj.body, encryptObj.message),
-        MasterPw: hash.copy().digest('hex'),
+        MasterPw: hash.copy().update(HandledRequest.body.MasterPw + salt).digest('hex'),
         Salt: salt,
         Info: HandledRequest.body.Info
     })
@@ -204,17 +203,17 @@ function UserUpdate(HandledRequest, response, User, encryptObj) {
 function UserCreate(HandledRequest, response, encryptObj) {
     // Generating salt for the master password
     let salt = MessageGenerator(), message, body;
-    hash.update(HandledRequest.body.MasterPw + salt)
-
     //Generating User
     Messages.create({
         Username: HandledRequest.body.Username,
         UserID: HandledRequest.body.ID,
         Message: crypto.publicEncrypt(encryptObj.body, encryptObj.message),
-        MasterPw: hash.copy().digest('hex'),
+        MasterPw: hash.copy().update(HandledRequest.body.MasterPw + salt).digest('hex'),
         Salt: salt,
         Info: HandledRequest.body.Info
-    }).then(() => response.end("Message created"))
+    }).then(() => {
+        response.end("Message created")
+    })
         .catch(err => {
             console.error(err)
             RejectRequest(response, 'User is already in database');
@@ -311,16 +310,12 @@ function AuthenticateUser(HandledRequest, response) {
             Messages.findByPk(HandledRequest.body.UserID)
                 .then(User => {
                     if (User != null) {
-                        console.log(crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, User.Message).toString());
-                        console.log(HandledRequest.body.Message.toString());
-                        if (HandledRequest.body.Message == crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, User.Message)) {
-                            hash.update(HandledRequest.body.MasterPw + User.salt)
-                            if (hash.copy().digest('hex') == User.MasterPw) {
+                        if (crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, Buffer.from(HandledRequest.body.Message)).equals(crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, User.Message))) {
+                            if (hash.copy().update(HandledRequest.body.MasterPw + User.dataValues.Salt).digest('hex') == User.MasterPw) {
                                 response.end('User authed xD TRIKS');
                             }
                         } else {
-                            console.log('No TRIKS');
-                            response.end('User not found');
+                            response.end('User not found INNER');
                         }
                     } else {
                         //temporary solution
@@ -364,4 +359,3 @@ function AcceptRequest(response, statusCode) {
         'Access-Control-Allow-Origin': '*'
     });
 }
-
