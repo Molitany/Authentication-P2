@@ -1,0 +1,235 @@
+body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background-color: rgb(29, 68, 76);
+    padding: 2vh 0 2.8vh 0;
+    margin: 0;
+    padding: 0px;
+}
+
+.app-title {
+    text-align: center;
+    font-weight: normal;
+    font-size: 2.6rem;
+    color: #ffffff;
+    padding-top: 3vh;
+    padding-bottom: 2vh;
+    margin: 0px;
+    margin-top: -80px;
+}
+
+.app-sub {
+    text-align: center;
+    font-weight: normal;
+    font-size: 1rem;
+    color: #ffffff;
+    margin: 0px;
+    padding-bottom: 2vh;
+}
+
+.box {
+    width: 60vh;
+    height: 2vh;
+    padding: 2vh;
+    margin: 1vh auto;
+    background-color: #fff;
+    box-shadow: .1vh .1vh 2vh black;
+    overflow: hidden;
+}
+
+.url-text {
+    align-self: left;
+    font-weight: normal;
+    font-size: 1.1rem;
+    padding: 2vh;
+}
+
+.psw-text {
+    text-align: right;
+    font-weight: normal;
+    font-size: 1.1rem;
+    padding: 2vh;
+    cursor: pointer;
+}
+
+.psw-title {
+    text-align: center;
+    font-weight: normal;
+    font-size: 1rem;
+    color: #ffffff;
+}
+
+.box-title {
+    width: 61vh;
+    padding: 2vh;
+    margin: 0.5vh auto;
+    overflow: hidden;
+    color: #ffffff;
+    padding-bottom: 5px;
+}
+
+.footer {
+    font-size: 0.7rem;
+    color: #ffffff;
+    text-align: center;
+    margin: 0;
+}
+
+.image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    height: 100%;
+}
+
+.button {
+    position: absolute;
+    margin-top: 5vh;
+    padding-top: 2vh;
+}
+
+.button button {
+    position: absolute;
+    right: -70px;
+    margin-top: -61px;
+    height: 50px;
+    width: 40px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.plus {
+    position: absolute;
+    margin-left: 70px;
+}
+
+.addh1 {
+    font-size: 1rem;
+    z-index: 0;
+    opacity: .2;
+    padding-bottom: 0vh;
+    margin-left: 1vh;
+    position: absolute;
+}
+
+.plus button {
+    border-radius: 50px;
+    border: 5px solid #fff;
+    overflow: hidden;
+    width: 15vh;
+    height: 6vh;
+    margin-left: 35vh;
+    margin-top: 0vh;
+    background: none;
+    z-index: 0;
+    box-shadow: .1vh .1vh 2vh black;
+    cursor: pointer;
+}
+
+.plus i {
+    margin-left: 6.7vh;
+}
+
+.plus button:hover {
+    background-color: #fff;
+}
+
+.login-form {
+    position: absolute;
+    width: 400px;
+    height: 200px;
+    background-color: #fff;
+    margin-top: 0vh;
+    z-index: 1;
+    box-shadow: .1vh .1vh 2vh black;
+    border-radius: 30px;
+}
+
+.login-form input {
+    font-style: italic;
+    text-align: center;
+    color: black;
+    margin-top: 3vh;
+    margin-left: 6vh;
+    font-size: 120%;
+    background: none;
+    border: none;
+    width: 30vh;
+    outline: none;
+}
+
+.login-form input:hover {
+    animation: expand2 8s;
+}
+
+.login-form button {
+    border-radius: 50px;
+    border: 5px solid #fff;
+    overflow: hidden;
+    font-style: italic;
+    color: black;
+    margin-left: 6vh;
+    margin-top: 1.5vh;
+    font-size: 120%;
+    width: 30vh;
+    border: none;
+    background: none;
+    box-shadow: .1vh .1vh 2vh black;
+}
+
+.input-form {
+    position: absolute;
+    margin-left: -43.3vh;
+    margin-top: 8vh;
+    transition-duration: 1s;
+}
+
+.submit {
+    cursor: pointer;
+}
+
+.searchBar {
+    background-image: linear-gradient(rgb(34, 34, 34), rgb(29, 68, 76));
+}
+
+.searchBar input {
+    font-style: italic;
+    color: #BDBDBD;
+    margin: 20px;
+    font-size: 120%;
+    background: none;
+    border: none;
+    width: 300px;
+}
+
+.searchBar input:hover {
+    animation: expand2 8s;
+}
+
+.searchBar i {
+    margin-left: 20px;
+    color: black;
+    font-size: 160%;
+}
+
+.searchBar i:hover {
+    animation: expand 1.1s;
+}
+
+@keyframes expand {
+    0% {
+        transform: scale(1);
+    }
+    20% {
+        transform: scale(1.2);
+    }
+}
+
+@keyframes expand2 {
+    0% {
+        transform: scale(1);
+    }
+    30% {
+        transform: scale(1.05);
+    }
+}
