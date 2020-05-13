@@ -21,6 +21,7 @@
             <p>Employee Management</p>
             <input id="employee" placeholder="Which employee do you wish to change?">
             <input id="masterpw" placeholder="Choose Master password">
+            <input id="info" placeholder="INFO SHITE">
         </div>
 
         <div class="button">
@@ -29,6 +30,18 @@
             <button onclick="MessageToUSB()"> Write to USB </button>
         </div>
         <p id="response_message"></p>
+
+        <div>
+            <table id="table">
+                <thead id="tableHeader">
+                    <tr>
+                        <th>Username</th>
+                        <th>Info</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
 </body>
 
 </html>
