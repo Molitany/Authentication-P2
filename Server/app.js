@@ -35,39 +35,18 @@ const server = http.createServer((request, response) => {
                 case 'ChangePriPubKey':
                     UpdateKeys(HandledRequest, response);
                     break;
-                case 'ChooseUser':
+
+                // Requesting user in database
+                case 'ChooseUserUSB':
                     USBIDReponse(HandledRequest, response)
                     break;
 
-                // Requesting user in database
+                case 'ChooseUserPDID':
+                    ChangePDIDResponse(HandledRequest, response)
+                    break;
+
                 case 'ChangePDID':
-                    //FindUsersByName(HandledRequest);
-                    Messages.findOne({ where: { UserID: HandledRequest.body.ID } }).then(User => {
-                        let encryptObj = { message: '', body: '' }
-                        // Encryption object created to secure messages in database
-                        Keys.findByPk(1)
-                            .then(publicKey => {
-                                // Generating encryption buffers
-                                encryptObj.message = Buffer.from(MessageGenerator());
-                                encryptObj.body = Buffer.from(publicKey.dataValues.PublicKey);
-
-                                //Handling the request itself
-                                if (HandledRequest.body.Update) {
-                                    if (!User) {
-                                        RejectRequest(response, 'User not in databaseSKIRT');
-                                    } else {
-                                        UserUpdate(HandledRequest, response, User, encryptObj);
-                                    }
-                                } else {
-                                    if (User) {
-                                        RejectRequest(response, 'User already in databaseTRIKS');
-                                    } else {
-                                        UserCreate(HandledRequest, response, encryptObj);
-                                    }
-
-                                }
-                            })
-                    }).catch(err => console.log(err));
+                    ChangePDIDResponse(HandledRequest, response)
                     break;
 
                 // Physical key ID    
@@ -155,9 +134,13 @@ function PostRequestHandler(HandledRequest, request, body) {
             HandledRequest.body = body.split('~');
             HandledRequest.type = 'PostPassword'
             break;
-        case '/ChooseUser':
+        case '/ChooseUserUSB':
             HandledRequest.body = body;
-            HandledRequest.type = 'ChooseUser';
+            HandledRequest.type = 'ChooseUserUSB';
+            break;
+        case '/ChooseUserPDID':
+            HandledRequest.body = JSON.parse(body);
+            HandledRequest.type = 'ChooseUserPDID';
             break;
         default:
             break;
@@ -181,11 +164,43 @@ function MessageGenerator() {
     return message;
 }
 
+function ChangePDIDResponse(HandledRequest, response) {
+    if (HandledRequest.body.Update == false) {
+        let encryptObj = { message: '', body: '' }
+        // Encryption object created to secure messages in database
+        Keys.findByPk(1)
+            .then(publicKey => {
+                // Generating encryption buffers
+                encryptObj.message = Buffer.from(MessageGenerator());
+                encryptObj.body = Buffer.from(publicKey.dataValues.PublicKey);
+                UserCreate(HandledRequest, response, encryptObj);
+            })
+    }
+    else if (HandledRequest.type == 'ChooseUserPDID') {
+        GetUserByInfo(HandledRequest.body.Info)
+            .then(User => {
+                let encryptObj = { message: '', body: '' }
+                // Encryption object created to secure messages in database
+                Keys.findByPk(1)
+                    .then(publicKey => {
+                        // Generating encryption buffers
+                        encryptObj.message = Buffer.from(MessageGenerator());
+                        encryptObj.body = Buffer.from(publicKey.dataValues.PublicKey);
+
+                        //Handling the request itself
+                        UserUpdate(HandledRequest, response, User, encryptObj);
+                    })
+            }).catch(err => console.log(err));
+    }
+    else {
+        MultipleUsersInDatabase(HandledRequest.body.Username, response)
+    }
+}
+
 function UserUpdate(HandledRequest, response, User, encryptObj) {
     // Generating salt for the master password
     let salt = MessageGenerator();
     hash.update(HandledRequest.body.MasterPw + salt);
-    console.log(encryptObj.message.toString());
     // Updating user
     User.update({
         Username: HandledRequest.body.Username,
@@ -193,10 +208,17 @@ function UserUpdate(HandledRequest, response, User, encryptObj) {
         Message: crypto.publicEncrypt(encryptObj.body, encryptObj.message),
         MasterPw: hash.copy().digest('hex'),
         Salt: salt,
-        Info: HandledRequest.body.Info
+        Info: HandledRequest.body.NewInfo
     })
         .then(() => response.end('User updated'))
-        .catch(err => console.error(err));
+        .catch(err => {
+            if (err.errors[0].type == 'unique violation')
+                RejectRequest(response, err.errors[0].message);
+            else if (err.errors[0].type == 'Validation error')
+                RejectRequest(response, `${err.errors[0].path} must not be empty`);
+            else
+                RejectRequest(response, 'User already in database');
+        });
 }
 
 function UserCreate(HandledRequest, response, encryptObj) {
@@ -214,8 +236,13 @@ function UserCreate(HandledRequest, response, encryptObj) {
         Info: HandledRequest.body.Info
     }).then(() => response.end("Message created"))
         .catch(err => {
-            console.error(err)
-            RejectRequest(response, 'User is already in database');
+            if (err.errors[0].type == 'unique violation')
+                RejectRequest(response, err.errors[0].message);
+            else if (err.errors[0].type == 'Validation error')
+                RejectRequest(response, `${err.errors[0].path} must not be empty`);
+            else
+                RejectRequest(response, 'User already in database');
+
         });
 }
 
@@ -258,13 +285,13 @@ else if (Users.length == 1) {
 }
 */
 function USBIDReponse(HandledRequest, response) {
-    if (HandledRequest.type == 'ChooseUser') {
+    if (HandledRequest.type == 'ChooseUserUSB') {
         GetUserByInfo(HandledRequest.body)
             .then(User => {
-                response.end(JSON.stringify({Message: User.dataValues.Message, UserID: User.dataValues.UserID, Username: User.dataValues.Username}))
+                response.end(JSON.stringify({ Message: User.dataValues.Message, UserID: User.dataValues.UserID, Username: User.dataValues.Username }))
             })
     } else {
-        MultipleUsersInDatabase(HandledRequest, response)
+        MultipleUsersInDatabase(HandledRequest.body, response)
     }
 }
 function GetUserByInfo(info) {
@@ -276,8 +303,8 @@ function GetUserByInfo(info) {
             }))
     })
 }
-function MultipleUsersInDatabase(HandledRequest, response) {
-    Messages.findAll({ where: { Username: HandledRequest.body } })
+function MultipleUsersInDatabase(username, response) {
+    Messages.findAll({ where: { Username: username } })
         .then(Users => {
             /*  First we find out how many users are in the database, with the same name.
                 if the amount of users is 1, then we proceed to update that user, else we
@@ -294,7 +321,8 @@ function MultipleUsersInDatabase(HandledRequest, response) {
                 Users.forEach(User => {
                     formattedUser = {
                         Username: User.Username,
-                        Info: User.Info
+                        Info: User.Info,
+                        CreatedAt: Date(User.createdAt).split(" GMT")[0]
                     }
                     userArray.push(formattedUser)
                 })
@@ -362,4 +390,3 @@ function AcceptRequest(response, statusCode) {
         'Access-Control-Allow-Origin': '*'
     });
 }
-
