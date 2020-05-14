@@ -25,8 +25,8 @@
         </div>
 
         <div class="button">
-            <button onclick="MessageGen(true)">Update Message</button>
-            <button onclick="MessageGen(false)"> Create Message </button>
+            <button onclick="UserGen(false)"> Create User </button>
+            <button onclick="UserGen(true)">Update User</button>
             <button onclick="MessageToUSB()"> Write to USB </button>
         </div>
         <p id="response_message"></p>
@@ -35,8 +35,9 @@
             <table id="table">
                 <thead id="tableHeader">
                     <tr>
-                        <th>Username</th>
+                        <th>Empleyee name</th>
                         <th>Info</th>
+                        <th>Created at</th>
                     </tr>
                 </thead>
                 <tbody id="tbody"></tbody>
