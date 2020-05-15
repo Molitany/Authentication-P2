@@ -22,7 +22,8 @@ app.on('ready', () => {
   });
   window.loadURL(`file://${__dirname}/admin_tools.html`);
   window.on('closed', () => window = null);
-/*
+
+  /*
    const keys = crypto.generateKeyPairSync('rsa', {
     modulusLength: 4096,
     publicKeyEncoding: {

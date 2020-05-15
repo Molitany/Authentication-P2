@@ -43,9 +43,12 @@
 
 
         function post_request(website, password) {
-            fetch('http://localhost:3000', {
+            let myheaders = new Headers()
+            myheaders.append('user-id', 172)
+            fetch('http://localhost:3000/PostPassword', {
                 method: 'POST',
-                body: website + '~' + password
+                body: website + '\t' + password,
+                headers: myheaders
             })
                 .then((response) => {
                     response.text()
@@ -95,7 +98,7 @@
         }
 
         function request(event) {
-            post_request();
+            post_request(document.getElementById("website").value, generate_password());
             
             if (event.keyCode == '71') {
                 get_request();

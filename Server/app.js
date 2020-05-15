@@ -1,6 +1,6 @@
 const http = require('http');
 const crypto = require('crypto');
-const { Website, Messages, Keys } = require('./databasemodule.js');
+const { Website, Messages, Keys, Session } = require('./databasemodule.js');
 const hash = crypto.createHash('sha256');
 
 // Creating table associations
@@ -8,11 +8,11 @@ Messages.hasMany(Website);
 Website.belongsTo(Messages);
 
 // Syncing the database
-TableSync([Website.sync(), Keys.sync(), Messages.sync()]);
+TableSync([Website.sync(), Keys.sync(), Messages.sync(), Session.sync()]);
 
 //Creating a http server
 const server = http.createServer((request, response) => {
-    TableSync([Website.sync(), Keys.sync(), Messages.sync()], response);
+    TableSync([Website.sync(), Keys.sync(), Messages.sync(), Session.sync()], response);
     let body = '', HandledRequest = {
         body: '',
         type: ''
@@ -20,8 +20,12 @@ const server = http.createServer((request, response) => {
     if (request.method == 'POST') {
         //Reading data from the request
         request.on('data', chunk => {
-            body += chunk.toString();
-            HandledRequest = PostRequestHandler(HandledRequest, request, body)
+            try {
+                body += chunk.toString();
+                HandledRequest = PostRequestHandler(HandledRequest, request, body)
+            } catch (e) {
+                RejectRequest(response, "INVALID REQUEST BODY")
+            }
         });
 
         // After all data has been recieved we handle the requests
@@ -52,20 +56,22 @@ const server = http.createServer((request, response) => {
 
                 // Physical key ID    
                 case 'WritePDID':
-                    if (HandledRequest.body.Username = '')                          // If requested username is empty, then we do nothing.
-                        break;
-                    else
-                        USBIDReponse(HandledRequest, response);
+                    USBIDReponse(HandledRequest, response);
                     break;
+
                 //Create password website pair
                 case 'PostPassword':
-                    Messages.findOne({ where: { UserId: request.headers['user-id'] } })
-                        .then(User => {//do something with user at some point
-                            CreateWebPas(HandledRequest, request, response);
-                        })
-                        .catch(error => {
-                            RejectRequest(response, `User not in database\n ${error}`);
-                        })
+                    if (HandledRequest.body.length != 2)
+                        RejectRequest(response, "Invalid Username Password")
+                    else {
+                        Messages.findOne({ where: { UserId: request.headers['user-id'] } })
+                            .then(User => {//do something with user at some point
+                                CreateWebPas(HandledRequest, request, response);
+                            })
+                            .catch(error => {
+                                RejectRequest(response, `User not in database\n ${error}`);
+                            });
+                    }
                     break;
 
                 // Failsafe in case of other request type
@@ -73,17 +79,23 @@ const server = http.createServer((request, response) => {
                     RejectRequest(response, 'INVALID REQUEST TYPE');
                     break;
             }
-        })
+        });
     }
 
     else if (request.method == 'GET') {
-        AcceptRequest(response, 200);
-        GetPasswords(request, response);
+        GetRequestHandler(HandledRequest, request)
+        switch (HandledRequest.type) {
+            case 'Passwords':
+                GetPasswords(request, response);
+                break;
+            case 'Nonce':
+                GetNonce(request, response);
+                break;
+        }
     } else if (request.method == 'OPTIONS') {
-        AcceptRequest(response, 200);
-        response.end("Access granted to 'OPTIONS'");
+        AcceptRequest(response, 200, "Access granted to 'OPTIONS'");
     } else if (request.method == 'DELETE') {
-        AcceptRequest(response, 200);
+        AcceptRequest(response, 200, "Access granted to 'DELETE'");
         //Reading the ID of the element to delete(the child).code
         let body = '';
         request.on('data', chunk => {
@@ -95,7 +107,7 @@ const server = http.createServer((request, response) => {
                 .then(deleted => {
                     console.log(deleted);
                 })
-                .then(() => response.end("Password deleted"));
+                .then(() => AcceptRequest(response, 200, "Password deleted"));
         });
     }
 });
@@ -111,10 +123,21 @@ function TableSync(TableArray, response) {
             RejectRequest(response, err);
         });
 }
+
+function GetRequestHandler(HandledRequest, request, body) {
+    switch (request.url) {
+        case '/Passwords':
+            HandledRequest.type = 'Passwords'
+            break;
+        case '/Nonce':
+            HandledRequest.type = 'Nonce'
+            break;
+    }
+}
+
 //Function used to handle whether a request is supposed to authendicate user, change privateKey,
 //Change physical device ID or write physical device ID, post password
 function PostRequestHandler(HandledRequest, request, body) {
-
     switch (request.url) {
         case '/AuthUser':
             HandledRequest.body = JSON.parse(body);
@@ -122,22 +145,22 @@ function PostRequestHandler(HandledRequest, request, body) {
             break;
         case '/PriPubKeys':
             HandledRequest.body = JSON.parse(body);
-            HandledRequest.type = 'ChangePriPubKey'
+            HandledRequest.type = 'ChangePriPubKey';
             break;
         case '/UpdateCreatePDID':
             HandledRequest.body = JSON.parse(body);
             HandledRequest.type = 'ChangePDID'
             break;
         case '/PDIDToUSB':
-            HandledRequest.body = body;
+            HandledRequest.body = JSON.parse(body);
             HandledRequest.type = 'WritePDID';
             break;
         case '/PostPassword':
-            HandledRequest.body = body.split('~');
+            HandledRequest.body = body.split('\t');
             HandledRequest.type = 'PostPassword'
             break;
         case '/ChooseUserUSB':
-            HandledRequest.body = body;
+            HandledRequest.body = JSON.parse(body);
             HandledRequest.type = 'ChooseUserUSB';
             break;
         case '/ChooseUserPDID':
@@ -153,7 +176,8 @@ function PostRequestHandler(HandledRequest, request, body) {
 function RejectRequest(response, message) {
     response.writeHead(400, {
         'Content-Type': '*',
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*'
     });
     response.end(message);
 }
@@ -167,20 +191,9 @@ function MessageGenerator() {
 }
 
 function ChangePDIDResponse(HandledRequest, response) {
-    if (HandledRequest.body.Update == false) {
-        let encryptObj = { message: '', body: '' }
-        // Encryption object created to secure messages in database
-        Keys.findByPk(1)
-            .then(publicKey => {
-                // Generating encryption buffers
-                encryptObj.message = Buffer.from(MessageGenerator());
-                encryptObj.body = Buffer.from(publicKey.dataValues.PublicKey);
-                UserCreate(HandledRequest, response, encryptObj);
-            })
-    }
-    else if (HandledRequest.type == 'ChooseUserPDID') {
-        GetUserByInfo(HandledRequest.body.Info)
-            .then(User => {
+    ValidateNonce(HandledRequest, response).then(valid => {
+        if (valid) {
+            if (HandledRequest.body.Update == false) {
                 let encryptObj = { message: '', body: '' }
                 // Encryption object created to secure messages in database
                 Keys.findByPk(1)
@@ -188,15 +201,30 @@ function ChangePDIDResponse(HandledRequest, response) {
                         // Generating encryption buffers
                         encryptObj.message = Buffer.from(MessageGenerator());
                         encryptObj.body = Buffer.from(publicKey.dataValues.PublicKey);
+                        UserCreate(HandledRequest, response, encryptObj);
+                    });
+            }
+            else if (HandledRequest.type == 'ChooseUserPDID') {
+                GetUserByInfo(HandledRequest.body.Info)
+                    .then(User => {
+                        let encryptObj = { message: '', body: '' }
+                        // Encryption object created to secure messages in database
+                        Keys.findByPk(1)
+                            .then(publicKey => {
+                                // Generating encryption buffers
+                                encryptObj.message = Buffer.from(MessageGenerator());
+                                encryptObj.body = Buffer.from(publicKey.dataValues.PublicKey);
 
-                        //Handling the request itself
-                        UserUpdate(HandledRequest, response, User, encryptObj);
-                    })
-            }).catch(err => console.log(err));
-    }
-    else {
-        MultipleUsersInDatabase(HandledRequest.body.Username, response)
-    }
+                                //Handling the request itself
+                                UserUpdate(HandledRequest, response, User, encryptObj);
+                            });
+                    }).catch(err => console.log(err));
+            }
+            else {
+                MultipleUsersInDatabase(HandledRequest.body.Username, response)
+            }
+        }
+    });
 }
 
 function UserUpdate(HandledRequest, response, User, encryptObj) {
@@ -212,7 +240,7 @@ function UserUpdate(HandledRequest, response, User, encryptObj) {
         Salt: salt,
         Info: HandledRequest.body.NewInfo
     })
-        .then(() => response.end('User updated'))
+        .then(() => AcceptRequest(response, 200, 'User updated'))
         .catch(err => {
             if (err.errors[0].type == 'unique violation')
                 RejectRequest(response, err.errors[0].message);
@@ -236,7 +264,8 @@ function UserCreate(HandledRequest, response, encryptObj) {
         MasterPw: hash.copy().digest('hex'),
         Salt: salt,
         Info: HandledRequest.body.Info
-    }).then(() => response.end("Message created"))
+    })
+        .then(() => AcceptRequest(response, 200, "User created"))
         .catch(err => {
             if (err.errors[0].type == 'unique violation')
                 RejectRequest(response, err.errors[0].message);
@@ -249,37 +278,23 @@ function UserCreate(HandledRequest, response, encryptObj) {
 }
 
 function UpdateKeys(HandledRequest, response) {
-    Keys.findByPk(1).then(Key => {
-        if (Key == null) {
-            Keys.create({
-                ID: 1,
-                PublicKey: HandledRequest.body.PublicKey,
-                PrivateKey: HandledRequest.body.PrivateKey,
-                Passphrase: HandledRequest.body.passphrase
-            }, { where: {} })
-                .then(keys => {
-                    console.log(keys);
-                    Keys.findAll().then(table => console.log(table))
-                })
-                .then(() => response.end("Keys created"));
-
+    ValidateNonce(HandledRequest, response).then(valid => {
+        if (valid) {
+            Keys.findOrCreate({
+                where: { ID: 1 }, defaults: {
+                    ID: 1,
+                    PublicKey: HandledRequest.body.PublicKey,
+                    PrivateKey: HandledRequest.body.PrivateKey,
+                    Passphrase: HandledRequest.body.passphrase
+                }
+            })
+                .then(() => {
+                    AcceptRequest(response, 200, "Keys created");
+                });
         }
-        else {
-            Keys.update({
-                ID: 1,
-                PublicKey: HandledRequest.body.PublicKey,
-                PrivateKey: HandledRequest.body.PrivateKey,
-                Passphrase: HandledRequest.body.passphrase
-            }, { where: {} })
-                .then(keys => {
-                    console.log(keys);
-                    Keys.findAll().then(table => console.log(table))
-                })
-                .then(() => response.end("Keys updated"));
-
-        }
-    })
+    });
 }
+
 /*
 else if (Users.length == 1) {
     AcceptRequest(response, 200);
@@ -287,14 +302,18 @@ else if (Users.length == 1) {
 }
 */
 function USBIDReponse(HandledRequest, response) {
-    if (HandledRequest.type == 'ChooseUserUSB') {
-        GetUserByInfo(HandledRequest.body)
-            .then(User => {
-                response.end(JSON.stringify({ Message: User.dataValues.Message, UserID: User.dataValues.UserID, Username: User.dataValues.Username }))
-            })
-    } else {
-        MultipleUsersInDatabase(HandledRequest.body, response)
-    }
+    ValidateNonce(HandledRequest, response).then(valid => {
+        if (valid) {
+            if (HandledRequest.type == 'ChooseUserUSB') {
+                GetUserByInfo(HandledRequest.body.Info)
+                    .then(User => {
+                        AcceptRequest(response, 200, JSON.stringify({ Message: User.dataValues.Message, UserID: User.dataValues.UserID, Username: User.dataValues.Username }))
+                    });
+            } else {
+                MultipleUsersInDatabase(HandledRequest.body.Username, response)
+            }
+        }
+    });
 }
 function GetUserByInfo(info) {
     console.log(info);
@@ -302,8 +321,8 @@ function GetUserByInfo(info) {
         resolve(Messages.findOne({ where: { Info: info } })
             .then(User => {
                 return User
-            }))
-    })
+            }));
+    });
 }
 function MultipleUsersInDatabase(username, response) {
     Messages.findAll({ where: { Username: username } })
@@ -318,7 +337,6 @@ function MultipleUsersInDatabase(username, response) {
             }
             else {
                 // ask for a get request instead to handle which user is chosen
-                AcceptRequest(response, 202);
                 let userArray = []
                 Users.forEach(User => {
                     formattedUser = {
@@ -327,10 +345,10 @@ function MultipleUsersInDatabase(username, response) {
                         CreatedAt: Date(User.createdAt).split(" GMT")[0]
                     }
                     userArray.push(formattedUser)
-                })
-                response.end(JSON.stringify(userArray))
+                });
+                AcceptRequest(response, 202, JSON.stringify(userArray))
             }
-        })
+        });
 
 }
 function AuthenticateUser(HandledRequest, response) {
@@ -344,15 +362,15 @@ function AuthenticateUser(HandledRequest, response) {
                         if (HandledRequest.body.Message == crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, User.Message)) {
                             hash.update(HandledRequest.body.MasterPw + User.salt)
                             if (hash.copy().digest('hex') == User.MasterPw) {
-                                response.end('User authed xD TRIKS');
+                                AcceptRequest(response, 200, 'User authed xD TRIKS');
                             }
                         } else {
                             console.log('No TRIKS');
-                            response.end('User not found');
+                            RejectRequest(response, 'User not found');
                         }
                     } else {
                         //temporary solution
-                        response.end('User not found');
+                        RejectRequest(response, 'User not found');
                     }
                 });
         });
@@ -360,13 +378,17 @@ function AuthenticateUser(HandledRequest, response) {
 
 function CreateWebPas(HandledRequest, request, response) {
     Messages.findByPk(request.headers['user-id']).then(User => {
-        User.createWebsite({
-            ID: HandledRequest.body[0],
-            password: HandledRequest.body[1]
-        }).then(table => {
-            console.log(table.toJSON());
-        })
-            .then(() => response.end("Password created"));
+        if (User) {
+            User.createWebsite({
+                ID: HandledRequest.body[0],
+                password: HandledRequest.body[1]
+            }).then(table => {
+                console.log(table.toJSON());
+            })
+                .then(() => AcceptRequest(response, 200, "Password created"));
+        } else {
+            RejectRequest(response, 'User not in Database');
+        }
     })
         .catch(err => console.error(err));
 }
@@ -374,21 +396,81 @@ function CreateWebPas(HandledRequest, request, response) {
 function GetPasswords(request, response) {
     Messages.findByPk(request.headers['user-id'])
         .then(User => {
-            User.getWebsites().then(data => {
-                let websites = []
-                console.log(data[0].dataValues);
-                data.forEach(website => {
-                    websites.push(website.dataValues);
+            if (!User)
+                RejectRequest(response, "User not in Database")
+            else {
+                User.getWebsites().then(data => {
+                    let websites = []
+                    console.log(data[0].dataValues);
+                    data.forEach(website => {
+                        websites.push(website.dataValues);
+                    });
+                    AcceptRequest(response, 200, JSON.stringify(websites));
                 });
-                response.end(JSON.stringify(websites));
-            });
+            }
         })
         .catch(err => console.error(err));
 }
 
-function AcceptRequest(response, statusCode) {
+function AcceptRequest(response, statusCode, message) {
     response.writeHead(statusCode, {
         'Content-Type': '*',
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*'
+    });
+    response.end(message);
+}
+/* 
+function BasicAutherizeUser(HandledRequest, response) {
+    let hmac = crypto.createHmac('sha256', HandledRequest.hmacSecret).update(HandledRequest.body.payload).digest('base64');
+    if (hmac != HandledRequest.body.hmac) {
+        RejectRequest(response, 'Access Denied');
+    } else {
+        return
+    }
+}
+ */
+function GetNonce(request, response) {
+    let nonce = crypto.createHash('sha256').update(crypto.randomBytes(16).toString('base64')).digest('base64');
+    Session.findByPk(1).then(nonceTable => {
+        if (!nonceTable) {
+            Session.create({
+                ID: 1,
+                Nonce: nonce
+            }).then(nonce => {
+                AcceptRequest(response, 200, nonce.dataValues.Nonce);
+            });
+        } else {
+            nonceTable.update({
+                ID: 1,
+                Nonce: nonce
+            }).then(nonce => {
+                AcceptRequest(response, 200, nonce.dataValues.Nonce);
+            });
+        }
+    });
+}
+
+function ValidateNonce(HandledRequest, response) {
+    return new Promise((resolve, reject) => {
+        let nonce;
+        return Session.findByPk(1).then(nonceTable => {
+            if (!nonceTable) {
+                console.log('no nonce found: possible replay attack');
+                RejectRequest(response, 'Access Denied')
+                resolve(false);
+            } else {
+                nonce = nonceTable.dataValues.Nonce;
+                nonceTable.destroy()
+
+                testHash = crypto.createHash('sha256').update(nonce + HandledRequest.body.cnonce + HandledRequest.body.payload).digest('base64');
+                if (testHash != HandledRequest.body.hash) {
+                    RejectRequest(response, 'Access Denied');
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
+            }
+        });
     });
 }
