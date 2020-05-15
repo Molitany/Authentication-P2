@@ -1,17 +1,26 @@
-const http = require('http');
+const https = require('https');
 const crypto = require('crypto');
 const { Website, Messages, Keys, Session } = require('./databasemodule.js');
 const hash = crypto.createHash('sha256');
-
+const fs = require('fs');
 // Creating table associations
 Messages.hasMany(Website);
 Website.belongsTo(Messages);
+
+// Implemeting tls by means of the HTTPS module
+const security = {
+    key: fs.readFileSync('./Server/private-key.pem'),
+    cert: fs.readFileSync('./Server/public-cert.pem')
+}
 
 // Syncing the database
 TableSync([Website.sync(), Keys.sync(), Messages.sync(), Session.sync()]);
 
 //Creating a http server
-const server = http.createServer((request, response) => {
+const server = https.createServer(security, (request, response) => {
+    /*if(request.method == 'GET' && request.url = ''){
+        response.write(fs.readFileSync('index.html'));
+    } do this later*/
     TableSync([Website.sync(), Keys.sync(), Messages.sync(), Session.sync()], response);
     let body = '', HandledRequest = {
         body: '',
