@@ -339,12 +339,18 @@ function AuthenticateUser(HandledRequest, response) {
             Messages.findByPk(HandledRequest.body.UserID)
                 .then(User => {
                     if (User != null) {
-                        if (crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, Buffer.from(HandledRequest.body.Message)).equals(crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, User.Message))) {
-                            if (hash.copy().update(HandledRequest.body.MasterPw + User.dataValues.Salt).digest('hex') == User.MasterPw) {
-                                response.end('User authed xD TRIKS');
+                        if ((HandledRequest.body.Message.data).length == 512) {
+                            if (crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, Buffer.from(HandledRequest.body.Message)).equals(crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, User.Message))) {
+                                if (hash.copy().update(HandledRequest.body.MasterPw + User.dataValues.Salt).digest('hex') == User.MasterPw) {
+                                    response.end('User authed');
+                                } else {
+                                    response.end('Uner not found');
+                                }
+                            } else {
+                                response.end('User not found');
                             }
                         } else {
-                            response.end('User not found INNER');
+                            response.end('Invalid Message');
                         }
                     } else {
                         //temporary solution
