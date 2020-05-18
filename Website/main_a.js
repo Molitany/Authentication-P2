@@ -24,42 +24,44 @@ function post_request(website, password) {
     .catch(err => console.log(err));
 }
 
-// function bigfetch() {
-//   fetch('http://localhost:3001/%27)
-//     .then(res => {
-//       return res.json()
-//         .then(resJSON => {
-//           return resJSON
-//         });
-//     })
-//     .then(resJson => {
-//       console.log(resJson)
-//       fetch('http://localhost:3000/Passwords', {
-//         method: 'POST',
-//         body: JSON.stringify(resJson)
-//       })
-//         .then((response) => {
-//           console.log(response)
-//           response.text()
-//             .then(data => {
-//               console.log(data)
-//               insert_table("tbody", data);
-//             });
-//         })
-//         .catch(err => console.log(err + 'BRERWER'));
-//     })
-//     .catch(err => {
-//       document.getElementById("usbdevice").style = "color:red";
-//       document.getElementById("usbdevice").innerHTML = "Please input USB device and start the server";
-//     })
-// }
-// bigfetch()
+function bigfetch() {
+  fetch('http://localhost:3001')
+    .then(res => {
+      return res.json()
+        .then(resJSON => {
+          return resJSON
+        });
+    })
+    .then(resJSON => {
+      let userIDParameter = new Headers()
+      userIDParameter.append('user-id', resJSON.UserID)
+      fetch('https://localhost:3000/Passwords', {
+        method: 'GET', //Should be get GET,
+        headers: userIDParameter
+      })
+        .then((response) => {
+          console.log(response)
+          response.text()
+            .then(data => {
+              console.log(data)
+              WritePage(JSON.parse(data));
+            });
+        })
+        .catch(err => console.log(err));
+    })
+    .catch(err => {
+      console.log(err)
+      document.getElementById("usbdevice").style = "color:red";
+      document.getElementById("usbdevice").innerHTML = "Please input USB device and start the server";
+    })
+}
+bigfetch()
 
 
 function passwordTemplate(password) {
   return `
         <tr>
-            <td class="url-text">${password.id}</td>
+            <td class="url-text">${password.ID}</td>
             <td id="psw" title="${password.password}" class="psw-text" onclick="ShowHide(this)">*********</td>
             <td class="button"><button onclick="copyToClipboard(this)"><i class="fas fa-copy fa-2x"></i></button></td>
             </tr>
@@ -68,7 +70,7 @@ function passwordTemplate(password) {
 
 document.getElementById("submit").addEventListener("click", e => {
   post_request(document.getElementById("Website").value, document.getElementById("Password").value);
-  // bigfetch();
+  bigfetch();
 })
 
 function ShowHide(id) {
@@ -89,7 +91,7 @@ const copyToClipboard = (id) => {
   document.body.removeChild(toCopy);
 };
 
-get_request().then(password => {
+function WritePage(password) {
   document.getElementById("app").innerHTML = `
   <p class="app-title">Password Vault (${password.length} results)</p>
 <table class="box-title">
@@ -107,4 +109,4 @@ ${password.map(passwordTemplate).join("")}
     Beregaard, Simon Preuss, Sebastian Lindhart, Kenneth Køpke and Andreas Poulsen</h1>
 <p><br /></p>
 `
-});
+};
