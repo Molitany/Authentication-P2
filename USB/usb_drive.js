@@ -6,7 +6,7 @@ const server = require('./usb_server');
 let tray = null;
 electron.app.commandLine.appendSwitch('ignore-certificate-errors');
 electron.app.on('ready', () => {
-    tray = new Tray(nativeImage.createFromPath("USB/usb.png"));
+    tray = new Tray(nativeImage.createFromPath("resources/app/USB/usb.png"));
     const menu = Menu.buildFromTemplate([
         {label: "Exit", click: ()=>{electron.app.quit();}}
     ]);
