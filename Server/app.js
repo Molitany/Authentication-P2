@@ -100,6 +100,9 @@ const server = https.createServer(security, (request, response) => {
             case 'Nonce':
                 GetNonce(request, response);
                 break;
+            case 'GetLastUserID':
+                GetLastUserID(request, response);
+                break;
         }
     } else if (request.method == 'OPTIONS') {
         AcceptRequest(response, 200, "Access granted to 'OPTIONS'");
@@ -140,6 +143,9 @@ function GetRequestHandler(HandledRequest, request, body) {
             break;
         case '/Nonce':
             HandledRequest.type = 'Nonce'
+            break;
+        case '/GetLastUserID':
+            HandledRequest.type = 'GetLastUserID'
             break;
     }
 }
@@ -482,4 +488,12 @@ function ValidateNonce(HandledRequest, response) {
             }
         });
     });
+}
+
+function GetLastUserID(request, response){
+    Messages.findAll().then(Users => {
+        AcceptRequest(response, 200, Users[Users.length-1].dataValues.UserID.toString());
+    }).catch(err => {
+        RejectRequest(response, err.toString())
+    })
 }

@@ -58,8 +58,20 @@ function UserGen(update) {
         let cnonce = crypto.createHash('sha256').update(crypto.randomBytes(16).toString('base64')).digest('base64');
         let payload = 'AdminUserGen';
         let hash = crypto.createHash('sha256').update(nonce + cnonce + payload).digest('base64');
-        let UserID = parseInt(fs.readFileSync('user_id.ini', 'utf8'));
-
+        let UserID
+        try {
+            UserID = parseInt(fs.readFileSync('user_id.ini', 'utf8'));
+            if (isNaN(UserID)){
+                throw TypeError
+            }
+        } catch (e) {
+            fetch('https://localhost:3000/GetLastUserID').then(res => {
+                res.text().then(data => {
+                    fs.writeFileSync('user_id.ini', data);
+                    UserID = parseInt(data);
+                });
+            });
+        }
         if (update == false) {
             fs.writeFileSync('user_id.ini', UserID + 1);
             fetch("https://localhost:3000/UpdateCreatePDID", {
