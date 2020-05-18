@@ -23,7 +23,7 @@ function MessageToUSB() {
         let cnonce = crypto.createHash('sha256').update(crypto.randomBytes(16).toString('base64')).digest('base64');
         let payload = 'AdminPDIDToUSB';
         let hash = crypto.createHash('sha256').update(nonce + cnonce + payload).digest('base64');
-        fetch("http://localhost:3000/PDIDToUSB", {
+        fetch("https://localhost:3000/PDIDToUSB", {
             method: 'POST',
             body: JSON.stringify({
                 Username: document.getElementById('employee').value,
@@ -62,7 +62,7 @@ function UserGen(update) {
 
         if (update == false) {
             fs.writeFileSync('user_id.ini', UserID + 1);
-            fetch("http://localhost:3000/UpdateCreatePDID", {
+            fetch("https://localhost:3000/UpdateCreatePDID", {
                 method: 'POST',
                 body: JSON.stringify({
                     Username: document.getElementById('employee').value,
@@ -83,7 +83,7 @@ function UserGen(update) {
                 });
             })
         } else {
-            fetch("http://localhost:3000/UpdateCreatePDID", {
+            fetch("https://localhost:3000/UpdateCreatePDID", {
                 method: 'POST',
                 body: JSON.stringify({
                     Username: document.getElementById('employee').value,
@@ -173,7 +173,7 @@ function ChooseUser(info, type, update, UserID) {
             case 'USB':
                 payload = 'AdminPDIDToUSB';
                 hash = crypto.createHash('sha256').update(nonce + cnonce + payload).digest('base64');
-                fetch("http://localhost:3000/ChooseUserUSB", {
+                fetch("https://localhost:3000/ChooseUserUSB", {
                     method: 'POST',
                     body: JSON.stringify({
                         Info: info,
@@ -197,7 +197,7 @@ function ChooseUser(info, type, update, UserID) {
             case 'PDID':
                 payload = 'AdminUserGen';
                 hash = crypto.createHash('sha256').update(nonce + cnonce + payload).digest('base64');
-                fetch("http://localhost:3000/ChooseUserPDID", {
+                fetch("https://localhost:3000/ChooseUserPDID", {
                     method: 'POST',
                     body: JSON.stringify({
                         Username: document.getElementById('employee').value,
@@ -250,7 +250,7 @@ function KeyGen() {
                 }
             });
 
-            fetch("http://localhost:3000/PriPubKeys", {
+            fetch("https://localhost:3000/PriPubKeys", {
                 method: 'Post',
                 body: JSON.stringify({
                     PublicKey: keys.publicKey,
@@ -274,7 +274,7 @@ function KeyGen() {
 
 function GetNonce() {
     return new Promise((resolve, reject) => {
-        fetch("http://localhost:3000/Nonce").then(res => {
+        fetch("https://localhost:3000/Nonce").then(res => {
             res.text().then(nonce => {
                 resolve(nonce);
             });

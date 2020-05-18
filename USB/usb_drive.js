@@ -4,6 +4,7 @@ const fs = require('fs');
 //Opens the server by requiring its functionality.
 const server = require('./usb_server');
 let tray = null;
+electron.app.commandLine.appendSwitch('ignore-certificate-errors');
 electron.app.on('ready', () => {
     tray = new Tray(nativeImage.createFromPath("USB/usb.png"));
     const menu = Menu.buildFromTemplate([
@@ -24,12 +25,12 @@ electron.app.on('ready', () => {
         //Send the user infomation to the server.
         let request = electron.net.request({
             method: 'POST',
-            protocol: 'http:',
+            protocol: 'https:',
             hostname: 'localhost',
             port: 3000,
             path: '/AuthUser'
         });
-        request.end(JSON.stringify({ Username: Key.Username, UserId: Key.UserId, Message: Key.Message }));
+        request.end(JSON.stringify({ Username: Key.Username, UserID: Key.UserID, Message: Key.Message }));
 
         //Send the user infomation to the local server.
         request = electron.net.request({
@@ -39,7 +40,7 @@ electron.app.on('ready', () => {
             port: 3001,
             path: ''
         });
-        request.end(JSON.stringify({ Username: Key.Username, UserId: Key.UserId, Message: Key.Message }));
+        request.end(JSON.stringify({ Username: Key.Username, UserID: Key.UserID, Message: Key.Message }));
     })
         //Display an error message if it fails.
         .catch(err => {

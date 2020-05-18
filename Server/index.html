@@ -44,8 +44,8 @@
 
         function post_request(website, password) {
             let myheaders = new Headers()
-            myheaders.append('user-id', 172)
-            fetch('http://localhost:3000/PostPassword', {
+            myheaders.append('user-id', 176)
+            fetch('https://localhost:3000/PostPassword', {
                 method: 'POST',
                 body: website + '\t' + password,
                 headers: myheaders
@@ -60,7 +60,7 @@
         function get_request(event) {
             //Getting a response from the local server using fetch api
             if (event.keyCode == '71') {
-                fetch('http://localhost:3000/Passwords', {
+                fetch('https://localhost:3000/Passwords', {
                     method: 'POST',
                     body: JSON.stringify({ Username: 'Bob', Message: 'L7jq¨(0I}o¨iaB.s7NX2^xT+(´/lO/zw' })
                 })
@@ -86,7 +86,7 @@
             }
         }
         function delete_request() {
-            fetch('http://localhost:3000', {
+            fetch('https://localhost:3000', {
                 method: 'DELETE',
                 body: prompt("website?") /*+ "@" + prompt("password?")*/
             })

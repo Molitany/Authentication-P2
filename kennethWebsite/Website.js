@@ -31,12 +31,12 @@ function delete_table(table_id){
 function insert_table(table_id, data_obj) {
     data_obj = JSON.parse(data_obj)
     for (let i = 0; i < data_obj.length; i++) {
-        create_row(i + 1, data_obj[i].WebsiteId, data_obj[i].password, table_id);
+        create_row(i + 1, data_obj[i].ID, data_obj[i].password, table_id);
     }
 }
 //The post_request function that fetches the website and the password
 function post_request(website, password) {
-    fetch('http://localhost:3000', {
+    fetch('https://localhost:3000', {
         method: 'POST',
         body: website + 0x1c + password
     })
@@ -51,17 +51,18 @@ function post_request(website, password) {
 //and inserts them into a table on the website
 function bigfetch() {
     fetch('http://localhost:3001')
-    .then(res => {
+    .then(res => {  
         return res.json()
             .then(resJSON => {
                 return resJSON
             });
     })
-    .then(resJson => {
-        console.log(resJson)
-        fetch('http://localhost:3000/Passwords', {
-            method: 'POST', //Should be get GET
-            body: JSON.stringify(resJson)
+    .then(resJSON => {
+        let userIDParameter = new Headers()
+        userIDParameter.append('user-id', resJSON.UserID)
+        fetch('https://localhost:3000/Passwords', {
+            method: 'GET', //Should be get GET,
+            headers: userIDParameter
         })
             .then((response) => {
                 console.log(response)
@@ -71,9 +72,10 @@ function bigfetch() {
                         insert_table("tbody", data);
                     });
             })
-            .catch(err => console.log(err + 'BRERWER'));
+            .catch(err => console.log(err));
     })
     .catch(err => {
+        console.log(err)
         document.getElementById("usbdevice").style = "color:red";
         document.getElementById("usbdevice").innerHTML = "Please input USB device and start the server";
     })
@@ -82,3 +84,4 @@ function bigfetch() {
 function LightMode(){
     document.getElementById('stylesheet').href = 'lightmode.css';
 }
+bigfetch()

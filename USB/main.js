@@ -10,6 +10,7 @@
 
 const { app, BrowserWindow, net } = require('electron');
  const crypto = require('crypto') 
+ app.commandLine.appendSwitch('ignore-certificate-errors');
 // Opens a window with the admin tools when the app is ready.
 app.on('ready', () => {
   let window = new BrowserWindow({
