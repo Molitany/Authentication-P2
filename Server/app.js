@@ -73,7 +73,7 @@ const server = https.createServer(security, (request, response) => {
                     if (HandledRequest.body.length != 2)
                         RejectRequest(response, "Invalid Username Password")
                     else {
-                        Messages.findOne({ where: { UserId: request.headers['user-id'] } })
+                        Messages.findOne({ where: { UserID: request.headers['user-id'] } })
                             .then(User => {//do something with user at some point
                                 CreateWebPas(HandledRequest, request, response);
                             })

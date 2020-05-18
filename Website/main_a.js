@@ -12,16 +12,32 @@ function get_request() {
 }
 
 function post_request(website, password) {
-  console.log(password + website)
-  fetch('http://localhost:3000', {
-    method: 'POST',
-    body: website + 0x1c + password
+  return new Promise(resolve => {
+    resolve(fetch('http://localhost:3001')
+      .then(res => {
+        return res.json()
+          .then(resJSON => {
+            return resJSON
+          });
+      })
+      .then(resJSON => {
+        console.log(resJSON)
+        let myheaders = new Headers()
+        myheaders.append('user-id', resJSON.UserID)
+        fetch('https://localhost:3000/PostPassword', {
+          method: 'POST',
+          body: website + '\t' + password,
+          headers: myheaders
+        })
+          .catch(err => console.log(err));
+      })
+      .catch(err => {
+        console.log(err)
+        document.getElementById("usbdevice").style = "color:red";
+        document.getElementById("usbdevice").innerHTML = "Please input USB device and start the server before posting passwords";
+      })
+    )
   })
-    .then((response) => {
-      response.text()
-        .then(data => console.log(data));
-    })
-    .catch(err => console.log(err));
 }
 
 function bigfetch() {
@@ -43,7 +59,7 @@ function bigfetch() {
           console.log(response)
           response.text()
             .then(data => {
-              console.log(data)
+              console.table(JSON.parse(data))
               WritePage(JSON.parse(data));
             });
         })
@@ -69,8 +85,8 @@ function passwordTemplate(password) {
 }
 
 document.getElementById("submit").addEventListener("click", e => {
-  post_request(document.getElementById("Website").value, document.getElementById("Password").value);
-  bigfetch();
+  post_request(document.getElementById("Website").value, document.getElementById("Password").value)
+    .then(() => bigfetch())
 })
 
 function ShowHide(id) {
