@@ -61,7 +61,7 @@ function bigfetch() {
         let userIDParameter = new Headers()
         userIDParameter.append('user-id', resJSON.UserID)
         fetch('https://localhost:3000/Passwords', {
-            method: 'GET', //Should be get GET,
+            method: 'GET',
             headers: userIDParameter
         })
             .then((response) => {
