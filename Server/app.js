@@ -18,9 +18,6 @@ TableSync([Website.sync(), Keys.sync(), Messages.sync(), Session.sync()]);
 
 //Creating a http server
 const server = https.createServer(security, (request, response) => {
-    /*if(request.method == 'GET' && request.url = ''){
-        response.write(fs.readFileSync('index.html'));
-    } do this later*/
     TableSync([Website.sync(), Keys.sync(), Messages.sync(), Session.sync()], response);
     let body = '', HandledRequest = {
         body: '',
@@ -95,10 +92,19 @@ const server = https.createServer(security, (request, response) => {
         GetRequestHandler(HandledRequest, request)
         switch (HandledRequest.type) {
             case 'Passwords':
-                GetPasswords(request, response);
+                GetPasswords(request, response)
                 break;
             case 'Nonce':
-                GetNonce(request, response);
+                GetNonce(request, response)
+                break;
+            case 'Webpage':
+                GiveWebpage(response)
+                break;
+            case 'CSS':
+                GiveCSS(response)
+                break;
+            case 'JS':
+                GiveJS(response)
                 break;
         }
     } else if (request.method == 'OPTIONS') {
@@ -110,7 +116,7 @@ const server = https.createServer(security, (request, response) => {
         request.on('data', chunk => {
             body += chunk.toString();
         });
-        //Destorying the users livelyhood when fired because of the corona virus
+        
         request.on('end', () => {
             Website.destroy({ where: { ID: body } })
                 .then(deleted => {
@@ -140,6 +146,15 @@ function GetRequestHandler(HandledRequest, request, body) {
             break;
         case '/Nonce':
             HandledRequest.type = 'Nonce'
+            break;
+        case '/':
+            HandledRequest.type = 'Webpage'
+            break;
+        case '/main_a.js':
+            HandledRequest.type = 'JS'
+            break;
+        case '/style.css':
+            HandledRequest.type = 'CSS'
             break;
     }
 }
@@ -410,7 +425,6 @@ function GetPasswords(request, response) {
             else {
                 User.getWebsites().then(data => {
                     let websites = []
-                    console.log(data[0].dataValues);
                     data.forEach(website => {
                         websites.push(website.dataValues);
                     });
@@ -482,4 +496,16 @@ function ValidateNonce(HandledRequest, response) {
             }
         });
     });
+}
+function GiveWebpage(response){ 
+    response.write(fs.readFileSync('./Website/index_a.html'))
+    response.end()
+}
+function GiveCSS(response){
+    response.write(fs.readFileSync('./Website/style.css'))
+    response.end()
+}
+function GiveJS(response){
+    response.write(fs.readFileSync('./Website/main_a.js'))
+    response.end()
 }

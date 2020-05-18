@@ -1,3 +1,4 @@
+bigfetch()
 function get_request() {
   //Getting a response from the local server using fetch api
   return new Promise(resolve => {
@@ -71,8 +72,6 @@ function bigfetch() {
       document.getElementById("usbdevice").innerHTML = "Please input USB device and start the server";
     })
 }
-bigfetch()
-
 
 function passwordTemplate(password) {
   return `
