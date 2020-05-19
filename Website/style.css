@@ -1,129 +1,147 @@
 body {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
-    background-color: rgb(29, 68, 76);
+    background-color: #fff;
     padding: 2vh 0 2.8vh 0;
     margin: 0;
     padding: 0px;
 }
 
-.app-title {
-    text-align: center;
-    font-weight: normal;
-    font-size: 2.6rem;
-    color: #ffffff;
-    padding-top: 3vh;
-    padding-bottom: 2vh;
-    margin: 0px;
-    margin-top: -80px;
+.hideboxes {
+    background-color: #fff;
+    height: 11vh;
+    z-index: 1;
+    position: -webkit-sticky;
+    position: sticky;
+    top:7.43vh;
+    margin-top: -20.5vh;
+    margin-bottom: 3vh;
 }
 
-.app-sub {
+.hideboxes p {
     text-align: center;
     font-weight: normal;
-    font-size: 1rem;
-    color: #ffffff;
-    margin: 0px;
-    padding-bottom: 2vh;
+    font-size: 2rem;
+    color: #193441;
+    z-index: 1;
+    margin-top: 20vh;
+    padding-top: 2.3vh;
 }
 
 .box {
     width: 60vh;
-    height: 2vh;
+    height: 10.5vh;
     padding: 2vh;
-    margin: 1vh auto;
-    background-color: #fff;
-    box-shadow: .1vh .1vh 2vh black;
+    margin: 2vh auto;
+    background-color: #193441;
     overflow: hidden;
+    border-radius: 0.6vh;
+    box-shadow: 0vh .7vh 0.7vh rgba(0, 0, 0, .7);
+    z-index: 1;
 }
 
 .url-text {
+    color: #fff;
     align-self: left;
     font-weight: normal;
     font-size: 1.1rem;
     padding: 2vh;
+    z-index: 1;
 }
 
 .psw-text {
+    color: #fff;
     text-align: right;
     font-weight: normal;
     font-size: 1.1rem;
     padding: 2vh;
     cursor: pointer;
-}
-
-.psw-title {
-    text-align: center;
-    font-weight: normal;
-    font-size: 1rem;
-    color: #ffffff;
-}
-
-.box-title {
-    width: 61vh;
-    padding: 2vh;
-    margin: 0.5vh auto;
-    overflow: hidden;
-    color: #ffffff;
-    padding-bottom: 5px;
+    z-index: 1;
 }
 
 .footer {
     font-size: 0.7rem;
-    color: #ffffff;
+    color: #193441;
     text-align: center;
     margin: 0;
-}
-
-.image {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-    height: 100%;
+    z-index: 1;
 }
 
 .button {
     position: absolute;
-    margin-top: 5vh;
+    margin-top: 4.5vh;
     padding-top: 2vh;
 }
 
 .button button {
     position: absolute;
-    right: -70px;
-    margin-top: -61px;
-    height: 50px;
-    width: 40px;
-    border-radius: 12px;
+    right: -7vh;
+    margin-top: -6.1vh;
+    height: 5vh;
+    width: 4vh;
+    border-radius: 1.2vh;
     cursor: pointer;
+    box-shadow: 0vh .8vh 1.5vh rgba(0, 0, 0, 0.13);
+    z-index: 0;
+    background-color: #193441;
+}
+
+.button i {
+    color: #D4D4DA;
+}
+
+.buttonDel {
+    position: absolute;
+    margin-top: 4.5vh;
+    padding-top: 2vh;
+}
+
+.buttonDel button {
+    position: absolute;
+    right: -12vh;
+    margin-top: -6.1vh;
+    height: 5vh;
+    width: 4vh;
+    border-radius: 1.2vh;
+    cursor: pointer;
+    box-shadow: 0vh .8vh 1.5vh rgba(0, 0, 0, 0.13);
+    z-index: 0;
+    background-color: #193441;
+}
+
+.buttonDel i {
+    color: #D4D4DA;
 }
 
 .plus {
-    position: absolute;
-    margin-left: 70px;
+    margin-left: 7vh;
+    z-index: 0;
+    position: fixed;
 }
 
 .addh1 {
     font-size: 1rem;
-    z-index: 0;
+    z-index: 2;
     opacity: .2;
-    padding-bottom: 0vh;
     margin-left: 1vh;
-    position: absolute;
+    position: fixed;
+    padding-top: 4vh;
+    margin-top: 1vh;
+    top: 10vh;
+    margin-bottom: 0;
 }
 
 .plus button {
-    border-radius: 50px;
-    border: 5px solid #fff;
-    overflow: hidden;
+    border-radius: 5vh;
+    position: fixed;
+    border: .3vh solid #193441;
     width: 15vh;
     height: 6vh;
-    margin-left: 35vh;
-    margin-top: 0vh;
+    margin-left: 27.7vh;
+    margin-top: 7.65vh;
     background: none;
-    z-index: 0;
-    box-shadow: .1vh .1vh 2vh black;
+    box-shadow: 0vh .8vh .7vh rgba(0, 0, 0, 0.13);
     cursor: pointer;
+    top: 15.4vh;
 }
 
 .plus i {
@@ -131,24 +149,24 @@ body {
 }
 
 .plus button:hover {
-    background-color: #fff;
+    background-color: #193441;
 }
 
 .login-form {
-    position: absolute;
+    background-color: #193441;
+    position: fixed;
     width: 400px;
     height: 200px;
-    background-color: #fff;
-    margin-top: 0vh;
+    box-shadow: .5vh .8vh .7vh rgba(0, 0, 0, 0.13);
+    border-radius: 3vh;
+    top: 23vh;
     z-index: 1;
-    box-shadow: .1vh .1vh 2vh black;
-    border-radius: 30px;
 }
 
 .login-form input {
     font-style: italic;
     text-align: center;
-    color: black;
+    color: #fff;
     margin-top: 3vh;
     margin-left: 6vh;
     font-size: 120%;
@@ -163,43 +181,55 @@ body {
 }
 
 .login-form button {
-    border-radius: 50px;
-    border: 5px solid #fff;
+    border-radius: 5vh;
+    border: .5vh solid #fff;
     overflow: hidden;
     font-style: italic;
-    color: black;
+    background-color: #fff;
+    color: #193441;
     margin-left: 6vh;
     margin-top: 1.5vh;
     font-size: 120%;
     width: 30vh;
     border: none;
-    background: none;
-    box-shadow: .1vh .1vh 2vh black;
+    box-shadow: .1vh .1vh 1vh black;
+    cursor:pointer;
 }
 
 .input-form {
-    position: absolute;
+    position: fixed;
     margin-left: -43.3vh;
     margin-top: 8vh;
     transition-duration: 1s;
-}
-
-.submit {
-    cursor: pointer;
+    z-index: 1;
 }
 
 .searchBar {
-    background-image: linear-gradient(rgb(34, 34, 34), rgb(29, 68, 76));
+    background-color: #193441;
+    padding-top: 2vh;
+    z-index: 2;
+    margin: 0;
+}
+
+.searchBar p {
+    font: OCR A Std, sans-serif;
+    text-align: center;
+    font-weight: normal;
+    font-size: 2rem;
+    margin-top: -1vh;
+    color: #fff;
+    position: absolute;
+    padding-left: 2vh;
 }
 
 .searchBar input {
     font-style: italic;
-    color: #BDBDBD;
-    margin: 20px;
+    color: #fff;
     font-size: 120%;
     background: none;
     border: none;
-    width: 300px;
+    width: 30vh;
+    padding-bottom: 2.5vh;
 }
 
 .searchBar input:hover {
@@ -207,13 +237,133 @@ body {
 }
 
 .searchBar i {
-    margin-left: 20px;
-    color: black;
+    margin-left: 41vh;
+    color: #fff;
     font-size: 160%;
 }
 
 .searchBar i:hover {
     animation: expand 1.1s;
+}
+
+.user {
+    position: fixed;
+    top: 2vh;
+    right: 6vh;
+    cursor: pointer;
+}
+
+.bg-modal {
+    display: none;
+    position: fixed;
+    z-index: 3;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.modal-contents {
+    margin: 10% auto;
+    position: fixed;
+    width: 40vh;
+    top: -14.2vh;
+    left: 158vh;
+    padding: 2vh;
+    animation-name: modalopen;
+    animation-duration: 1s;
+}
+
+.modal-arrow {
+    width: 0; 
+    height: 0; 
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    
+    border-bottom: 20px solid #193441;
+    position: fixed;
+    top: 6vh;
+    left: 193.7vh;
+  }
+
+  .modal-header h2,
+  .modal-footer h3 {
+      margin: 0;
+  }
+
+  .modal-footer {
+      font-size: .6rem;
+  }
+
+  .modal-header {
+    background: #193441;
+    padding: 1.5vh;
+    color: #fff;
+    border-top-left-radius: .5vh;
+    border-top-right-radius: .5vh;
+  }
+
+  .modal-body {
+      padding: 1vh 2vh;
+      background: #fff;
+  }
+
+  .modal-footer {
+      background: #193441;
+      padding: 1vh;
+      color: #fff;
+      text-align: center;
+      border-bottom-left-radius: .5vh;
+      border-bottom-right-radius: .5vh;
+  }
+
+.closeBtn {
+    position: absolute;
+    color: #fff;
+    top: 20px;
+    right: 27px;
+    font-size: 1.6rem;
+    transform: rotate(45deg);
+    cursor: pointer;
+}
+
+.closeBtn:hover,.closeBtn:focus {
+    color: #A9A9A9;
+    cursor:pointer;
+}
+
+.logoutBtn{
+    border-radius: 5vh;
+    border: 5vh solid #193441;
+    overflow: hidden;
+    font-style: italic;
+    background-color: #193441;
+    color: #fff;
+    font-size: 120%;
+    width: 15vh;
+    border: none;
+    cursor: pointer;
+}
+
+.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%
+}
+
+::placeholder{
+    color: #fff;
+    opacity: 1;
+}
+
+:-ms-input-placeholder {
+    color: #fff;
+}
+
+::-ms-input-placeholder {
+    color: #fff;
 }
 
 @keyframes expand {
@@ -231,5 +381,18 @@ body {
     }
     30% {
         transform: scale(1.05);
+    }
+}
+
+@keyframes modalopen {
+    from {opacity: 0}
+    to {opacity: 1}
+}
+
+@media only screen and (max-width: 1626px) {
+    .modal-contents {
+        position: fixed;
+        top: -14.2vh;
+        left: 138vh;
     }
 }
