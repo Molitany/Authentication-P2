@@ -14,7 +14,7 @@ electron.app.on('ready', () => {
     tray.setContextMenu(menu);
     new Promise((resolve, reject) => {
         //Read the file and if it fails then reject the promise.
-        fs.readFile("E:\\test.key", (err, data) => {
+        fs.readFile("./test.key", (err, data) => {
             if (err) {
                 reject(err);
             } else {

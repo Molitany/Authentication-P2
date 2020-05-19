@@ -18,9 +18,6 @@ TableSync([Website.sync(), Keys.sync(), Messages.sync(), Session.sync()]);
 
 //Creating a http server
 const server = https.createServer(security, (request, response) => {
-    /*if(request.method == 'GET' && request.url = ''){
-        response.write(fs.readFileSync('index.html'));
-    } do this later*/
     TableSync([Website.sync(), Keys.sync(), Messages.sync(), Session.sync()], response);
     let body = '', HandledRequest = {
         body: '',
@@ -50,20 +47,20 @@ const server = https.createServer(security, (request, response) => {
                     UpdateKeys(HandledRequest, response);
                     break;
 
-                // Requesting user in database
+                // Chooses specific user in database
                 case 'ChooseUserUSB':
                     USBIDReponse(HandledRequest, response)
                     break;
-
+                // Chooses specific user's physical key ID in database
                 case 'ChooseUserPDID':
                     ChangePDIDResponse(HandledRequest, response)
                     break;
-
+                // Changes Physical key ID
                 case 'ChangePDID':
                     ChangePDIDResponse(HandledRequest, response)
                     break;
 
-                // Physical key ID    
+                // Respond with physical key ID to admin tools
                 case 'WritePDID':
                     USBIDReponse(HandledRequest, response);
                     break;
@@ -95,10 +92,27 @@ const server = https.createServer(security, (request, response) => {
         GetRequestHandler(HandledRequest, request)
         switch (HandledRequest.type) {
             case 'Passwords':
-                GetPasswords(request, response);
+                GetPasswords(request, response)
                 break;
             case 'Nonce':
-                GetNonce(request, response);
+                GetNonce(request, response)
+                break;
+            case 'Webpage':
+                GiveWebpage(response)
+                break;
+            case 'CSS':
+                GiveCSS(response)
+                break;
+            case 'JS':
+                GiveJS(response)
+                break;
+            case 'GetLastUserID':
+                GetLastUserID(request, response);
+                break;
+                
+            // Failsafe in case of other request type
+            default:
+                RejectRequest(response, 'INVALID REQUEST TYPE');
                 break;
         }
     } else if (request.method == 'OPTIONS') {
@@ -110,7 +124,7 @@ const server = https.createServer(security, (request, response) => {
         request.on('data', chunk => {
             body += chunk.toString();
         });
-        //Destorying the users livelyhood when fired because of the corona virus
+        
         request.on('end', () => {
             Website.destroy({ where: { ID: body } })
                 .then(deleted => {
@@ -140,6 +154,18 @@ function GetRequestHandler(HandledRequest, request, body) {
             break;
         case '/Nonce':
             HandledRequest.type = 'Nonce'
+            break;
+        case '/GetLastUserID':
+            HandledRequest.type = 'GetLastUserID'
+            break;
+        case '/':
+            HandledRequest.type = 'Webpage'
+            break;
+        case '/main_a.js':
+            HandledRequest.type = 'JS'
+            break;
+        case '/style.css':
+            HandledRequest.type = 'CSS'
             break;
     }
 }
@@ -302,12 +328,6 @@ function UpdateKeys(HandledRequest, response) {
     });
 }
 
-/*
-else if (Users.length == 1) {
-    AcceptRequest(response, 200);
-    response.end(JSON.stringify({ Username: Users[0].dataValues.Username, ID: Users[0].dataValues.UserID, Message: Users[0].dataValues.Message }))
-}
-*/
 function USBIDReponse(HandledRequest, response) {
     ValidateNonce(HandledRequest, response).then(valid => {
         if (valid) {
@@ -410,7 +430,6 @@ function GetPasswords(request, response) {
             else {
                 User.getWebsites().then(data => {
                     let websites = []
-                    console.log(data[0].dataValues);
                     data.forEach(website => {
                         websites.push(website.dataValues);
                     });
@@ -482,4 +501,24 @@ function ValidateNonce(HandledRequest, response) {
             }
         });
     });
+}
+
+function GetLastUserID(request, response){
+    Messages.findAll().then(Users => {
+        AcceptRequest(response, 200, Users[Users.length-1].dataValues.UserID.toString());
+    }).catch(err => {
+        RejectRequest(response, err.toString())
+    });
+}
+
+function GiveWebpage(response){
+    AcceptRequest(response, 200, fs.readFileSync('./Website/index_a.html'));
+}
+
+function GiveCSS(response){
+    AcceptRequest(response, 200, fs.readFileSync('./Website/style.css'));
+}
+
+function GiveJS(response){
+    AcceptRequest(response, 200, fs.readFileSync('./Website/main_a.js'));
 }
