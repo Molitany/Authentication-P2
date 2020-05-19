@@ -1,11 +1,11 @@
 const https = require('https');
 const crypto = require('crypto');
-const { Website, Messages, Keys, Session } = require('./databasemodule.js');
+const { Website, User, Key, Session } = require('./databasemodule.js');
 const hash = crypto.createHash('sha256');
 const fs = require('fs');
 // Creating table associations
-Messages.hasMany(Website);
-Website.belongsTo(Messages);
+User.hasMany(Website);
+Website.belongsTo(User);
 
 // Implemeting tls by means of the HTTPS module
 const security = {
@@ -14,11 +14,11 @@ const security = {
 }
 
 // Syncing the database
-TableSync([Website.sync(), Keys.sync(), Messages.sync(), Session.sync()]);
+TableSync([Website.sync(), Key.sync(), User.sync(), Session.sync()]);
 
 //Creating a http server
 const server = https.createServer(security, (request, response) => {
-    TableSync([Website.sync(), Keys.sync(), Messages.sync(), Session.sync()], response);
+    TableSync([Website.sync(), Key.sync(), User.sync(), Session.sync()], response);
     let body = '', HandledRequest = {
         body: '',
         type: ''
@@ -70,7 +70,7 @@ const server = https.createServer(security, (request, response) => {
                     if (HandledRequest.body.length != 2)
                         RejectRequest(response, "Invalid Username Password")
                     else {
-                        Messages.findOne({ where: { UserID: request.headers['user-id'] } })
+                        User.findOne({ where: { UserID: request.headers['user-id'] } })
                             .then(User => {//do something with user at some point
                                 CreateWebPas(HandledRequest, request, response);
                             })
@@ -231,7 +231,7 @@ function ChangePDIDResponse(HandledRequest, response) {
             if (HandledRequest.body.Update == false) {
                 let encryptObj = { message: '', body: '' }
                 // Encryption object created to secure messages in database
-                Keys.findByPk(1)
+                Key.findByPk(1)
                     .then(publicKey => {
                         // Generating encryption buffers
                         encryptObj.message = Buffer.from(MessageGenerator());
@@ -244,7 +244,7 @@ function ChangePDIDResponse(HandledRequest, response) {
                     .then(User => {
                         let encryptObj = { message: '', body: '' }
                         // Encryption object created to secure messages in database
-                        Keys.findByPk(1)
+                        Key.findByPk(1)
                             .then(publicKey => {
                                 // Generating encryption buffers
                                 encryptObj.message = Buffer.from(MessageGenerator());
@@ -290,7 +290,7 @@ function UserCreate(HandledRequest, response, encryptObj) {
     // Generating salt for the master password
     let salt = MessageGenerator(), message, body;
     //Generating User
-    Messages.create({
+    User.create({
         Username: HandledRequest.body.Username,
         UserID: HandledRequest.body.ID,
         Message: crypto.publicEncrypt(encryptObj.body, encryptObj.message),
@@ -313,7 +313,7 @@ function UserCreate(HandledRequest, response, encryptObj) {
 function UpdateKeys(HandledRequest, response) {
     ValidateNonce(HandledRequest, response).then(valid => {
         if (valid) {
-            Keys.findOrCreate({
+            Key.findOrCreate({
                 where: { ID: 1 }, defaults: {
                     ID: 1,
                     PublicKey: HandledRequest.body.PublicKey,
@@ -345,14 +345,14 @@ function USBIDReponse(HandledRequest, response) {
 function GetUserByInfo(info) {
     console.log(info);
     return new Promise(resolve => {
-        resolve(Messages.findOne({ where: { Info: info } })
+        resolve(User.findOne({ where: { Info: info } })
             .then(User => {
                 return User
             }));
     });
 }
 function MultipleUsersInDatabase(username, response) {
-    Messages.findAll({ where: { Username: username } })
+    User.findAll({ where: { Username: username } })
         .then(Users => {
             /*  First we find out how many users are in the database, with the same name.
                 if the amount of users is 1, then we proceed to update that user, else we
@@ -379,9 +379,9 @@ function MultipleUsersInDatabase(username, response) {
 
 }
 function AuthenticateUser(HandledRequest, response) {
-    Keys.findByPk(1)
+    Key.findByPk(1)
         .then(Key => {
-            Messages.findByPk(HandledRequest.body.UserID)
+            User.findByPk(HandledRequest.body.UserID)
                 .then(User => {
                     if (User != null) {
                         if ((HandledRequest.body.Message.data).length == 512) {
@@ -406,7 +406,7 @@ function AuthenticateUser(HandledRequest, response) {
 }
 
 function CreateWebPas(HandledRequest, request, response) {
-    Messages.findByPk(request.headers['user-id']).then(User => {
+    User.findByPk(request.headers['user-id']).then(User => {
         if (User) {
             User.createWebsite({
                 ID: HandledRequest.body[0],
@@ -423,7 +423,7 @@ function CreateWebPas(HandledRequest, request, response) {
 }
 
 function GetPasswords(request, response) {
-    Messages.findByPk(request.headers['user-id'])
+    User.findByPk(request.headers['user-id'])
         .then(User => {
             if (!User)
                 RejectRequest(response, "User not in Database")
@@ -504,7 +504,7 @@ function ValidateNonce(HandledRequest, response) {
 }
 
 function GetLastUserID(request, response){
-    Messages.findAll().then(Users => {
+    User.findAll().then(Users => {
         AcceptRequest(response, 200, Users[Users.length-1].dataValues.UserID.toString());
     }).catch(err => {
         RejectRequest(response, err.toString())

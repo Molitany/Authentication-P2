@@ -4,7 +4,7 @@ const sequelize = new Sequelize({
     storage: 'database.sqlite'
 });
 
-module.exports.Keys = sequelize.define('Keys', {
+module.exports.Key = sequelize.define('Key', {
     ID: {
         type: DataTypes.NUMBER,
         primaryKey: true
@@ -20,7 +20,7 @@ module.exports.Keys = sequelize.define('Keys', {
     }
 });
 
-module.exports.Messages = sequelize.define('Message', {
+module.exports.User = sequelize.define('User', {
     UserID: {
         type: DataTypes.INTEGER,
         primaryKey: true
