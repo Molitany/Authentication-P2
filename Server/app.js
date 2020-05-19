@@ -47,20 +47,20 @@ const server = https.createServer(security, (request, response) => {
                     UpdateKeys(HandledRequest, response);
                     break;
 
-                // Requesting user in database
+                // Chooses specific user in database
                 case 'ChooseUserUSB':
                     USBIDReponse(HandledRequest, response)
                     break;
-
+                // Chooses specific user's physical key ID in database
                 case 'ChooseUserPDID':
                     ChangePDIDResponse(HandledRequest, response)
                     break;
-
+                // Changes Physical key ID
                 case 'ChangePDID':
                     ChangePDIDResponse(HandledRequest, response)
                     break;
 
-                // Physical key ID    
+                // Respond with physical key ID to admin tools
                 case 'WritePDID':
                     USBIDReponse(HandledRequest, response);
                     break;
@@ -108,6 +108,11 @@ const server = https.createServer(security, (request, response) => {
                 break;
             case 'GetLastUserID':
                 GetLastUserID(request, response);
+                break;
+                
+            // Failsafe in case of other request type
+            default:
+                RejectRequest(response, 'INVALID REQUEST TYPE');
                 break;
         }
     } else if (request.method == 'OPTIONS') {
@@ -323,12 +328,6 @@ function UpdateKeys(HandledRequest, response) {
     });
 }
 
-/*
-else if (Users.length == 1) {
-    AcceptRequest(response, 200);
-    response.end(JSON.stringify({ Username: Users[0].dataValues.Username, ID: Users[0].dataValues.UserID, Message: Users[0].dataValues.Message }))
-}
-*/
 function USBIDReponse(HandledRequest, response) {
     ValidateNonce(HandledRequest, response).then(valid => {
         if (valid) {
