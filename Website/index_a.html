@@ -10,22 +10,24 @@
     <script src="https://kit.fontawesome.com/e3bd776f17.js" crossorigin="anonymous"></script>
 </head>
 <style>
-    body,
-    html {
-        height: 100%;
-        margin: 0px;
-        padding: 0px;
-    }
 </style>
 
 <body>
+    <div id="simpleModal" class="bg-modal">
+        <div class="modal-arrow">
+            <div id="modal" class="modal-contents">
+
+            </div>
+        </div>
+    </div>
     <header>
-        <div class="searchBar">
+        <div class="searchBar" id="myHeader">
+            <p>Password Manager &nbsp;|</p>
             <i class="fas fa-search"></i>
             <input onkeyup="search()" id="search" type="text" placeholder="Search for your website...">
+            <div class="user"><i id="modalBtn" class="fas fa-user"></i></div>
         </div>
     </header>
-
     <div class="addh1">
         <h1> Add website</h1>
     </div>
@@ -34,31 +36,29 @@
 
         <div class="login-form">
 
-            <input autcomplete="off" text-align: center; type="text" id="Website" name="Website name"
-                placeholder="Web name..." required>
+            <input autcomplete="off" type="text" id="Website" name="Website name" placeholder="Web name..." required>
             <br>
             <div class="password">
                 <input autocomplete="off" type="password" id="Password" name="Passwordname" placeholder="Password"
                     required>
             </div>
             <br>
-            <button id="submit" class="submit" type="button"><i class="fas fa-cloud-upload-alt"></i> Submit to
+            <button id="submit" type="button"><i class="fas fa-cloud-upload-alt"></i> Submit to
                 database</button>
-
         </div>
         <div class="plus"><button type="button" onclick="menu()"><i id="arrow"
                     class="fas fa-angle-double-right fa-3x"></i></button></div>
 
     </form>
-    
     <div id="app">
-        
-        
+
+
         <p><br /></p>
         <h1 class="footer">This password vault was made by the P2 group at Aalborg University: Thomas Damsgaard, Thor
             Beregaard, Simon Preuss, Sebastian Lindhart, Kenneth Køpke and Andreas Poulsen</h1>
     </div>
-    <script src="./main_a.js"></script>
+
+    <script src="main_a.js"></script>
     <script>
         let search = function () {
             let search_text = document.getElementById("search").value;
@@ -90,7 +90,7 @@
             }
         }
     </script>
-    
+
 </body>
 
 </html>

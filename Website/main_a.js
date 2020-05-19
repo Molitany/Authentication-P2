@@ -13,6 +13,7 @@ function get_request() {
 }
 
 function post_request(website, password) {
+  if (website == '') return;
   return new Promise(resolve => {
     resolve(fetch('http://localhost:3001')
       .then(res => {
@@ -50,6 +51,7 @@ function bigfetch() {
         });
     })
     .then(resJSON => {
+      SetUsername(resJSON);
       let userIDParameter = new Headers()
       userIDParameter.append('user-id', resJSON.UserID)
       fetch('https://localhost:3000/Passwords', {
@@ -73,13 +75,57 @@ function bigfetch() {
     })
 }
 
+function SetUsername({Username}) {
+  document.getElementById('modal').innerHTML = `
+  <div class="modal-header">
+  <span id="closeBtn" class="closeBtn">+</span>
+  <h2>Hello ${Username}</h2>
+  </div>
+
+  <div class="modal-body">
+  <p>Remember to remove your USB device from the PC as you leave.</p>
+  <button class="logoutBtn">Logout</button>
+  </div>
+
+  <div class="modal-footer">
+  <h3>Developed by the P2 group at Aalborg University</h3>
+  </div>
+  `
+  };
+
+SetUsername({Username: 'Placeholder'});
+let modal = document.getElementById("simpleModal");
+let modalBtn = document.getElementById("modalBtn");
+let closeBtn = document.getElementById("closeBtn");
+
+modalBtn.addEventListener('click', openModal);
+closeBtn.addEventListener('click', closeModal);
+window.addEventListener('click', clickOutside);
+console.log(closeBtn);
+
+function openModal() {
+  modal.style.display = 'flex';
+}
+
+function closeModal() {
+  console.log(modal.style.display);
+  modal.style.display = 'none';
+}
+
+function clickOutside(e) {
+  if(e.target == modal) {
+    modal.style.display = 'none';
+  } 
+}
+
 function passwordTemplate(password) {
   return `
         <tr>
             <td class="url-text">${password.ID}</td>
             <td id="psw" title="${password.password}" class="psw-text" onclick="ShowHide(this)">*********</td>
             <td class="button"><button onclick="copyToClipboard(this)"><i class="fas fa-copy fa-2x"></i></button></td>
-            </tr>
+            <td class="buttonDel"><button onclick="deleteRow()"><i class="fas fa-trash-alt fa-2x"></i></button></td>
+        </tr>
       `;
 }
 
@@ -106,19 +152,25 @@ const copyToClipboard = (id) => {
   document.body.removeChild(toCopy);
 };
 
+window.onscroll = function() {scrollHeader();}
+
+let header = document.getElementById("myHeader");
+let sticky = header.offsetTop;
+
+function scrollHeader() {
+  if (window.pageYOffset > sticky) {
+    header.classList.add("sticky");
+  } else {
+    header.classList.remove("sticky");
+  }
+}
+
 function WritePage(password) {
   document.getElementById("app").innerHTML = `
-  <p class="app-title">Password Vault (${password.length} results)</p>
-<table class="box-title">
-  <tr>
-        <td class="url-text">Website</td>
-        <td class="psw-title">Password</td>
-  </tr>
-</table>
+<div class="hideboxes"><p>${password.length} total saved passwords <br/><hr style="width:70vh;text-align:center;"><br/></p></div>
 <table class="box" id="table_body">
 ${password.map(passwordTemplate).join("")}
 </table>
-
 <p><br /><br /><br /></p>
 <h1 class="footer">This password vault was made by the P2 group at Aalborg University: Thomas Damsgaard, Thor
     Beregaard, Simon Preuss, Sebastian Lindhart, Kenneth Køpke and Andreas Poulsen</h1>
