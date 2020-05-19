@@ -15,4 +15,3 @@ describe("#Read File from USB", () => {
             .catch(err => done(err))
     });
 });
-

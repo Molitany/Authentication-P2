@@ -208,15 +208,6 @@ function PostRequestHandler(HandledRequest, request, body) {
     return HandledRequest;
 }
 
-function RejectRequest(response, message) {
-    response.writeHead(400, {
-        'Content-Type': '*',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': '*'
-    });
-    response.end(message);
-}
-
 function MessageGenerator() {
     let message = '';
     let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;*-_¨^´`+?=)(/&%¤#"!}][{€$£@';
@@ -288,7 +279,7 @@ function UserUpdate(HandledRequest, response, User, encryptObj) {
 
 function UserCreate(HandledRequest, response, encryptObj) {
     // Generating salt for the master password
-    let salt = MessageGenerator(), message, body;
+    let salt = MessageGenerator();
     //Generating User
     User.create({
         Username: HandledRequest.body.Username,
@@ -448,16 +439,16 @@ function AcceptRequest(response, statusCode, message) {
     });
     response.end(message);
 }
-/* 
-function BasicAutherizeUser(HandledRequest, response) {
-    let hmac = crypto.createHmac('sha256', HandledRequest.hmacSecret).update(HandledRequest.body.payload).digest('base64');
-    if (hmac != HandledRequest.body.hmac) {
-        RejectRequest(response, 'Access Denied');
-    } else {
-        return
-    }
+
+function RejectRequest(response, message) {
+    response.writeHead(400, {
+        'Content-Type': '*',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*'
+    });
+    response.end(message);
 }
- */
+
 function GetNonce(request, response) {
     let nonce = crypto.createHash('sha256').update(crypto.randomBytes(16).toString('base64')).digest('base64');
     Session.findByPk(1).then(nonceTable => {
