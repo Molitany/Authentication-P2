@@ -512,17 +512,14 @@ function GetLastUserID(request, response){
     });
 }
 
-function GiveWebpage(response){ 
-    response.write(fs.readFileSync('./Website/index_a.html'))
-    response.end()
+function GiveWebpage(response){
+    AcceptRequest(response, 200, fs.readFileSync('./Website/index_a.html'));
 }
 
 function GiveCSS(response){
-    response.write(fs.readFileSync('./Website/style.css'))
-    response.end()
+    AcceptRequest(response, 200, fs.readFileSync('./Website/style.css'));
 }
 
 function GiveJS(response){
-    response.write(fs.readFileSync('./Website/main_a.js'))
-    response.end()
+    AcceptRequest(response, 200, fs.readFileSync('./Website/main_a.js'));
 }
