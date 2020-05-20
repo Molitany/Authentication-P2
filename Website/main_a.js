@@ -167,47 +167,23 @@ ${password.map(passwordTemplate).join("")}
 };
 
 function DeleteRow(element, change) {
-  // Send options request then send delete request for one row in database
-  let changeOrDelete
-  switch (change) {
-    case true:
-      changeOrDelete = 'change'
-      break;
-    default:
-      changeOrDelete = 'delete'
-      break;
+  let row = {
+    UserID: getCookie('user-id'),
+    Password: element.parentElement.parentElement.children[1]['title'],
+    ID: element.parentElement.parentElement.children[0].innerText
   }
-  if (confirm(`Are you sure you want to ${changeOrDelete} ${element.parentElement.parentElement.children[0].innerText}?`)) {
-    let row
-    fetch('http://localhost:3001')
-      .then(response => {
-        response.json()
-          .then(keyInfo => {
-            row = {
-              UserID: keyInfo.UserID,
-              Password: element.parentElement.parentElement.children[1]['title'],
-              ID: element.parentElement.parentElement.children[0].innerText
-            }
-          })
-          .then(() => {
-            fetch('https://localhost:3000/', {
-              method: 'DELETE',
-              body: JSON.stringify(row)
-            })
-              .then(res => {
-                if (!res.ok)
-                  throw Error
-              })
-              .catch(err => {
-                location.href = 'https://localhost:3000';
-              })
-            bigfetch()
-          })
-      })
-    return true
-  }
-  else
-    return false
+  fetch('https://localhost:3000/', {
+    method: 'DELETE',
+    body: JSON.stringify(row)
+  })
+    .then(res => {
+      if (!res.ok)
+        throw Error
+    })
+    .catch(err => {
+      location.href = 'https://localhost:3000';
+    })
+  bigfetch()
 }
 function search() {
   let search_text = document.getElementById("search").value.toLowerCase();
@@ -223,12 +199,19 @@ function search() {
   }
 }
 function ChangePassword(element) {
-  let password = prompt('What should the new password be?');
+  let password
+  if (confirm(`Are you sure you want to change ${element.parentElement.parentElement.children[0].innerText}?`))
+    password = prompt('What should the new password be?');
   if (password == '') {
-    return;
+    alert('You did not enter a password we assume you changed your mind')
+    return
   }
-  let change = DeleteRow(element, true)
-  if (change) {
-    PostPassword(element.parentElement.parentElement.children[0].innerText, password)
-  }
+  DeleteRow(element, true)
+  PostPassword(element.parentElement.parentElement.children[0].innerText, password)
+}
+function getCookie(name) {
+  let matches = document.cookie.match(new RegExp(
+    "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+  ));
+  return matches ? decodeURIComponent(matches[1]) : undefined;
 }
