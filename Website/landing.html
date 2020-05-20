@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landing Page</title>
+</head>
+<body>
+    <input id='MasterPW'label='Master Password'>
+    <button onclick="redirect(document.getElementById('MasterPW').value)">Click me!</button>
+    <script>
+        function redirect(MasterPW){
+            let header;
+            header = new Headers()
+            header.append('MasterPW', MasterPW)
+            fetch('https://localhost:3000/temp', {
+                headers: header
+            })
+        }
+    </script>
+</body>
+</html>
