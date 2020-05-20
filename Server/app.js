@@ -21,7 +21,8 @@ const server = https.createServer(security, (request, response) => {
     TableSync([Website.sync(), Key.sync(), User.sync(), Session.sync()], response);
     let body = '', HandledRequest = {
         body: '',
-        type: ''
+        type: '',
+        cookies: {}
     };
     if (request.method == 'POST') {
         //Reading data from the request
@@ -37,11 +38,6 @@ const server = https.createServer(security, (request, response) => {
         // After all data has been recieved we handle the requests
         request.on('end', () => {
             switch (HandledRequest.type) {
-                // Gives response back whether or not the user is in the database
-                case 'AuthUser':
-                    AuthenticateUser(HandledRequest, response);
-                    break;
-
                 // Public/Private key pair update
                 case 'ChangePriPubKey':
                     UpdateKeys(HandledRequest, response);
@@ -68,10 +64,8 @@ const server = https.createServer(security, (request, response) => {
 
                 //Create password website pair
                 case 'PostPassword':
-                    AuthenticateUser(HandledRequest, response).then(result => {
-                    if (result)
+                    AuthenticateUser(HandledRequest.cookies, response).then(result => {
                         if (HandledRequest.body.length != 2) {
-                            console.log("here")
                             RejectRequest(response, "Invalid Username Password")
                         }
                         else {
@@ -80,11 +74,12 @@ const server = https.createServer(security, (request, response) => {
                                     CreateWebPas(HandledRequest, request, response, User);
                                 })
                                 .catch(error => {
-                                    console.log("here")
-
-                                    RejectRequest(response, `User not in database\n ${error}`);
+                                    console.log(error)
+                                    RejectRequest(response, `User not in database`);
                                 });
                         }
+                    }).catch(e => { 
+                        RejectRequest(response, 'Please use the landing page to login')
                     });
                     break;
 
@@ -97,13 +92,14 @@ const server = https.createServer(security, (request, response) => {
     }
 
     else if (request.method == 'GET') {
-        GetRequestHandler(HandledRequest, request)
+        GetRequestHandler(HandledRequest, response, request)
         switch (HandledRequest.type) {
             case 'Passwords':
-                    AuthenticateUser(HandledRequest, response).then(result => {
-                    if (result)
-                        GetPasswords(request, response)
-                    });
+                AuthenticateUser(HandledRequest.cookies, response).then(result => {
+                    GetPasswords(request, response);
+                }).catch(e => {
+                    RejectRequest(response, 'Please use the landing page to login');
+                });
                 break;
             case 'Nonce':
                 GetNonce(request, response)
@@ -112,9 +108,10 @@ const server = https.createServer(security, (request, response) => {
                 GiveLanding(response)
                 break;
             case 'Webpage':
-                AuthenticateUser(HandledRequest, response).then(result => {
-                if (result)
-                    GiveWebpage(response)
+                AuthenticateUser(HandledRequest.cookies, response).then(result => {
+                    GiveWebpage(response);
+                }).catch(e => {
+                    RejectRequest(response, 'Please use the landing page to login');
                 });
                 break;
             case 'CSS':
@@ -135,23 +132,38 @@ const server = https.createServer(security, (request, response) => {
     } else if (request.method == 'OPTIONS') {
         AcceptRequest(response, 200, "Access granted to 'OPTIONS'");
     } else if (request.method == 'DELETE') {
-        let body;
-        request.on('data', chunk => {
-            try {
-                body = JSON.parse(chunk.toString());
-            } catch (e) {
-                RejectRequest(response, 'Empty Request')
-            }
-        });
+        let cookies = parseCookies(request);
+        if (Object.keys(cookies).length === 0 && cookies.constructor === Object) {
+            RejectRequest(response, "location.href='https://localhost:3000'")
+        }
+        else {
+            HandledRequest.cookies = {
+                UserID: cookies['user-id'],
+                MasterPw: cookies.masterpw,
+                Message: JSON.parse(cookies.message),
+            };
 
-        request.on('end', () => {
-            console.log(body)
-            Website.destroy({ where: { ID: body.ID, password: body.Password, UserUserID: body.UserID } })
-                .then(deleted => {
-                    console.log(deleted);
-                    AcceptRequest(response, 200, "Password deleted");
+            AuthenticateUser(HandledRequest.cookies, response).then(result => {
+                let body;
+                request.on('data', chunk => {
+                    try {
+                        body = JSON.parse(chunk.toString());
+                    } catch (e) {
+                        RejectRequest(response, 'Empty Request')
+                    }
                 });
-        });
+                request.on('end', () => {
+                    console.log(body)
+                    Website.destroy({ where: { ID: body.ID, password: body.Password, UserUserID: body.UserID } })
+                        .then(deleted => {
+                            console.log(deleted);
+                            AcceptRequest(response, 200, "Password deleted");
+                        });
+                });
+            }).catch(e => {
+                RejectRequest(response, "Incorrect")
+            });
+        }
     }
 });
 
@@ -167,13 +179,19 @@ function TableSync(TableArray, response) {
         });
 }
 
-function GetRequestHandler(HandledRequest, request, body) {
+function GetRequestHandler(HandledRequest, response, request) {
+    let cookies;
     switch (request.url) {
         case '/Passwords':
-            HandledRequest.body = {
-                UserID: request.headers['user-id'],
-                MasterPw: request.headers['masterpw'],
-                Message: JSON.parse(request.headers['message']),
+            cookies = parseCookies(request)
+            if (Object.keys(cookies).length === 0 && cookies.constructor === Object) {
+                HandledRequest.type = 'Landing'
+            } else {
+                HandledRequest.cookies = {
+                    UserID: cookies['user-id'],
+                    MasterPw: cookies.masterpw,
+                    Message: JSON.parse(cookies.message),
+                }
             }
             HandledRequest.type = 'Passwords'
             break;
@@ -184,10 +202,15 @@ function GetRequestHandler(HandledRequest, request, body) {
             HandledRequest.type = 'GetLastUserID'
             break;
         case '/main_page':
-            HandledRequest.body = {
-                UserID: request.headers['user-id'],
-                MasterPw: request.headers['masterpw'],
-                Message: JSON.parse(request.headers['message']),
+            cookies = parseCookies(request)
+            if (Object.keys(cookies).length === 0 && cookies.constructor === Object) {
+                HandledRequest.type = 'Landing'
+            } else {
+                HandledRequest.cookies = {
+                    UserID: cookies['user-id'],
+                    MasterPw: cookies.masterpw,
+                    Message: JSON.parse(cookies.message),
+                }
             }
             HandledRequest.type = 'Webpage'
             break;
@@ -205,7 +228,7 @@ function GetRequestHandler(HandledRequest, request, body) {
 
 //Function used to handle whether a request is supposed to authendicate user, change privateKey,
 //Change physical device ID or write physical device ID, post password
-function PostRequestHandler(HandledRequest, request, body) {
+function PostRequestHandler(HandledRequest, response, request, body) {
     switch (request.url) {
         case '/AuthUser':
             HandledRequest.body = JSON.parse(body);
@@ -225,7 +248,17 @@ function PostRequestHandler(HandledRequest, request, body) {
             break;
         case '/PostPassword':
             HandledRequest.body = body.split('\t');
-            HandledRequest.type = 'PostPassword'
+            let cookies = parseCookies(request)
+            if (Object.keys(cookies).length === 0 && cookies.constructor === Object) {
+                RejectRequest(response, "smile")
+            } else {
+                HandledRequest.cookies = {
+                    UserID: cookies['user-id'],
+                    MasterPw: cookies.masterpw,
+                    Message: JSON.parse(cookies.message),
+                }
+                HandledRequest.type = 'PostPassword'
+            }
             break;
         case '/ChooseUserUSB':
             HandledRequest.body = JSON.parse(body);
@@ -234,10 +267,6 @@ function PostRequestHandler(HandledRequest, request, body) {
         case '/ChooseUserPDID':
             HandledRequest.body = JSON.parse(body);
             HandledRequest.type = 'ChooseUserPDID';
-            break;
-        case '/DeletePassword':
-            HandledRequest.body = JSON.parse(body);
-            HandledRequest.type = 'DeletePassword';
             break;
         default:
             break;
@@ -406,36 +435,31 @@ function MultipleUsersInDatabase(username, response) {
         });
 
 }
-function AuthenticateUser(HandledRequest, response) {
+function AuthenticateUser(cookies, response) {
     return new Promise((resolve, reject) => {
         return Key.findByPk(1)
             .then(Key => {
-                return User.findByPk(HandledRequest.body.UserID)
+                return User.findByPk(cookies.UserID)
                     .then(User => {
                         try {
                             if (User != null) {
-                                if ((HandledRequest.body.Message.data).length == 512) {
-                                    if (crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, Buffer.from(HandledRequest.body.Message)).equals(crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, User.Message))) {
-                                        if (hash.copy().update(HandledRequest.body.MasterPw + User.dataValues.Salt).digest('hex') == User.MasterPw) {
+                                if ((cookies.Message.data).length == 512) {
+                                    if (crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, Buffer.from(cookies.Message)).equals(crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, User.Message))) {
+                                        if (hash.copy().update(cookies.MasterPw + User.dataValues.Salt).digest('hex') == User.MasterPw) {
                                             resolve(true)
                                         } else {
-                                            Redirect(302, 'landing', response);
                                             reject(false)
                                         }
                                     } else {
-                                        Redirect(302, 'landing', response);
                                         reject(false)
                                     }
                                 } else {
-                                    Redirect(302, 'landing', response);
                                     reject(false)
                                 }
                             } else {
-                                Redirect(302, 'landing', response);
                                 reject(false)
                             }
                         } catch (e) {
-                            Redirect(302, 'landing', response);
                             reject(false)
                         }
                     });
@@ -568,13 +592,15 @@ function GiveJS(response) {
     AcceptRequest(response, 200, fs.readFileSync('./Website/main_a.js'));
 }
 
-function Redirect(statusCode, location, response) {
-    response.writeHead(statusCode, {
-        'Location': 'https://localhost:3000/' + location,
-        'Content-Type': '*',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Method': '*',
-        'Access-Control-Allow-Headers': '*'
+// Taken from cookie documentation, is like using module. //is no plagiat i swear
+function parseCookies(request) {
+    let object = {},
+        cookies = request.headers.cookie;
+
+    cookies && cookies.split(';').forEach(cookie => {
+        let parts = cookie.split('=');
+        object[parts.shift().trim()] = decodeURI(parts.join('='));
     });
-    response.end();
+
+    return object;
 }

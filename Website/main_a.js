@@ -29,8 +29,13 @@ function PostPassword(website, password) {
           method: 'POST',
           body: website + '\t' + password,
           headers: myheaders
+        }).then(response => {
+          if (!response.ok)
+            throw Error
         })
-          .catch(err => console.log(err));
+          .catch(err => {
+            location.href = 'https://localhost:3000';
+          });
       })
       .catch(err => {
         console.log(err)
@@ -201,12 +206,17 @@ function DeleteRow(element, change) {
             }
           })
           .then(() => {
-            fetch('https://localhost:3000/DeletePassword', {
+            fetch('https://localhost:3000/', {
               method: 'DELETE',
               body: JSON.stringify(row)
             })
-              .then(() => console.log('Row deleted'))
-              .catch(err => console.log(`Could not delete, error: ${err}`))
+              .then(res => {
+                if (!res.ok)
+                  throw Error
+              })
+              .catch(err => {
+                location.href = 'https://localhost:3000';
+              })
             bigfetch()
           })
       })
