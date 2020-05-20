@@ -124,7 +124,7 @@ function passwordTemplate(password) {
             <td class="url-text">${password.ID}</td>
             <td id="psw" title="${password.password}" class="psw-text" onclick="ShowHide(this)">*********</td>
             <td class="button"><button onclick="copyToClipboard(this)"><i class="fas fa-copy fa-2x"></i></button></td>
-            <td class="buttonDel"><button onclick="deleteRow()"><i class="fas fa-trash-alt fa-2x"></i></button></td>
+            <td class="buttonDel"><button onclick="deleteRow(this)"><i class="fas fa-trash-alt fa-2x"></i></button></td>
         </tr>
       `;
 }
@@ -177,3 +177,15 @@ ${password.map(passwordTemplate).join("")}
 <p><br /></p>
 `
 };
+
+function deleteRow(element){
+  // Send options request then send delete request for one row in database
+  if(confirm(`Are you sure you want to delete ${element.parentElement.parentElement.children[0].innerText}?`)){
+    fetch('https://localhost:3000/DeletePassword', { method: 'DELETE' })
+      .then(() => console.log('Row deleted'))
+      .catch(err => console.log(`Could not delete, error: ${err}`))
+   bigfetch()
+  }
+  else
+    return
+}
