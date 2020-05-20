@@ -231,10 +231,6 @@ function GetRequestHandler(HandledRequest, response, request) {
 //Change physical device ID or write physical device ID, post password
 function PostRequestHandler(HandledRequest, response, request, body) {
     switch (request.url) {
-        case '/AuthUser':
-            HandledRequest.body = JSON.parse(body);
-            HandledRequest.type = 'AuthUser'
-            break;
         case '/PriPubKeys':
             HandledRequest.body = JSON.parse(body);
             HandledRequest.type = 'ChangePriPubKey';
