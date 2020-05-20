@@ -123,7 +123,7 @@ const server = https.createServer(security, (request, response) => {
         let body;
         request.on('data', chunk => {
             try {
-            body = JSON.parse(chunk.toString());
+                body = JSON.parse(chunk.toString());
             } catch (e) {
                 RejectRequest(response, 'Empty Request')
             }
@@ -131,7 +131,7 @@ const server = https.createServer(security, (request, response) => {
 
         request.on('end', () => {
             console.log(body)
-            Website.destroy({ where: { ID: body.ID, password: body.Password, UserUserID: body.UserID }})
+            Website.destroy({ where: { ID: body.ID, password: body.Password, UserUserID: body.UserID } })
                 .then(deleted => {
                     console.log(deleted);
                     AcceptRequest(response, 200, "Password deleted");
@@ -384,46 +384,43 @@ function AuthenticateUser(HandledRequest, response) {
             User.findByPk(HandledRequest.body.UserID)
                 .then(User => {
                     try {
-                    if (User != null) {
-                        if ((HandledRequest.body.Message.data).length == 512) {
-                            if (crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, Buffer.from(HandledRequest.body.Message)).equals(crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, User.Message))) {
-                                if (hash.copy().update(HandledRequest.body.MasterPw + User.dataValues.Salt).digest('hex') == User.MasterPw) {
-                                    AcceptRequest(response, 'User authed');
+                        if (User != null) {
+                            if ((HandledRequest.body.Message.data).length == 512) {
+                                if (crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, Buffer.from(HandledRequest.body.Message)).equals(crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, User.Message))) {
+                                    if (hash.copy().update(HandledRequest.body.MasterPw + User.dataValues.Salt).digest('hex') == User.MasterPw) {
+                                        AcceptRequest(response, 'User authed');
+                                    } else {
+                                        RejectRequest(response, 'User not found');
+                                    }
                                 } else {
                                     RejectRequest(response, 'User not found');
                                 }
                             } else {
-                                RejectRequest(response, 'User not found');
+                                RejectRequest(response, 'Invalid Message');
                             }
                         } else {
-                            RejectRequest(response, 'Invalid Message');
+                            //temporary solution
+                            RejectRequest(response, 'User not found');
                         }
-                    } else {
-                        //temporary solution
-                        RejectRequest(response, 'User not found');
+                    } catch (e) {
+                        RejectRequest(response, "Invalid body")
                     }
-                } catch (e) {
-                    RejectRequest(response, "Invalid body")
-                }
                 });
         });
 }
 
-function CreateWebPas(HandledRequest, request, response) {
-    User.findByPk(request.headers['user-id']).then(User => {
-        if (User) {
-            User.createWebsite({
-                ID: HandledRequest.body[0],
-                password: HandledRequest.body[1]
-            }).then(table => {
-                console.log(table.toJSON());
-            })
-                .then(() => AcceptRequest(response, 200, "Password created"));
-        } else {
-            RejectRequest(response, 'User not in Database');
-        }
-    })
-        .catch(err => console.error(err));
+function CreateWebPas(HandledRequest, request, response, User) {
+    if (User) {
+        User.createWebsite({
+            ID: HandledRequest.body[0],
+            password: HandledRequest.body[1]
+        }).then(table => {
+            console.log(table.toJSON());
+        })
+            .then(() => AcceptRequest(response, 200, "Password created"));
+    } else {
+        RejectRequest(response, 'User not in Database');
+    }
 }
 
 function GetPasswords(request, response) {
