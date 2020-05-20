@@ -15,37 +15,21 @@ function get_request() {
 function PostPassword(website, password) {
   if (website == '') return;
   return new Promise(resolve => {
-    resolve(fetch('http://localhost:3001')
-      .then(res => {
-        return res.json()
-          .then(resJSON => {
-            return resJSON
-          });
-      })
-      .then(resJSON => {
-        let myheaders = new Headers()
-        myheaders.append('user-id', resJSON.UserID)
-        fetch('https://localhost:3000/PostPassword', {
-          method: 'POST',
-          body: website + '\t' + password,
-          headers: myheaders
-        }).then(response => {
-          if (!response.ok)
-            throw Error
-        })
-          .catch(err => {
-            location.href = 'https://localhost:3000';
-          });
-      })
+    resolve(fetch('https://localhost:3000/PostPassword', {
+      method: 'POST',
+      body: website + '\t' + password
+    }).then(response => {
+      if (!response.ok)
+        throw Error
+    })
       .catch(err => {
-        console.log(err)
-        document.getElementById("usbdevice").style = "color:red";
-        document.getElementById("usbdevice").innerHTML = "Please input USB device and start the server before posting passwords";
+        console.table(err)
+        //location.href = 'https://localhost:3000';
       })
     )
-  })
+  }
+  )
 }
-
 function bigfetch() {
   fetch('http://localhost:3001')
     .then(res => {
@@ -183,67 +167,51 @@ ${password.map(passwordTemplate).join("")}
 };
 
 function DeleteRow(element, change) {
-  // Send options request then send delete request for one row in database
-  let changeOrDelete
-  switch (change) {
-    case true:
-      changeOrDelete = 'change'
-      break;
-    default:
-      changeOrDelete = 'delete'
-      break;
+  let row = {
+    UserID: getCookie('user-id'),
+    Password: element.parentElement.parentElement.children[1]['title'],
+    ID: element.parentElement.parentElement.children[0].innerText
   }
-  if (confirm(`Are you sure you want to ${changeOrDelete} ${element.parentElement.parentElement.children[0].innerText}?`)) {
-    let row
-    fetch('http://localhost:3001')
-      .then(response => {
-        response.json()
-          .then(keyInfo => {
-            row = {
-              UserID: keyInfo.UserID,
-              Password: element.parentElement.parentElement.children[1]['title'],
-              ID: element.parentElement.parentElement.children[0].innerText
-            }
-          })
-          .then(() => {
-            fetch('https://localhost:3000/', {
-              method: 'DELETE',
-              body: JSON.stringify(row)
-            })
-              .then(res => {
-                if (!res.ok)
-                  throw Error
-              })
-              .catch(err => {
-                location.href = 'https://localhost:3000';
-              })
-            bigfetch()
-          })
-      })
-  }
+  fetch('https://localhost:3000/', {
+    method: 'DELETE',
+    body: JSON.stringify(row)
+  })
+    .then(res => {
+      if (!res.ok)
+        throw Error
+    })
+    .catch(err => {
+      location.href = 'https://localhost:3000';
+    })
+  bigfetch()
 }
-function search(){
+function search() {
   let search_text = document.getElementById("search").value.toLowerCase();
   let table = document.getElementById("table_body");
   let a = table.rows;
   for (i = 0; i < a.length; i++) {
-      let specific_value = a[i].cells[0].innerText.toLowerCase();
-      if (specific_value.indexOf(search_text) != -1) {
-          a[i].style.display = "";
-      } else {
-          a[i].style.display = "none";
-      }
+    let specific_value = a[i].cells[0].innerText.toLowerCase();
+    if (specific_value.indexOf(search_text) != -1) {
+      a[i].style.display = "";
+    } else {
+      a[i].style.display = "none";
+    }
   }
 }
-function ChangePassword(element){
-    DeleteRow(element, true);
-    console.log(element.parentElement.parentElement)
-    PostPassword(element.parentElement.parentElement.children[0].innerText, prompt('What should the new password be?'))
+function ChangePassword(element) {
+  let password
+  if (confirm(`Are you sure you want to change ${element.parentElement.parentElement.children[0].innerText}?`))
+    password = prompt('What should the new password be?');
+  if (password == '') {
+    alert('You did not enter a password we assume you changed your mind')
+    return
+  }
+  DeleteRow(element, true)
+  PostPassword(element.parentElement.parentElement.children[0].innerText, password)
 }
-// Taken from cookie documentation, is like using module. is no plagiat i swear
 function getCookie(name) {
   let matches = document.cookie.match(new RegExp(
-      "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+    "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
   ));
   return matches ? decodeURIComponent(matches[1]) : undefined;
 }
