@@ -121,7 +121,7 @@ function passwordTemplate(password) {
             <td class="url-text">${password.ID}</td>
             <td id="psw" title="${password.password}" class="psw-text" onclick="ShowHide(this)">*********</td>
             <td class="button"><button onclick="copyToClipboard(this)"><i class="fas fa-copy fa-2x"></i></button></td>
-            <td class="buttonEdit"><button onclick="EditRow(this)"><i class="fas fa-edit fa-2x"></i></button></td>
+            <td class="buttonEdit"><button onclick="ChangePassword(this)"><i class="fas fa-edit fa-2x"></i></button></td>
             <td class="buttonDel"><button onclick="DeleteRow(this)"><i class="fas fa-trash-alt fa-2x"></i></button></td>
         </tr>
       `;
@@ -176,9 +176,18 @@ ${password.map(passwordTemplate).join("")}
 `
 };
 
-function DeleteRow(element) {
+function DeleteRow(element, change) {
   // Send options request then send delete request for one row in database
-  if (confirm(`Are you sure you want to delete ${element.parentElement.parentElement.children[0].innerText}?`)) {
+  let changeOrDelete
+  switch (change) {
+    case true:
+      changeOrDelete = 'change'
+      break;
+    default:
+      changeOrDelete = 'delete'
+      break;
+  }
+  if (confirm(`Are you sure you want to ${changeOrDelete} ${element.parentElement.parentElement.children[0].innerText}?`)) {
     let row
     fetch('http://localhost:3001')
       .then(response => {
@@ -216,7 +225,7 @@ function search(){
   }
 }
 function ChangePassword(element){
-    //DeleteRow(element);
+    DeleteRow(element, true);
     console.log(element.parentElement.parentElement)
-    //PostPassword(element.parentElement.parentElement.children[0].innerText, element.parentElement.parentElement.children[1].innerText)
+    PostPassword(element.parentElement.parentElement.children[0].innerText, prompt('What should the new password be?'))
 }
