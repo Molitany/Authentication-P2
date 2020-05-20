@@ -55,6 +55,7 @@ const server = https.createServer(security, (request, response) => {
                 case 'ChooseUserPDID':
                     ChangePDIDResponse(HandledRequest, response)
                     break;
+
                 // Changes Physical key ID
                 case 'ChangePDID':
                     ChangePDIDResponse(HandledRequest, response)
@@ -109,7 +110,7 @@ const server = https.createServer(security, (request, response) => {
             case 'GetLastUserID':
                 GetLastUserID(request, response);
                 break;
-                
+
             // Failsafe in case of other request type
             default:
                 RejectRequest(response, 'INVALID REQUEST TYPE');
@@ -118,19 +119,22 @@ const server = https.createServer(security, (request, response) => {
     } else if (request.method == 'OPTIONS') {
         AcceptRequest(response, 200, "Access granted to 'OPTIONS'");
     } else if (request.method == 'DELETE') {
-        AcceptRequest(response, 200, "Access granted to 'DELETE'");
         //Reading the ID of the element to delete(the child).code
-        let body = '';
+        let body;
         request.on('data', chunk => {
-            body += chunk.toString();
+            try {
+            body = JSON.parse(chunk.toString());
+            } catch (e) {
+                RejectRequest(response, 'Empty Request')
+            }
         });
-        
+
         request.on('end', () => {
-            Website.destroy({ where: { ID: body } })
+            Website.destroy({ where: { ID: body.ID, password: body.Password, UserUserID: body.UserID }})
                 .then(deleted => {
                     console.log(deleted);
-                })
-                .then(() => AcceptRequest(response, 200, "Password deleted"));
+                    AcceptRequest(response, 200, "Password deleted")
+                });
         });
     }
 });
@@ -201,6 +205,10 @@ function PostRequestHandler(HandledRequest, request, body) {
         case '/ChooseUserPDID':
             HandledRequest.body = JSON.parse(body);
             HandledRequest.type = 'ChooseUserPDID';
+            break;
+        case '/DeletePassword':
+            HandledRequest.body = JSON.parse(body);
+            HandledRequest.type = 'DeletePassword';
             break;
         default:
             break;
@@ -374,6 +382,7 @@ function AuthenticateUser(HandledRequest, response) {
         .then(Key => {
             User.findByPk(HandledRequest.body.UserID)
                 .then(User => {
+                    try {
                     if (User != null) {
                         if ((HandledRequest.body.Message.data).length == 512) {
                             if (crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, Buffer.from(HandledRequest.body.Message)).equals(crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, User.Message))) {
@@ -392,6 +401,9 @@ function AuthenticateUser(HandledRequest, response) {
                         //temporary solution
                         RejectRequest(response, 'User not found');
                     }
+                } catch (e) {
+                    RejectRequest(response, "Invalid body")
+                }
                 });
         });
 }
@@ -494,22 +506,22 @@ function ValidateNonce(HandledRequest, response) {
     });
 }
 
-function GetLastUserID(request, response){
+function GetLastUserID(request, response) {
     User.findAll().then(Users => {
-        AcceptRequest(response, 200, Users[Users.length-1].dataValues.UserID.toString());
+        AcceptRequest(response, 200, Users[Users.length - 1].dataValues.UserID.toString());
     }).catch(err => {
         RejectRequest(response, err.toString())
     });
 }
 
-function GiveWebpage(response){
+function GiveWebpage(response) {
     AcceptRequest(response, 200, fs.readFileSync('./Website/index_a.html'));
 }
 
-function GiveCSS(response){
+function GiveCSS(response) {
     AcceptRequest(response, 200, fs.readFileSync('./Website/style.css'));
 }
 
-function GiveJS(response){
+function GiveJS(response) {
     AcceptRequest(response, 200, fs.readFileSync('./Website/main_a.js'));
 }
