@@ -68,14 +68,18 @@ const server = https.createServer(security, (request, response) => {
 
                 //Create password website pair
                 case 'PostPassword':
-                    if (HandledRequest.body.length != 2)
+                    if (HandledRequest.body.length != 2){
+                        console.log("here")
                         RejectRequest(response, "Invalid Username Password")
+                    }
                     else {
                         User.findOne({ where: { UserID: request.headers['user-id'] } })
                             .then(User => {//do something with user at some point
-                                CreateWebPas(HandledRequest, request, response);
+                                CreateWebPas(HandledRequest, request, response, User);
                             })
                             .catch(error => {
+                                console.log("here")
+
                                 RejectRequest(response, `User not in database\n ${error}`);
                             });
                     }
