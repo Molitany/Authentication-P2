@@ -1,33 +1,39 @@
-describe("#Filter through the table", () => {
-    it("should show us the  website with the keyword from search", function(done) {
-        let search_text = "f";
-        let table = ["www.facebook.com"];
-        let a = table; //let a be all rows
+describe("#Password handling", () => {
+    it("Copy to clipboard", done => {
+        const toCopy = document.createElement('textarea');
 
-        for (let i = 0; i < a.length; i++) {
-            let specific_value = a[i]; // specify what we want to compare
+        toCopy.value = "Something that should be copied";
+        document.body.appendChild(toCopy);
+        toCopy.select()
+        document.execCommand('copy')
+        document.body.removeChild(toCopy);
 
-            if (specific_value.indexOf(search_text)) {
+        if ("Something that should be copied" === document.execCommand('paste'))
+            done();
+        else
+            done(Error('execCommand not useable'));
+    });
+
+    it("Show hide password", done => {
+        if (document.getElementById('psw').innerText === "*********") {
+            document.getElementById('psw').innerText = document.getElementById('psw').title;
+            if (document.getElementById('psw').innerText == "xd")
                 done()
-            } else {}
         }
     });
 });
 
-describe('#Password handling', () => {
-    it("Show hide password", done => {
-        if (document.getElementById('psw').innerText === "*********") {
-            document.getElementById('psw').innerText = document.getElementById('psw').title;
-            if (document.getElementById('psw').innerText == "xd")
-                done()
-        }
-    });
+describe("#Filter through the table", () => {
+    it("should show us the  website with the keyword from search", done => {
+        let search_text = "f";
+        let table = ["www.facebook.com", "www.apple.com", "www.wwe.com"];
 
-    it("Show hide password", done => {
-        if (document.getElementById('psw').innerText === "*********") {
-            document.getElementById('psw').innerText = document.getElementById('psw').title;
-            if (document.getElementById('psw').innerText == "xd")
-                done()
+        for (let i = 0; i < table.length; i++) {
+            let specific_value = table[i]; // specify what we want to compare
+
+            if (specific_value.indexOf(search_text) != -1) {
+                done();
+            }
         }
     });
-})
+});
