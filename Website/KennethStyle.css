@@ -2,7 +2,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: "poppins", sans-serif;
-    background-color: rgb(29, 68, 76);
+    background-color: #fff;
     background-repeat: no-repeat;
     background-size: cover;
     width: 70vh;
@@ -11,19 +11,12 @@ body {
 .text h1 {
     z-index: 1;
     position: absolute;
-    color: white;
+    color: #193441;
     opacity: 0.3;
     margin-top: 0px;
     font-size: 300%;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
-    margin-left: 300px;
-}
-
-.fa-user-lock {
-    font-size: 300%;
-    position: relative;
-    margin-left: 139%;
-    margin-top: 10vh;
+    margin-left: 500px;
 }
 
 .animation-area {
@@ -34,7 +27,7 @@ body {
 
 .footer {
     position: relative;
-    bottom: -37vh;
+    bottom: -43vh;
     left: 80vh;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-size: 80%;
@@ -59,7 +52,7 @@ body {
     width: 25px;
     height: 25px;
     list-style: none;
-    background-color: black;
+    background-color: #193441;
     animation: animate 200s linear infinite;
     bottom: 0px;
     opacity: .2;
@@ -72,6 +65,7 @@ body {
     width: 80px;
     height: 80px;
     animation-delay: 50.2s;
+    background-color: #193441;
 }
 
 .box-area li:nth-child(2) {
@@ -80,6 +74,7 @@ body {
     height: 300px;
     margin-bottom: 30px;
     animation-delay: 0s;
+    background-color: #193441;
 }
 
 .box-area li:nth-child(3) {
@@ -87,6 +82,7 @@ body {
     width: 180px;
     height: 180px;
     animation-delay: 22s;
+    background-color: #193441;
 }
 
 .box-area li:nth-child(4) {
@@ -94,6 +90,7 @@ body {
     width: 100px;
     height: 100px;
     animation-delay: 19.2s;
+    background-color: #193441;
 }
 
 .box-area li:nth-child(5) {
@@ -101,6 +98,7 @@ body {
     width: 20px;
     height: 20px;
     animation-delay: 39.2s;
+    background-color: #193441;
 }
 
 .box-area li:nth-child(6) {
@@ -108,24 +106,35 @@ body {
     width: 40px;
     height: 40px;
     animation-delay: 6s;
+    background-color: #193441;
+}
+
+.fa-user-lock {
+    font-size: 300%;
+    top: 15vh;
+    left: 96vh;
+    color: #fff;
+    z-index: 1;
+    position: fixed;
 }
 
 .masterpassword {
-    position: absolute;
+    position: fixed;
     margin: auto;
-    margin-top: 2vh;
-    margin-left: 41.5%;
-    background-color: rgb(18, 18, 18);
-    width: 280px;
-    height: 300px;
+    margin-top: 10vh;
+    margin-left: 42%;
+    background-color: #193441;
+    width: 230px;
+    height: 270px;
     border-radius: 5px;
-    box-shadow: 15px 10px black;
+    box-shadow: 2px 1px .7vh black;
     opacity: .8;
+    padding: 1vh;
 }
 
 .masterpassword input {
     margin-right: 5px;
-    margin-top: 40px;
+    margin-top: 95px;
     outline: none;
     height: 40px;
     width: 200px;
@@ -138,20 +147,27 @@ body {
     border-top: none;
     color:white;
     text-align: center;
+    text-decoration: none;
+    display: fixed;
 }
 
 i {
-    margin-right: 20px;
+    display: fixed;
+    margin-right: 4px;
+    display: flex;
+    color: #fff;
+    
 }
 
 button {
-    margin-left: 42px;
-    margin-top: 60px;
+    margin-left: 16px;
+    margin-top: 20px;
     height: 40px;
     width: 200px;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
-    background-color: teal;
+    background-color: #fff;
     border: none;
+    border-radius: 5vh;
 }
 
 button:active {
@@ -170,6 +186,7 @@ h1 span:hover {
 
 span.m-left {
     margin-left: -10px;
+    color: #193441;
 }
 
 span.Name {
@@ -181,6 +198,19 @@ span.Name:hover {
     transition-duration: .1s;
     display: ruby-text;
 }
+
+::placeholder {
+    color: #fff;
+    opacity: 1;
+  }
+  
+  :-ms-input-placeholder { 
+    color: #fff;
+  }
+  
+  ::-ms-input-placeholder {
+    color: #fff;
+  }
 
 @keyframes animate {
     0% {
