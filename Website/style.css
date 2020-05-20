@@ -110,6 +110,29 @@ body {
     color: #D4D4DA;
 }
 
+.buttonEdit {
+    position: absolute;
+    margin-top: 4.5vh;
+    padding-top: 2vh;
+}
+
+.buttonEdit button {
+    position: absolute;
+    right: -17.2vh;
+    margin-top: -6.1vh;
+    height: 5vh;
+    width: 4vh;
+    border-radius: 1.2vh;
+    cursor: pointer;
+    box-shadow: 0vh .8vh 1.5vh rgba(0, 0, 0, 0.13);
+    z-index: 0;
+    background-color: #193441;
+}
+
+.buttonEdit i {
+    color: #D4D4DA;
+}
+
 .plus {
     margin-left: 7vh;
     z-index: 0;

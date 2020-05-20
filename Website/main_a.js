@@ -121,6 +121,7 @@ function passwordTemplate(password) {
             <td class="url-text">${password.ID}</td>
             <td id="psw" title="${password.password}" class="psw-text" onclick="ShowHide(this)">*********</td>
             <td class="button"><button onclick="copyToClipboard(this)"><i class="fas fa-copy fa-2x"></i></button></td>
+            <td class="buttonEdit"><button onclick="EditRow(this)"><i class="fas fa-edit fa-2x"></i></button></td>
             <td class="buttonDel"><button onclick="DeleteRow(this)"><i class="fas fa-trash-alt fa-2x"></i></button></td>
         </tr>
       `;
