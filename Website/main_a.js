@@ -15,37 +15,21 @@ function get_request() {
 function PostPassword(website, password) {
   if (website == '') return;
   return new Promise(resolve => {
-    resolve(fetch('http://localhost:3001')
-      .then(res => {
-        return res.json()
-          .then(resJSON => {
-            return resJSON
-          });
-      })
-      .then(resJSON => {
-        let myheaders = new Headers()
-        myheaders.append('user-id', resJSON.UserID)
-        fetch('https://localhost:3000/PostPassword', {
-          method: 'POST',
-          body: website + '\t' + password,
-          headers: myheaders
-        }).then(response => {
-          if (!response.ok)
-            throw Error
-        })
-          .catch(err => {
-            location.href = 'https://localhost:3000';
-          });
-      })
+    resolve(fetch('https://localhost:3000/PostPassword', {
+      method: 'POST',
+      body: website + '\t' + password
+    }).then(response => {
+      if (!response.ok)
+        throw Error
+    })
       .catch(err => {
-        console.log(err)
-        document.getElementById("usbdevice").style = "color:red";
-        document.getElementById("usbdevice").innerHTML = "Please input USB device and start the server before posting passwords";
+        console.table(err)
+        //location.href = 'https://localhost:3000';
       })
     )
-  })
+  }
+  )
 }
-
 function bigfetch() {
   fetch('http://localhost:3001')
     .then(res => {
@@ -220,30 +204,31 @@ function DeleteRow(element, change) {
             bigfetch()
           })
       })
+    return true
   }
+  else
+    return false
 }
-function search(){
+function search() {
   let search_text = document.getElementById("search").value.toLowerCase();
   let table = document.getElementById("table_body");
   let a = table.rows;
   for (i = 0; i < a.length; i++) {
-      let specific_value = a[i].cells[0].innerText.toLowerCase();
-      if (specific_value.indexOf(search_text) != -1) {
-          a[i].style.display = "";
-      } else {
-          a[i].style.display = "none";
-      }
+    let specific_value = a[i].cells[0].innerText.toLowerCase();
+    if (specific_value.indexOf(search_text) != -1) {
+      a[i].style.display = "";
+    } else {
+      a[i].style.display = "none";
+    }
   }
 }
-function ChangePassword(element){
-    DeleteRow(element, true);
-    console.log(element.parentElement.parentElement)
-    PostPassword(element.parentElement.parentElement.children[0].innerText, prompt('What should the new password be?'))
-}
-// Taken from cookie documentation, is like using module. is no plagiat i swear
-function getCookie(name) {
-  let matches = document.cookie.match(new RegExp(
-      "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-  ));
-  return matches ? decodeURIComponent(matches[1]) : undefined;
+function ChangePassword(element) {
+  let password = prompt('What should the new password be?');
+  if (password == '') {
+    return;
+  }
+  let change = DeleteRow(element, true)
+  if (change) {
+    PostPassword(element.parentElement.parentElement.children[0].innerText, password)
+  }
 }
