@@ -13,21 +13,3 @@ describe("#Filter through the table", () => {
         }
     });
 });
-
-describe('#Password handling', () => {
-    it("Show hide password", done => {
-        if (document.getElementById('psw').innerText === "*********") {
-            document.getElementById('psw').innerText = document.getElementById('psw').title;
-            if (document.getElementById('psw').innerText == "xd")
-                done()
-        }
-    });
-
-    it("Show hide password", done => {
-        if (document.getElementById('psw').innerText === "*********") {
-            document.getElementById('psw').innerText = document.getElementById('psw').title;
-            if (document.getElementById('psw').innerText == "xd")
-                done()
-        }
-    });
-})
