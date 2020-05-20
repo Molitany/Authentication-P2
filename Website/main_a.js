@@ -186,7 +186,6 @@ function DeleteRow(element) {
       .then(response => {
         response.json()
           .then(keyInfo => {
-            console.log(keyInfo)
             row = {
               UserID: keyInfo.UserID,
               Password: element.parentElement.parentElement.children[1]['title'],
@@ -194,10 +193,9 @@ function DeleteRow(element) {
             }
           })
           .then(() => {
-            console.log(row)
             fetch('https://localhost:3000/DeletePassword', {
               method: 'DELETE',
-              body: row.toString()
+              body: JSON.stringify(row)
             })
               .then(() => console.log('Row deleted'))
               .catch(err => console.log(`Could not delete, error: ${err}`))
