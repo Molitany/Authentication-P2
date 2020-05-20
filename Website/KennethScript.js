@@ -31,14 +31,3 @@ function check() {
 
     }
 }
-
-document.getElementById("unittest").addEventListener('click', function() {
-    let loginID = document.getElementById("IDnumber");
-    let loginPSW = document.getElementById("password");
-
-    if(loginID.value === "12345" && loginPSW.value === "123") {
-        console.log("Success!")
-    } else {
-        console.log("Failure!")
-    }
-});
