@@ -68,21 +68,24 @@ const server = https.createServer(security, (request, response) => {
 
                 //Create password website pair
                 case 'PostPassword':
-                    if (HandledRequest.body.length != 2){
-                        console.log("here")
-                        RejectRequest(response, "Invalid Username Password")
-                    }
-                    else {
-                        User.findOne({ where: { UserID: request.headers['user-id'] } })
-                            .then(User => {//do something with user at some point
-                                CreateWebPas(HandledRequest, request, response, User);
-                            })
-                            .catch(error => {
-                                console.log("here")
+                    AuthenticateUser(HandledRequest, response).then(result => {
+                    if (result)
+                        if (HandledRequest.body.length != 2) {
+                            console.log("here")
+                            RejectRequest(response, "Invalid Username Password")
+                        }
+                        else {
+                            User.findOne({ where: { UserID: request.headers['user-id'] } })
+                                .then(User => {//do something with user at some point
+                                    CreateWebPas(HandledRequest, request, response, User);
+                                })
+                                .catch(error => {
+                                    console.log("here")
 
-                                RejectRequest(response, `User not in database\n ${error}`);
-                            });
-                    }
+                                    RejectRequest(response, `User not in database\n ${error}`);
+                                });
+                        }
+                    });
                     break;
 
                 // Failsafe in case of other request type
@@ -97,13 +100,22 @@ const server = https.createServer(security, (request, response) => {
         GetRequestHandler(HandledRequest, request)
         switch (HandledRequest.type) {
             case 'Passwords':
-                GetPasswords(request, response)
+                    AuthenticateUser(HandledRequest, response).then(result => {
+                    if (result)
+                        GetPasswords(request, response)
+                    });
                 break;
             case 'Nonce':
                 GetNonce(request, response)
                 break;
+            case 'Landing':
+                GiveLanding(response)
+                break;
             case 'Webpage':
-                GiveWebpage(response)
+                AuthenticateUser(HandledRequest, response).then(result => {
+                if (result)
+                    GiveWebpage(response)
+                });
                 break;
             case 'CSS':
                 GiveCSS(response)
@@ -158,6 +170,11 @@ function TableSync(TableArray, response) {
 function GetRequestHandler(HandledRequest, request, body) {
     switch (request.url) {
         case '/Passwords':
+            HandledRequest.body = {
+                UserID: request.headers['user-id'],
+                MasterPw: request.headers['masterpw'],
+                Message: JSON.parse(request.headers['message']),
+            }
             HandledRequest.type = 'Passwords'
             break;
         case '/Nonce':
@@ -166,7 +183,12 @@ function GetRequestHandler(HandledRequest, request, body) {
         case '/GetLastUserID':
             HandledRequest.type = 'GetLastUserID'
             break;
-        case '/':
+        case '/main_page':
+            HandledRequest.body = {
+                UserID: request.headers['user-id'],
+                MasterPw: request.headers['masterpw'],
+                Message: JSON.parse(request.headers['message']),
+            }
             HandledRequest.type = 'Webpage'
             break;
         case '/main_a.js':
@@ -174,6 +196,9 @@ function GetRequestHandler(HandledRequest, request, body) {
             break;
         case '/style.css':
             HandledRequest.type = 'CSS'
+            break;
+        default:
+            HandledRequest.type = 'Landing'
             break;
     }
 }
@@ -382,34 +407,40 @@ function MultipleUsersInDatabase(username, response) {
 
 }
 function AuthenticateUser(HandledRequest, response) {
-    Key.findByPk(1)
-        .then(Key => {
-            User.findByPk(HandledRequest.body.UserID)
-                .then(User => {
-                    try {
-                        if (User != null) {
-                            if ((HandledRequest.body.Message.data).length == 512) {
-                                if (crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, Buffer.from(HandledRequest.body.Message)).equals(crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, User.Message))) {
-                                    if (hash.copy().update(HandledRequest.body.MasterPw + User.dataValues.Salt).digest('hex') == User.MasterPw) {
-                                        AcceptRequest(response, 'User authed');
+    return new Promise((resolve, reject) => {
+        return Key.findByPk(1)
+            .then(Key => {
+                return User.findByPk(HandledRequest.body.UserID)
+                    .then(User => {
+                        try {
+                            if (User != null) {
+                                if ((HandledRequest.body.Message.data).length == 512) {
+                                    if (crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, Buffer.from(HandledRequest.body.Message)).equals(crypto.privateDecrypt({ key: Key.dataValues.PrivateKey, passphrase: Key.dataValues.Passphrase }, User.Message))) {
+                                        if (hash.copy().update(HandledRequest.body.MasterPw + User.dataValues.Salt).digest('hex') == User.MasterPw) {
+                                            resolve(true)
+                                        } else {
+                                            Redirect(302, 'landing', response);
+                                            reject(false)
+                                        }
                                     } else {
-                                        RejectRequest(response, 'User not found');
+                                        Redirect(302, 'landing', response);
+                                        reject(false)
                                     }
                                 } else {
-                                    RejectRequest(response, 'User not found');
+                                    Redirect(302, 'landing', response);
+                                    reject(false)
                                 }
                             } else {
-                                RejectRequest(response, 'Invalid Message');
+                                Redirect(302, 'landing', response);
+                                reject(false)
                             }
-                        } else {
-                            //temporary solution
-                            RejectRequest(response, 'User not found');
+                        } catch (e) {
+                            Redirect(302, 'landing', response);
+                            reject(false)
                         }
-                    } catch (e) {
-                        RejectRequest(response, "Invalid body")
-                    }
-                });
-        });
+                    });
+            });
+    });
 }
 
 function CreateWebPas(HandledRequest, request, response, User) {
@@ -517,6 +548,10 @@ function GetLastUserID(request, response) {
     });
 }
 
+function GiveLanding(response) {
+    AcceptRequest(response, 200, fs.readFileSync('./Website/landing.html'));
+}
+
 function GiveWebpage(response) {
     AcceptRequest(response, 200, fs.readFileSync('./Website/index_a.html'));
 }
@@ -531,4 +566,15 @@ function GiveCSS(response) {
 
 function GiveJS(response) {
     AcceptRequest(response, 200, fs.readFileSync('./Website/main_a.js'));
+}
+
+function Redirect(statusCode, location, response) {
+    response.writeHead(statusCode, {
+        'Location': 'https://localhost:3000/' + location,
+        'Content-Type': '*',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Method': '*',
+        'Access-Control-Allow-Headers': '*'
+    });
+    response.end();
 }
