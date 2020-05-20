@@ -10,8 +10,6 @@ body {
     background-color: #fff;
     height: 11vh;
     z-index: 1;
-    position: -webkit-sticky;
-    position: sticky;
     top:7.43vh;
     margin-top: -20.5vh;
     margin-bottom: 3vh;
@@ -36,7 +34,7 @@ body {
     overflow: hidden;
     border-radius: 0.6vh;
     box-shadow: 0vh .7vh 0.7vh rgba(0, 0, 0, .7);
-    z-index: 1;
+    z-index: -10;
 }
 
 .url-text {
@@ -206,6 +204,9 @@ body {
 
 .searchBar {
     background-color: #193441;
+    -webkit-box-shadow: 3px 6px 5px -2px rgba(0,0,0,0.75);
+    -moz-box-shadow: 3px 6px 5px -2px rgba(0,0,0,0.75);
+    box-shadow: 3px 6px 5px -2px rgba(0,0,0,0.75);
     padding-top: 2vh;
     z-index: 2;
     margin: 0;
@@ -350,7 +351,10 @@ body {
 .sticky {
     position: fixed;
     top: 0;
-    width: 100%
+    width: 100%;
+    -webkit-box-shadow: 3px 6px 5px -2px rgba(0,0,0,0.75);
+    -moz-box-shadow: 3px 6px 5px -2px rgba(0,0,0,0.75);
+    box-shadow: 3px 6px 5px -2px rgba(0,0,0,0.75);
 }
 
 ::placeholder{
