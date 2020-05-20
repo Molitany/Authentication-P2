@@ -119,7 +119,6 @@ const server = https.createServer(security, (request, response) => {
     } else if (request.method == 'OPTIONS') {
         AcceptRequest(response, 200, "Access granted to 'OPTIONS'");
     } else if (request.method == 'DELETE') {
-        //Reading the ID of the element to delete(the child).code
         let body;
         request.on('data', chunk => {
             try {
@@ -519,7 +518,11 @@ function GiveWebpage(response) {
 }
 
 function GiveCSS(response) {
-    AcceptRequest(response, 200, fs.readFileSync('./Website/style.css'));
+    response.writeHead(200, {
+        'content-type': 'text/css'
+    })
+    response.end(fs.readFileSync('./Website/style.css'))
+    //AcceptRequest(response, 200, fs.readFileSync('./Website/style.css'));
 }
 
 function GiveJS(response) {

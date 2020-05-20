@@ -23,7 +23,6 @@ function post_request(website, password) {
           });
       })
       .then(resJSON => {
-        console.log(resJSON)
         let myheaders = new Headers()
         myheaders.append('user-id', resJSON.UserID)
         fetch('https://localhost:3000/PostPassword', {
@@ -59,7 +58,6 @@ function bigfetch() {
         headers: userIDParameter
       })
         .then((response) => {
-          console.log(response)
           response.text()
             .then(data => {
               console.table(JSON.parse(data))
@@ -101,14 +99,13 @@ let closeBtn = document.getElementById("closeBtn");
 modalBtn.addEventListener('click', openModal);
 closeBtn.addEventListener('click', closeModal);
 window.addEventListener('click', clickOutside);
-console.log(closeBtn);
+
 
 function openModal() {
   modal.style.display = 'flex';
 }
 
 function closeModal() {
-  console.log(modal.style.display);
   modal.style.display = 'none';
 }
 
@@ -202,5 +199,18 @@ function DeleteRow(element) {
             bigfetch()
           })
       })
+  }
+}
+function search(){
+  let search_text = document.getElementById("search").value.toLowerCase();
+  let table = document.getElementById("table_body");
+  let a = table.rows;
+  for (i = 0; i < a.length; i++) {
+      let specific_value = a[i].cells[0].innerText.toLowerCase();
+      if (specific_value.indexOf(search_text) != -1) {
+          a[i].style.display = "";
+      } else {
+          a[i].style.display = "none";
+      }
   }
 }

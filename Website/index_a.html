@@ -9,8 +9,6 @@
     <link rel="icon" href="https://i.imgur.com/dGImM3T.png" type="image/x-icon">
     <script src="https://kit.fontawesome.com/e3bd776f17.js" crossorigin="anonymous"></script>
 </head>
-<style>
-</style>
 
 <body>
     <div id="simpleModal" class="bg-modal">
@@ -33,9 +31,7 @@
     </div>
     <form autocomplete="off" class="input-form" id="inputForm">
         <i fas></i>
-
         <div class="login-form">
-
             <input autcomplete="off" type="text" id="Website" name="Website name" placeholder="Web name..." required>
             <br>
             <div class="password">
@@ -58,21 +54,6 @@
 
     <script src="main_a.js"></script>
     <script>
-        let search = function () {
-            let search_text = document.getElementById("search").value;
-            let table = document.getElementById("table_body");
-            let a = table.rows;
-            console.log(a);
-            for (i = 0; i < a.length; i++) {
-                let specific_value = a[i].cells[0].innerText;
-                if (specific_value.indexOf(search_text) != -1) {
-                    a[i].style.display = "";
-                } else {
-                    a[i].style.display = "none";
-                }
-            }
-        }
-
         let menustatus = true;
         let menu = function () {
             let menulength = document.querySelector(".input-form");
@@ -88,7 +69,5 @@
             }
         }
     </script>
-
 </body>
-
 </html>
