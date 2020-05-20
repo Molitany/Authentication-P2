@@ -20,7 +20,7 @@ electron.app.on('ready', () => {
 
     //Read the file and if it fails then reject the promise.
     new Promise((resolve, reject) => {
-        fs.readFile("./test.key", (err, data) => {
+        fs.readFile("E:/test.key", (err, data) => {
             if (err) {
                 reject(err);
             } else {
