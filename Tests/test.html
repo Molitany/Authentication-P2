@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../Website/style.css">
+    <title>AAU's Password Vault</title>
+    <link rel="icon" href="https://i.imgur.com/dGImM3T.png" type="image/x-icon">
+    <script src="https://kit.fontawesome.com/e3bd776f17.js" crossorigin="anonymous"></script>
+    <script src="../node_modules/mocha/mocha.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="searchBar" id="myHeader">
+            <p>Password Manager &nbsp;|</p>
+            <i class="fas fa-search"></i>
+            <input onkeyup="search()" id="search" type="text" placeholder="Search for your website...">
+            <div class="user"><i id="modalBtn" class="fas fa-user"></i></div>
+        </div>
+    </header>
+
+    <div class="addh1">
+        <h1> Add website</h1>
+    </div>
+
+    <!-- User modal -->
+    <div id="simpleModal" class="bg-modal">
+        <div class="modal-arrow">
+            <div id="modal" class="modal-contents">
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Edit modal-->
+    <div id="confirmSimpleModal" class="confirm-BG">
+        <div id="confirmModal" class="confirmModal-content">
+            <div class="confirmModal-header">
+                <span id="closeBtn" class="confirmCloseBtn">+</span>
+                <h2>Enter password below</h2>
+            </div>
+
+            <div class="confirmModal-body">
+                <input autocomplete="off" type="password" id="editedPassword" name="editedPassword"
+                    placeholder="Password" required>
+                <button class="logoutBtn">Change Password</button>
+            </div>
+
+            <div class="confirmModal-footer">
+                <h3>Developed by the P2 group at Aalborg University</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit modal -->
+    <div id="editModal" class="editPassword-content">
+        <div class="editPassword-header">
+            <span id="editCloseBtn" class="closeBtn">+</span>
+            <p>Would you like to change placeholder?</p>
+        </div>
+
+        <div class="editPassword-body">
+            &nbsp &nbsp <button class="editYes" id="editYes">Yes</button> &nbsp &nbsp <button class="editNo"
+                id="editNo">No</button>
+        </div>
+
+        <div class="editPassword-footer">
+            <h3>Developed by the P2 group at Aalborg University</h3>
+        </div>
+        <div class="editPassword-arrow"></div>
+    </div>
+
+
+
+    <div id="app">
+        <p><br /></p>
+        <h1 class="footer">This password vault was made by the P2 group at Aalborg University: Thomas Damsgaard, Thor
+            Beregaard, Simon Preuss, Sebastian Lindhart, Kenneth Køpke and Andreas Poulsen</h1>
+            <table class="box" id="table_body">
+            <tr>
+                <td class="url-text">${password.ID}</td>
+                <td id="psw" title="xd" class="psw-text" onclick="ShowHide(this)">*********</td>
+                <td class="button"><button onclick="copyToClipboard(this)"><i class="fas fa-copy fa-2x"></i></button></td>
+                <td class="buttonDel"><button onclick="DeleteRow(this)"><i class="fas fa-trash-alt fa-2x"></i></button></td>
+                <td class="buttonEdit"><button id="editPswBtn" onclick="ChangePassword(this)"><i class="fas fa-edit fa-2x"></i></button></td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        let menustatus = true;
+        let menu = function () {
+            let menulength = document.querySelector(".input-form");
+            let arrow = document.getElementById("arrow");
+            if (menustatus === true) {
+                menulength.style.marginLeft = "-3vh"
+                arrow.style.transform = "rotate(180deg)";
+                menustatus = false;
+            } else if (menustatus === false) {
+                menulength.style.marginLeft = "-43.3vh";
+                arrow.style.transform = "rotate(360deg)";
+                menustatus = true
+            }
+        }
+    </script>
+
+    <div id="mocha"></div>
+    <script class="mocha-init">
+        mocha.setup('bdd');
+        mocha.checkLeaks();
+      </script>
+      <script src="./website.js"></script>
+      <script class="mocha-exec">
+        mocha.run();
+      </script>
+</body>
+
+</html>
