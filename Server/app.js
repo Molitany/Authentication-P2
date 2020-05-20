@@ -29,7 +29,7 @@ const server = https.createServer(security, (request, response) => {
         request.on('data', chunk => {
             try {
                 body += chunk.toString();
-                HandledRequest = PostRequestHandler(HandledRequest, request, body)
+                HandledRequest = PostRequestHandler(HandledRequest, response, request, body)
             } catch (e) {
                 RejectRequest(response, "INVALID REQUEST BODY")
             }
@@ -69,8 +69,9 @@ const server = https.createServer(security, (request, response) => {
                             RejectRequest(response, "Invalid Username Password")
                         }
                         else {
-                            User.findOne({ where: { UserID: request.headers['user-id'] } })
-                                .then(User => {//do something with user at some point
+                            console.log(HandledRequest)
+                            User.findOne({ where: { UserID: HandledRequest.cookies['UserID'] } })
+                                .then(User => {
                                     CreateWebPas(HandledRequest, request, response, User);
                                 })
                                 .catch(error => {
