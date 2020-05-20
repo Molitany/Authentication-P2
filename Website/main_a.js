@@ -75,7 +75,7 @@ function bigfetch() {
     })
 }
 
-function SetUsername({Username}) {
+function SetUsername({ Username }) {
   document.getElementById('modal').innerHTML = `
   <div class="modal-header">
   <span id="closeBtn" class="closeBtn">+</span>
@@ -91,9 +91,9 @@ function SetUsername({Username}) {
   <h3>Developed by the P2 group at Aalborg University</h3>
   </div>
   `
-  };
+};
 
-SetUsername({Username: 'Placeholder'});
+SetUsername({ Username: 'Placeholder' });
 let modal = document.getElementById("simpleModal");
 let modalBtn = document.getElementById("modalBtn");
 let closeBtn = document.getElementById("closeBtn");
@@ -113,9 +113,9 @@ function closeModal() {
 }
 
 function clickOutside(e) {
-  if(e.target == modal) {
+  if (e.target == modal) {
     modal.style.display = 'none';
-  } 
+  }
 }
 
 function passwordTemplate(password) {
@@ -124,7 +124,7 @@ function passwordTemplate(password) {
             <td class="url-text">${password.ID}</td>
             <td id="psw" title="${password.password}" class="psw-text" onclick="ShowHide(this)">*********</td>
             <td class="button"><button onclick="copyToClipboard(this)"><i class="fas fa-copy fa-2x"></i></button></td>
-            <td class="buttonDel"><button onclick="deleteRow(this)"><i class="fas fa-trash-alt fa-2x"></i></button></td>
+            <td class="buttonDel"><button onclick="DeleteRow(this)"><i class="fas fa-trash-alt fa-2x"></i></button></td>
         </tr>
       `;
 }
@@ -152,7 +152,7 @@ const copyToClipboard = (id) => {
   document.body.removeChild(toCopy);
 };
 
-window.onscroll = function() {scrollHeader();}
+window.onscroll = function () { scrollHeader(); }
 
 let header = document.getElementById("myHeader");
 let sticky = header.offsetTop;
@@ -178,14 +178,31 @@ ${password.map(passwordTemplate).join("")}
 `
 };
 
-function deleteRow(element){
+function DeleteRow(element) {
   // Send options request then send delete request for one row in database
-  if(confirm(`Are you sure you want to delete ${element.parentElement.parentElement.children[0].innerText}?`)){
-    fetch('https://localhost:3000/DeletePassword', { method: 'DELETE' })
-      .then(() => console.log('Row deleted'))
-      .catch(err => console.log(`Could not delete, error: ${err}`))
-   bigfetch()
+  if (confirm(`Are you sure you want to delete ${element.parentElement.parentElement.children[0].innerText}?`)) {
+    let row
+    fetch('http://localhost:3001')
+      .then(response => {
+        response.json()
+          .then(keyInfo => {
+            console.log(keyInfo)
+            row = {
+              UserID: keyInfo.UserID,
+              Password: element.parentElement.parentElement.children[1]['title'],
+              ID: element.parentElement.parentElement.children[0].innerText
+            }
+          })
+          .then(() => {
+            console.log(row)
+            fetch('https://localhost:3000/DeletePassword', {
+              method: 'DELETE',
+              body: row.toString()
+            })
+              .then(() => console.log('Row deleted'))
+              .catch(err => console.log(`Could not delete, error: ${err}`))
+            bigfetch()
+          })
+      })
   }
-  else
-    return
 }
