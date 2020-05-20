@@ -209,7 +209,10 @@ function DeleteRow(element, change) {
             bigfetch()
           })
       })
+      return true
   }
+  else
+   return false 
 }
 function search(){
   let search_text = document.getElementById("search").value.toLowerCase();
@@ -225,7 +228,8 @@ function search(){
   }
 }
 function ChangePassword(element){
-    DeleteRow(element, true);
-    console.log(element.parentElement.parentElement)
-    PostPassword(element.parentElement.parentElement.children[0].innerText, prompt('What should the new password be?'))
+    let change = DeleteRow(element, true)
+    if(change){
+      PostPassword(element.parentElement.parentElement.children[0].innerText, prompt('What should the new password be?'))
+    }
 }
