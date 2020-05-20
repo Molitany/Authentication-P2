@@ -91,6 +91,7 @@ function SetUsername({ Username }) {
   `
 };
 
+/* Modal for user in top right corner */
 SetUsername({ Username: 'Placeholder' });
 let modal = document.getElementById("simpleModal");
 let modalBtn = document.getElementById("modalBtn");
@@ -121,8 +122,8 @@ function passwordTemplate(password) {
             <td class="url-text">${password.ID}</td>
             <td id="psw" title="${password.password}" class="psw-text" onclick="ShowHide(this)">*********</td>
             <td class="button"><button onclick="copyToClipboard(this)"><i class="fas fa-copy fa-2x"></i></button></td>
-            <td class="buttonEdit"><button onclick="ChangePassword(this)"><i class="fas fa-edit fa-2x"></i></button></td>
             <td class="buttonDel"><button onclick="DeleteRow(this)"><i class="fas fa-trash-alt fa-2x"></i></button></td>
+            <td class="buttonEdit"><button id="editPswBtn" onclick="ChangePassword(this)"><i class="fas fa-edit fa-2x"></i></button></td>
         </tr>
       `;
 }
@@ -209,10 +210,7 @@ function DeleteRow(element, change) {
             bigfetch()
           })
       })
-      return true
   }
-  else
-   return false 
 }
 function search(){
   let search_text = document.getElementById("search").value.toLowerCase();
@@ -228,8 +226,7 @@ function search(){
   }
 }
 function ChangePassword(element){
-    let change = DeleteRow(element, true)
-    if(change){
-      PostPassword(element.parentElement.parentElement.children[0].innerText, prompt('What should the new password be?'))
-    }
+    DeleteRow(element, true);
+    console.log(element.parentElement.parentElement)
+    PostPassword(element.parentElement.parentElement.children[0].innerText, prompt('What should the new password be?'))
 }

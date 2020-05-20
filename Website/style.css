@@ -157,7 +157,7 @@ body {
     border: .3vh solid #193441;
     width: 15vh;
     height: 6vh;
-    margin-left: 37.7vh;
+    margin-left: 28vh;
     margin-top: 7.65vh;
     background: none;
     box-shadow: 0vh .8vh .7vh rgba(0, 0, 0, 0.13);
@@ -305,9 +305,9 @@ body {
     height: 0;
     border-left: 20px solid transparent;
     border-right: 20px solid transparent;
-    border-bottom: 20px solid #193441;
+    border-bottom: 30px solid #193441;
     position: fixed;
-    top: 6vh;
+    top: 5vh;
     left: 193.7vh;
 }
 
@@ -349,7 +349,6 @@ body {
     right: 27px;
     font-size: 1.6rem;
     transform: rotate(45deg);
-    cursor: pointer;
 }
 
 .closeBtn:hover,
@@ -371,13 +370,161 @@ body {
     cursor: pointer;
 }
 
+.editPassword-content {
+    display: none;
+    top: 17vh;
+    left: 143.6vh;
+    color: #fff;
+    width: 25vh;
+    position: fixed;
+    padding: 20px;
+    margin-left: 5vh;
+    height: 6.5vh;
+    z-index: 2;
+    font-size: 1rem;
+}
+
+.editYes {
+    border-radius: 5vh;
+    border: 5vh solid #193441;
+    overflow: hidden;
+    font-style: italic;
+    background-color: green;
+    color: #fff;
+    font-size: 120%;
+    width: 7vh;
+    border: none;
+    cursor: pointer;
+}
+.editNo {
+    border-radius: 5vh;
+    border: 5vh solid #193441;
+    overflow: hidden;
+    font-style: italic;
+    background-color: red;
+    color: #fff;
+    font-size: 120%;
+    width: 7vh;
+    border: none;
+    cursor: pointer;
+}
+
+.editPassword-arrow {
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 30px solid #193441;
+    position: fixed;
+    top: 24.3vh;
+    left: 147vh;
+    transform: rotate(-90deg)
+}
+
+.editPassword-header {
+    background: #193441;
+    padding: 1.5vh;
+    color: #fff;
+    border-top-left-radius: .5vh;
+    border-top-right-radius: .5vh;
+}
+
+.editPassword-body {
+    padding: 1vh 2vh;
+    margin-top: -1vh;
+    background: #193441;
+}
+
+.editPassword-footer {
+    background: #193441;
+    padding: 1vh;
+    color: #fff;
+    text-align: center;
+    font-size: .5rem;
+    border-bottom-left-radius: .5vh;
+    border-bottom-right-radius: .5vh;
+}
+
+.confirm-BG {
+    display: none;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    justify-content: center;
+    align-items: center;
+}
+
+.confirmModal-content {
+    width: 35vh;
+    height: 15vh;
+    background-color: #193441;
+    border-radius: .5vh
+}
+
+.confirmModal-header {
+    background: #193441;
+    padding: 1.5vh;
+    margin-bottom: 1vh;
+    color: #fff;
+    border-top-left-radius: .5vh;
+    border-top-right-radius: .5vh;
+}
+
+.confirmModal-header h2,
+.confirmModal-footer h3 {
+    margin: 0;
+}
+
+.confirmModal-body {
+    padding: 1vh 2vh;
+    margin-top: -1vh;
+    background: #fff;
+}
+
+.confirmModal-body input {
+    display: block;
+    border-radius: .5vh;
+    margin-left: 6vh;
+    margin-bottom: 2vh;
+    margin-top: 1vh;
+}
+
+.confirmModal-body button {
+    margin-left: 5.4vh;
+    width: 20vh;
+}
+.confirmModal-footer {
+    background: #193441;
+    padding: 1vh;
+    color: #fff;
+    text-align: center;
+    font-size: .5rem;
+    border-bottom-left-radius: .5vh;
+    border-bottom-right-radius: .5vh;
+}
+
+.confirmCloseBtn {
+    position: absolute;
+    color: #fff;
+    top: 42vh;
+    right: 84vh;
+    font-size: 1.6rem;
+    transform: rotate(45deg);
+}
+
+.confirmCloseBtn:hover,
+.confirmCloseBtn:focus {
+    color: #A9A9A9;
+    cursor: pointer;
+}
+
 .sticky {
     position: fixed;
     top: 0;
     width: 100%;
-    -webkit-box-shadow: 3px 6px 5px -2px rgba(0, 0, 0, 0.75);
-    -moz-box-shadow: 3px 6px 5px -2px rgba(0, 0, 0, 0.75);
-    box-shadow: 3px 6px 5px -2px rgba(0, 0, 0, 0.75);
 }
 
 ::placeholder {
