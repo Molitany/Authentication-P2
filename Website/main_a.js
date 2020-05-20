@@ -12,7 +12,7 @@ function get_request() {
   });
 }
 
-function post_request(website, password) {
+function PostPassword(website, password) {
   if (website == '') return;
   return new Promise(resolve => {
     resolve(fetch('http://localhost:3001')
@@ -121,13 +121,14 @@ function passwordTemplate(password) {
             <td class="url-text">${password.ID}</td>
             <td id="psw" title="${password.password}" class="psw-text" onclick="ShowHide(this)">*********</td>
             <td class="button"><button onclick="copyToClipboard(this)"><i class="fas fa-copy fa-2x"></i></button></td>
+            <td class="buttonEdit"><button onclick="EditRow(this)"><i class="fas fa-edit fa-2x"></i></button></td>
             <td class="buttonDel"><button onclick="DeleteRow(this)"><i class="fas fa-trash-alt fa-2x"></i></button></td>
         </tr>
       `;
 }
 
 document.getElementById("submit").addEventListener("click", e => {
-  post_request(document.getElementById("Website").value, document.getElementById("Password").value)
+  PostPassword(document.getElementById("Website").value, document.getElementById("Password").value)
     .then(() => bigfetch())
 })
 
@@ -213,4 +214,9 @@ function search(){
           a[i].style.display = "none";
       }
   }
+}
+function ChangePassword(element){
+    //DeleteRow(element);
+    console.log(element.parentElement.parentElement)
+    //PostPassword(element.parentElement.parentElement.children[0].innerText, element.parentElement.parentElement.children[1].innerText)
 }
