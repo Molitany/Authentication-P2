@@ -130,10 +130,11 @@ const server = https.createServer(security, (request, response) => {
         });
 
         request.on('end', () => {
+            console.log(body)
             Website.destroy({ where: { ID: body.ID, password: body.Password, UserUserID: body.UserID }})
                 .then(deleted => {
                     console.log(deleted);
-                    AcceptRequest(response, 200, "Password deleted")
+                    AcceptRequest(response, 200, "Password deleted");
                 });
         });
     }
@@ -447,6 +448,7 @@ function AcceptRequest(response, statusCode, message) {
     response.writeHead(statusCode, {
         'Content-Type': '*',
         'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Method': '*',
         'Access-Control-Allow-Headers': '*'
     });
     response.end(message);
@@ -456,6 +458,7 @@ function RejectRequest(response, message) {
     response.writeHead(400, {
         'Content-Type': '*',
         'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Method': '*',
         'Access-Control-Allow-Headers': '*'
     });
     response.end(message);
