@@ -10,12 +10,8 @@
     <button onclick="redirect(document.getElementById('MasterPW').value)">Click me!</button>
     <script>
         function redirect(MasterPW){
-            let header;
-            header = new Headers()
-            header.append('MasterPW', MasterPW)
-            fetch('https://localhost:3000/temp', {
-                headers: header
-            })
+            document.cookie = `password=${MasterPW}; path=/test`; 
+            location.href ='https://localhost:3000/test'
         }
     </script>
 </body>

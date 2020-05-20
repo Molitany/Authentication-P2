@@ -233,3 +233,10 @@ function ChangePassword(element){
       PostPassword(element.parentElement.parentElement.children[0].innerText, prompt('What should the new password be?'))
     }
 }
+// Taken from cookie documentation, is like using module. is no plagiat i swear
+function getCookie(name) {
+  let matches = document.cookie.match(new RegExp(
+      "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+  ));
+  return matches ? decodeURIComponent(matches[1]) : undefined;
+}
