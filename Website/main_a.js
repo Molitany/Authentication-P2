@@ -206,3 +206,16 @@ function DeleteRow(element) {
       })
   }
 }
+function search(){
+  let search_text = document.getElementById("search").value.toLowerCase();
+  let table = document.getElementById("table_body");
+  let a = table.rows;
+  for (i = 0; i < a.length; i++) {
+      let specific_value = a[i].cells[0].innerText.toLowerCase();
+      if (specific_value.indexOf(search_text) != -1) {
+          a[i].style.display = "";
+      } else {
+          a[i].style.display = "none";
+      }
+  }
+}

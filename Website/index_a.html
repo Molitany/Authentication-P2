@@ -58,21 +58,6 @@
 
     <script src="main_a.js"></script>
     <script>
-        let search = function () {
-            let search_text = document.getElementById("search").value;
-            let table = document.getElementById("table_body");
-            let a = table.rows;
-            console.log(a);
-            for (i = 0; i < a.length; i++) {
-                let specific_value = a[i].cells[0].innerText;
-                if (specific_value.indexOf(search_text) != -1) {
-                    a[i].style.display = "";
-                } else {
-                    a[i].style.display = "none";
-                }
-            }
-        }
-
         let menustatus = true;
         let menu = function () {
             let menulength = document.querySelector(".input-form");
