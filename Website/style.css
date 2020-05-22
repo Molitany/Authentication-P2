@@ -184,6 +184,11 @@ body {
     z-index: 1;
 }
 
+.login-form p {
+    text-align: center;
+    color: red;
+}
+
 .login-form input {
     font-style: italic;
     text-align: center;
@@ -357,19 +362,6 @@ body {
     cursor: pointer;
 }
 
-.logoutBtn {
-    border-radius: 5vh;
-    border: 5vh solid #193441;
-    overflow: hidden;
-    font-style: italic;
-    background-color: #193441;
-    color: #fff;
-    font-size: 120%;
-    width: 15vh;
-    border: none;
-    cursor: pointer;
-}
-
 .editPassword-content {
     display: none;
     top: 17vh;
@@ -493,8 +485,18 @@ body {
 }
 
 .confirmModal-body button {
-    margin-left: 5.4vh;
-    width: 20vh;
+    margin-left: 2vw;
+    margin-bottom: 1vh;
+    width: 10vw;
+    border-radius: 5vh;
+    border: 5vh solid #193441;
+    overflow: hidden;
+    font-style: italic;
+    background-color: #193441;
+    color: #fff;
+    font-size: 120%;
+    border: none;
+    cursor: pointer;
 }
 .confirmModal-footer {
     background: #193441;
@@ -506,7 +508,7 @@ body {
     border-bottom-right-radius: .5vh;
 }
 
-.confirmCloseBtn {
+#editCloseBtn {
     position: absolute;
     color: #fff;
     top: 42vh;
@@ -515,8 +517,8 @@ body {
     transform: rotate(45deg);
 }
 
-.confirmCloseBtn:hover,
-.confirmCloseBtn:focus {
+#editCloseBtn:hover,
+#editCloseBtn:focus {
     color: #A9A9A9;
     cursor: pointer;
 }

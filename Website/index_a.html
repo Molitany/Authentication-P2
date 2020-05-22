@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,15 +26,17 @@
     <form autocomplete="off" class="input-form" id="inputForm">
         <i fas></i>
         <div class="login-form">
-            <input autcomplete="off" type="text" id="Website" name="Website name" placeholder="Web name..." required>
+            <input autocomplete="off" type="text" id="Website" name="Website name" placeholder="Web name..." required>
             <br>
             <div class="password">
                 <input autocomplete="off" type="password" id="Password" name="Passwordname" placeholder="Password"
                     required>
             </div>
             <br>
-            <button id="submit" type="button"><i class="fas fa-cloud-upload-alt"></i> Submit to
-                database</button>
+            <button id="submit" type="button"><i class="fas fa-cloud-upload-alt"></i> Submit to database</button>
+            <br>
+            <p id="ErrorAddText"></p>
+
         </div>
         <div class="plus"><button type="button" onclick="menu()"><i id="arrow"
                     class="fas fa-angle-double-right fa-3x"></i></button></div>
@@ -50,43 +53,38 @@
     </div>
 
     <!-- Confirm Edit modal-->
-    <div id="confirmSimpleModal" class="confirm-BG">
-        <div id="confirmModal" class="confirmModal-content">
+    <div id="editSimpleModal" class="confirm-BG">
+        <div id="editModal" class="confirmModal-content">
             <div class="confirmModal-header">
-                <span id="closeBtn" class="confirmCloseBtn">+</span>
+                <span id="editCloseBtn" class="closeBtn">+</span>
                 <h2>Enter password below</h2>
             </div>
 
             <div class="confirmModal-body">
-                <input autocomplete="off" type="password" id="editedPassword" name="editedPassword" placeholder="Password" required>
-                <button class="logoutBtn">Change Password</button>
+                <input autocomplete="off" type="password" id="editedPassword" name="editedPassword"
+                    placeholder="Password" required>
+                <button id="ChangePassword" class="logoutBtn">Change Password</button>
+                <button id="CancelEditModal" class="CancelButton">Cancel</button>
             </div>
 
-            <div class="confirmModal-footer">
-                <h3>Developed by the P2 group at Aalborg University</h3>
-            </div>
         </div>
     </div>
 
-    <!-- Edit modal -->
-    <div id="editModal" class="editPassword-content">
-        <div class="editPassword-header">
-            <span id="editCloseBtn" class="closeBtn">+</span>
-            <p>Would you like to change placeholder?</p>
+        <!-- Confirm modal-->
+        <div id="confirmSimpleModal" class="confirm-BG">
+            <div id="confirmModal" class="confirmModal-content">
+                <div class="confirmModal-header">
+                    <span id="confirmCloseBtn" class="closeBtn">+</span>
+                    <h2>Are you sure you want to delete the website</h2>
+                </div>
+    
+                <div class="confirmModal-body">
+                    <button id="confirmButton" class="logoutBtn">Confirm</button>
+                    <button id="CancelConfirmModal" class="CancelButton">Cancel</button>
+                </div>
+    
+            </div>
         </div>
-
-        <div class="editPassword-body">
-            &nbsp &nbsp <button class="editYes" id="editYes">Yes</button> &nbsp &nbsp <button class="editNo"
-                id="editNo">No</button>
-        </div>
-
-        <div class="editPassword-footer">
-            <h3>Developed by the P2 group at Aalborg University</h3>
-        </div>
-        <div class="editPassword-arrow"></div>
-    </div>
-
-
 
     <div id="app">
         <p><br /></p>
