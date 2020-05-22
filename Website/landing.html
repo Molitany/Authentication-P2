@@ -1,15 +1,83 @@
 <!DOCTYPE html>
+
+
+
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landing Page</title>
+    <meta charset="utf-8" />
+    <title>Login page</title>
+
+
+    <link rel="stylesheet" type="text/css" href="KennethStyle.css">
+    <script src="KennethScript.js"></script>
+    <script src="https://kit.fontawesome.com/9b0e1113b8.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
-    <input id='MasterPW' label='Master Password'>
-    <button onclick="redirect(document.getElementById('MasterPW').value)">Click me!</button>
+    <form onsubmit="return check()" action="index_a.html" name="Login">
+        <div class="text">
+            <h1>
+                <span>W</span>
+                <span class="m-left">e</span>
+                <span class="m-left">l</span>
+                <span class="m-left">c</span>
+                <span class="m-left">o</span>
+                <span class="m-left">m</span>
+                <span class="m-left">e</span>
+
+                <span>T</span>
+                <span class="m-left">o</span>
+
+                <span>P</span>
+                <span class="m-left">a</span>
+                <span class="m-left">s</span>
+                <span class="m-left">s</span>
+                <span class="m-left">w</span>
+                <span class="m-left">o</span>
+                <span class="m-left">r</span>
+                <span class="m-left">d</span>
+
+                <span>V</span>
+                <span class="m-left">a</span>
+                <span class="m-left">u</span>
+                <span class="m-left">l</span>
+                <span class="m-left">t</span>
+            </h1>
+
+        </div>
+
+
+        <i class="fas fa-user-lock"></i>
+
+        <div class="masterpassword">
+
+            <br>
+            <i class="fas fa-key"></i>
+            <input type="password" id="password" placeholder="Master password" required><br><br>
+            <button onclick="redirect(document.getElementById('password').value)" type="button"> Login</button>
+        </div>
+
+    </form>
+    <div class="animation-area">
+        <ul class="box-area">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+
+        </ul>
+
+    </div>
+    <div class="footer">
+        <footer>This is made by group B2-27 software engineer 2.semester <br> <span>Kenneth, Andreas, Sebastian, Thomas, Thor and Simon</span> </footer>
+    </div>
+
+
     <script>
-        function redirect(MasterPW){
+        function redirect(MasterPW) {
             fetch('http://localhost:3001')
                 .then(data => {
                     data.json().then(keyInfo => {
@@ -17,22 +85,23 @@
                         document.cookie = `user-id=${keyInfo.UserID}`
                         document.cookie = `message=${JSON.stringify(keyInfo.Message)}`
                         fetch('https://localhost:3000/main_page')
-                        .then(response => {
-                            if(!response.ok){
-                                throw Error('Wrong password')
-                            }
-                        })
-                        .then(() => {
-                            // redirect, cookies already set
-                            location.href='https://localhost:3000/main_page'
-                        })
-                        .catch(err => {
-                            console.error(err)
-                            // show message on screen and stay on landing page?
-                        });
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw Error('Wrong password')
+                                }
+                            })
+                            .then(() => {
+                                // redirect, cookies already set
+                                location.href = 'https://localhost:3000/main_page'
+                            })
+                            .catch(err => {
+                                console.error(err)
+                                    // show message on screen and stay on landing page?
+                            });
                     })
                 })
         }
     </script>
 </body>
+
 </html>
