@@ -9,7 +9,7 @@
     <input id='MasterPW' label='Master Password'>
     <button onclick="redirect(document.getElementById('MasterPW').value)">Click me!</button>
     <script>
-        function redirect(MasterPW){
+        function redirect(MasterPW) {
             fetch('http://localhost:3001')
                 .then(data => {
                     data.json().then(keyInfo => {
@@ -17,19 +17,19 @@
                         document.cookie = `user-id=${keyInfo.UserID}`
                         document.cookie = `message=${JSON.stringify(keyInfo.Message)}`
                         fetch('https://localhost:3000/main_page')
-                        .then(response => {
-                            if(!response.ok){
-                                throw Error('Wrong password')
-                            }
-                        })
-                        .then(() => {
-                            // redirect, cookies already set
-                            location.href='https://localhost:3000/main_page'
-                        })
-                        .catch(err => {
-                            console.error(err)
-                            // show message on screen and stay on landing page?
-                        });
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw Error('Wrong password')
+                                }
+                            })
+                            .then(() => {
+                                // redirect, cookies already set
+                                location.href = 'https://localhost:3000/main_page'
+                            })
+                            .catch(err => {
+                                console.error(err)
+                                    // show message on screen and stay on landing page?
+                            });
                     })
                 })
         }
