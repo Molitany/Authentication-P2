@@ -2,7 +2,7 @@ const http = require('http');
 let message = '';
 
 // Opens the server on port 3001 that takes user info and is able to transmit it futher.
-http.createServer(function (req, res) {
+let server = http.createServer((req, res) => {
     if (req.method == 'GET'){
         res.writeHead(200, {
             'Content-Type': '*',
@@ -21,3 +21,5 @@ http.createServer(function (req, res) {
         res.end('Message Recieved');
     }
 }).listen(3001);
+
+module.exports.Server = server;

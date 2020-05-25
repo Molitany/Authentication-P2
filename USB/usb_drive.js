@@ -3,7 +3,12 @@ const { BrowserWindow, Tray, Menu, nativeImage } = require('electron');
 const fs = require('fs');
 
 //Opens the server by requiring its functionality.
-const server = require('./usb_server');
+const { Server } = require('./usb_server');
+
+Server.on('error', err => {
+    electron.app.quit();
+})
+
 let tray = null;
 
 //Allows localhost cert
@@ -13,14 +18,14 @@ electron.app.on('ready', () => {
     // Create tray icon so the program is visibly running for the user
     tray = new Tray(nativeImage.createFromPath("resources/app/USB/usb.png"));
     const menu = Menu.buildFromTemplate([
-        {label: "Exit", click: ()=>{electron.app.quit();}}
+        { label: "Exit", click: () => { electron.app.quit(); } }
     ]);
     tray.setToolTip('USB Authentication');
     tray.setContextMenu(menu);
 
     //Read the file and if it fails then reject the promise.
     new Promise((resolve, reject) => {
-        fs.readFile("E:/test.key", (err, data) => {
+        fs.readFile("./test.key", (err, data) => {
             if (err) {
                 reject(err);
             } else {
@@ -47,6 +52,7 @@ electron.app.on('ready', () => {
             path: ''
         });
         request.end(JSON.stringify({ Username: Key.Username, UserID: Key.UserID, Message: Key.Message }));
+
     })
         //Display an error message if it fails.
         .catch(err => {
