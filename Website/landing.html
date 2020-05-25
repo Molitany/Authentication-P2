@@ -1,15 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landing Page</title>
+    <meta charset="utf-8" />
+    <title>Login page</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "poppins", sans-serif;
+            background-color: #fff;
+            background-repeat: no-repeat;
+            background-size: cover;
+            width: 70vh;
+        }
+
+        .text h1 {
+            z-index: 1;
+            position: absolute;
+            color: #193441;
+            opacity: 0.3;
+            margin-top: 0px;
+            font-size: 300%;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            margin-left: 19vw;
+        }
+
+        .animation-area {
+            background-color: rgb(47, 43, 43);
+            width: 100%;
+            height: 100%;
+        }
+
+        .footer {
+            position: relative;
+            bottom: -80vh;
+            left: 80vh;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 80%;
+        }
+
+        .footer span {
+            margin-left: 44px;
+            font-size: 80%;
+        }
+
+        .box-area {
+            z-index: 1;
+            top: 0;
+            left: 0;
+            width: 90%;
+            height: 90%;
+            overflow: hidden;
+        }
+
+        .box-area li {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            list-style: none;
+            background-color: #193441;
+            animation: animate 200s linear infinite;
+            bottom: 0px;
+            opacity: .2;
+            clip-path: polygon(0% 0%, 0% 100%, 20% 100%, 20% 20%, 80% 20%, 80% 80%, 20% 80%, 20% 100%, 100% 100%, 100% 0%);
+            border-radius: 5%;
+        }
+
+        .box-area li:nth-child(1) {
+            left: 86%;
+            width: 80px;
+            height: 80px;
+            animation-delay: 50.2s;
+            background-color: #193441;
+        }
+
+        .box-area li:nth-child(2) {
+            left: 12%;
+            width: 300px;
+            height: 300px;
+            margin-bottom: 30px;
+            animation-delay: 0s;
+            background-color: #193441;
+        }
+
+        .box-area li:nth-child(3) {
+            left: 70%;
+            width: 180px;
+            height: 180px;
+            animation-delay: 22s;
+            background-color: #193441;
+        }
+
+        .box-area li:nth-child(4) {
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            animation-delay: 19.2s;
+            background-color: #193441;
+        }
+
+        .box-area li:nth-child(5) {
+            left: 38%;
+            width: 20px;
+            height: 20px;
+            animation-delay: 39.2s;
+            background-color: #193441;
+        }
+
+        .box-area li:nth-child(6) {
+            left: 90%;
+            width: 40px;
+            height: 40px;
+            animation-delay: 6s;
+            background-color: #193441;
+        }
+
+        .fa-user-lock {
+            font-size: 300%;
+            top: 20vh;
+            left: 43vw;
+            color: #fff;
+            z-index: 1;
+            position: fixed;
+        }
+
+        .masterpassword {
+            position: fixed;
+            margin: auto;
+            margin-top: 15vh;
+            margin-left: 42vw;
+            background-color: #193441;
+            width: 230px;
+            height: 270px;
+            border-radius: 5px;
+            box-shadow: 2px 1px .7vh black;
+            opacity: .8;
+            padding: 1vh;
+        }
+
+        .masterpassword input {
+            margin-right: 5px;
+            margin-top: 95px;
+            outline: none;
+            height: 40px;
+            width: 200px;
+            background: none;
+            border-color: black;
+            border-radius: 2%;
+            font-size: 120%;
+            border-left: none;
+            border-right: none;
+            border-top: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: fixed;
+        }
+
+        i {
+            display: fixed;
+            margin-right: 4px;
+            display: flex;
+            color: #fff;
+
+        }
+
+        button {
+            margin-left: 16px;
+            margin-top: 20px;
+            height: 40px;
+            width: 200px;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            background-color: #fff;
+            border: none;
+            border-radius: 5vh;
+        }
+
+        button:active {
+            animation: clear .5s;
+        }
+
+        h1 span:hover {
+            color: teal;
+            transition-duration: .1s;
+            animation: rubberband 1.0s;
+        }
+
+        .text span {
+            display: inline-block;
+        }
+
+        span.m-left {
+            margin-left: -10px;
+            color: #193441;
+        }
+
+        span.Name {
+            color: grey;
+        }
+
+        span.Name:hover {
+            color: teal;
+            transition-duration: .1s;
+            display: ruby-text;
+        }
+
+        ::placeholder {
+            color: #fff;
+            opacity: 1;
+        }
+
+        :-ms-input-placeholder {
+            color: #fff;
+        }
+
+        ::-ms-input-placeholder {
+            color: #fff;
+        }
+
+        @keyframes animate {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: .2;
+            }
+
+            100% {
+                transform: translateY(-800px) rotate(360deg);
+                opacity: .2;
+            }
+        }
+
+        @keyframes clear {
+            20% {
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes rubberband {
+            0% {
+                transform: scale(1);
+            }
+
+            20% {
+                transform: scale(1.9);
+            }
+        }
+    </style>
+    <script src="https://kit.fontawesome.com/9b0e1113b8.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
-    <input id='MasterPW' label='Master Password'>
-    <button onclick="redirect(document.getElementById('MasterPW').value)">Click me!</button>
+    <div class="text">
+        <h1>
+            <span>W</span>
+            <span class="m-left">e</span>
+            <span class="m-left">l</span>
+            <span class="m-left">c</span>
+            <span class="m-left">o</span>
+            <span class="m-left">m</span>
+            <span class="m-left">e</span>
+
+            <span>T</span>
+            <span class="m-left">o</span>
+
+            <span>P</span>
+            <span class="m-left">a</span>
+            <span class="m-left">s</span>
+            <span class="m-left">s</span>
+            <span class="m-left">w</span>
+            <span class="m-left">o</span>
+            <span class="m-left">r</span>
+            <span class="m-left">d</span>
+
+            <span>V</span>
+            <span class="m-left">a</span>
+            <span class="m-left">u</span>
+            <span class="m-left">l</span>
+            <span class="m-left">t</span>
+        </h1>
+    </div>
+
+    <i class="fas fa-user-lock"></i>
+
+    <div class="masterpassword">
+
+        <br>
+        <i class="fas fa-key"></i>
+        <input type="password" id="password" placeholder="Master password" required
+            onkeydown="redirect(this.value)"><br><br>
+        <button type="button" onclick="redirect(document.getElementById('password').value)"> Login</button>
+    </div>
+    <div class="animation-area">
+        <ul class="box-area">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+
+        </ul>
+
+    </div>
+    <div class="footer">
+        <footer>This is made by group B2-27 software engineer 2.semester <br> <span>Kenneth, Andreas, Sebastian, Thomas,
+                Thor and Simon</span> </footer>
+    </div>
+
     <script>
-        function redirect(MasterPW){
+        function redirect(MasterPW) {
             fetch('http://localhost:3001')
                 .then(data => {
                     data.json().then(keyInfo => {
@@ -17,22 +317,24 @@
                         document.cookie = `user-id=${keyInfo.UserID}`
                         document.cookie = `message=${JSON.stringify(keyInfo.Message)}`
                         fetch('https://localhost:3000/main_page')
-                        .then(response => {
-                            if(!response.ok){
-                                throw Error('Wrong password')
-                            }
-                        })
-                        .then(() => {
-                            // redirect, cookies already set
-                            location.href='https://localhost:3000/main_page'
-                        })
-                        .catch(err => {
-                            console.error(err)
-                            // show message on screen and stay on landing page?
-                        });
-                    })
-                })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw Error('Wrong password')
+                                }
+                            })
+                            .then(() => {
+                                // redirect, cookies already set
+                                location.href = 'https://localhost:3000/main_page'
+                            })
+                            .catch(err => {
+                                console.error(err)
+                                // show message on screen and stay on landing page?
+                            });
+                    });
+                });
         }
     </script>
+
 </body>
+
 </html>
