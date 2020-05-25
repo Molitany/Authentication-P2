@@ -134,7 +134,7 @@ body {
 }
 
 .plus {
-    margin-left: 7vh;
+    margin-left: 17vh;
     z-index: 0;
     position: fixed;
 }
@@ -388,6 +388,7 @@ body {
     border: none;
     cursor: pointer;
 }
+
 .editNo {
     border-radius: 5vh;
     border: 5vh solid #193441;
@@ -498,6 +499,7 @@ body {
     border: none;
     cursor: pointer;
 }
+
 .confirmModal-footer {
     background: #193441;
     padding: 1vh;
