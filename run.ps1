@@ -9,3 +9,4 @@ $package.main = '.\USB\usb_drive.js'
 $package | ConvertTo-Json -Depth 2 | Set-Content -Path '.\package.json'
 
 Start-Process powershell 'npm start'
+Start-Process "https://localhost:3000"
